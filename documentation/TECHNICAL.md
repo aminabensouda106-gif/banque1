@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 1 terminée — prêt pour Phase 2 (bootstrap Spring Boot) |
+| **Status** | Phase 2 terminée — prêt pour Phase 3 (auth) |
 
 ### Problématique
 
@@ -144,7 +144,7 @@ java -jar plantuml.jar -tsvg documentation/modele-donnees/*.puml documentation/u
 | **Backend** | Spring Boot | 3.4.x |
 | **Security** | Spring Security | (Boot starter) |
 | **Persistence** | Spring Data JPA + Hibernate | (Boot starter) |
-| **Database** | PostgreSQL | 16+ |
+| **Database** | PostgreSQL | **18** (port local **5433** sur cette machine) |
 | **Migrations** | Flyway | latest stable |
 | **Frontend** | Thymeleaf + Bootstrap | Bootstrap 5.3 |
 | **Build** | Maven | 3.9+ |
@@ -404,11 +404,15 @@ SPRING_PROFILES_ACTIVE=prod
 
 ### Local dev setup (no Docker)
 
-1. Install PostgreSQL locally (Windows installer or existing school setup).
-2. Create database and user manually (see `ROADMAP.md` Phase 2).
-3. Configure `application-dev.yml`:
+1. Install **PostgreSQL 18** locally.
+2. Sur ce PC, PG 18 écoute le port **5433** (Odoo occupe le 5432).
+3. Create database and user with `documentation/setup-postgresql.sql` :
+   ```bash
+   psql -U postgres -h localhost -p 5433 -f documentation/setup-postgresql.sql
+   ```
+4. Configure `application-dev.yml` :
 
-- DB: `jdbc:postgresql://localhost:5432/banque_agence`
+- DB: `jdbc:postgresql://localhost:5433/banque_agence`
 - User: `banque` / password: `banque` (dev only)
 
 ---
@@ -496,6 +500,7 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-14 | Docs live under `documentation/` | Keeps project root clean; all PFA docs in one place |
 | 2026-06-14 | No Python, no Docker | School project — keep stack simple, Java + local PostgreSQL |
 | 2026-06-14 | Phase 1 = UML conception before any code | Required by cahier §11; see `ROADMAP.md` Phase 1 |
+| 2026-06-14 | PostgreSQL 18 on port 5433 | Port 5432 is Odoo PG 9.5 on this machine |
 | TBD | Optimistic vs pessimistic lock on balance | To validate under concurrent withdraw tests |
 
 ---

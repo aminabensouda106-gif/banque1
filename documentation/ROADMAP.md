@@ -143,40 +143,39 @@ git push origin main
 **Référence cahier :** §10 (contraintes techniques), §13.2 (code source, scripts SQL).
 
 ### Prérequis (installation locale, sans Docker)
-- [ ] Java 21 installé (`java -version`)
-- [ ] Maven installé ou utiliser le wrapper `mvnw`
-- [ ] PostgreSQL installé localement
-- [ ] Créer la base manuellement :
-  ```sql
-  CREATE DATABASE banque_agence;
-  CREATE USER banque WITH PASSWORD 'banque';
-  GRANT ALL PRIVILEGES ON DATABASE banque_agence TO banque;
-  ```
+- [x] Java 21+ installé — détecté : Java 23 (`java -version`)
+- [x] Maven installé — détecté : Maven 3.9.9 (`mvn -version`)
+- [x] PostgreSQL **18** installé — port **5433** (`postgresql-x64-18`)
+- [x] Port **5432** réservé à Odoo — ce projet utilise **5433** uniquement
+- [x] Base créée : `psql -U postgres -h localhost -p 5433 -f documentation/setup-postgresql.sql`
 
 ### Étapes détaillées
 
 #### Étape 2.1 — Initialiser le projet
-- [ ] Générer projet Spring Boot 3 (start.spring.io ou à la main) :
-  - Dependencies : Web, Thymeleaf, Security, Data JPA, Validation, PostgreSQL, Flyway
-- [ ] Group : `com.banque.agence` · Artifact : `banque-agence`
-- [ ] Java 21
+- [x] Générer projet Spring Boot 3 (Maven, Java 21)
+- [x] Dependencies : Web, Thymeleaf, Security, JPA, Validation, PostgreSQL, Flyway, DevTools
+- [x] Group : `com.banque.agence` · Artifact : `agence`
 
 #### Étape 2.2 — Structure des packages
-- [ ] Créer les packages selon `TECHNICAL.md` §3 :
-  - `config`, `domain.entity`, `domain.enums`, `repository`, `service`, `web.controller`, `security`, `audit`
+- [x] Packages créés : `config`, `domain.entity`, `domain.enums`, `repository`, `service`, `web.controller`, `security`, `audit`
 
 #### Étape 2.3 — Configuration
-- [ ] `application.yml` : profil actif `dev`
-- [ ] `application-dev.yml` : URL JDBC, user, password locaux
-- [ ] Désactiver Flyway temporairement ou migration vide `V1__placeholder.sql` si besoin
+- [x] `application.yml` + `application-dev.yml`
+- [x] Flyway `V1__baseline.sql`
 
 #### Étape 2.4 — Fichiers projet
-- [ ] `.gitignore` (target/, .idea/, *.class, .env)
-- [ ] `README.md` à la racine : prérequis, création BDD, commande de lancement
+- [x] `.gitignore`
+- [x] `README.md` — prérequis, setup BDD, lancement
+- [x] `documentation/setup-postgresql.sql`
+- [x] Maven Wrapper (`mvnw`)
 
 #### Étape 2.5 — Page de test
-- [ ] Controller simple `GET /` → page Thymeleaf « Banque Agence — en construction »
-- [ ] Ou endpoint health : l'app répond sur `http://localhost:8080`
+- [x] `GET /` → page Thymeleaf « Banque Agence — en construction »
+- [x] `mvn clean compile` OK
+- [x] **PostgreSQL 18** — port **5433**, base `banque_agence` créée
+- [x] `mvn spring-boot:run` OK — connexion PostgreSQL 18.3 + Flyway v1
+- [x] Page d'accueil sur http://localhost:8080
+- [x] Connexion PostgreSQL OK
 
 ### Comment tester (Phase 2)
 ```bash
@@ -188,10 +187,10 @@ mvn spring-boot:run
 ```
 | Vérification | OK ? |
 |---|---|
-| `mvn clean compile` sans erreur | ☐ |
-| App démarre sur port 8080 | ☐ |
-| Page d'accueil s'affiche dans le navigateur | ☐ |
-| Connexion PostgreSQL OK (pas d'erreur dans les logs) | ☐ |
+| `mvn clean compile` sans erreur | ✓ |
+| `mvn spring-boot:run` sans erreur | ✓ |
+| Page d'accueil sur http://localhost:8080 | ✓ |
+| Connexion PostgreSQL OK | ✓ |
 
 ### Commit & push
 ```bash
@@ -660,7 +659,7 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 1 terminée.** Commencer **Phase 2 — Bootstrap Spring Boot**.
+**Phase 2 terminée.** Commencer **Phase 3 — Authentification & interface de base**.
 
 ---
 
