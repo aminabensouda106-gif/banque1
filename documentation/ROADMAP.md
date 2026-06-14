@@ -77,39 +77,33 @@ git push origin main
 - [x] Relier chaque cas au bon acteur avec les bonnes permissions
 
 #### Étape 1.3 — Diagramme de classes
-- [ ] Créer `documentation/uml/diagramme-classes.png`
-- [ ] Modéliser les classes principales :
+- [x] Créer `documentation/uml/diagramme-classes.puml` (+ SVG)
+- [x] Modéliser les classes principales :
   - `User`, `Client`, `Account`, `Transaction`, `AuditLog`
   - Énumérations : `UserRole`, `AccountType`, `AccountStatus`, `ClientStatus`, `TransactionType`
-- [ ] Afficher les relations : Client 1—* Account, User 1—* Transaction, etc.
-- [ ] Annoter les attributs clés (`balance: BigDecimal`, `passwordHash`, `version` pour verrouillage)
+- [x] Afficher les relations : Client 1—* Account, User 1—* Transaction, etc.
+- [x] Annoter les attributs clés (`balance: BigDecimal`, `passwordHash`, `version`)
 
-#### Étape 1.4 — Diagrammes de séquence (scénarios majeurs)
-- [ ] Créer un fichier par scénario dans `documentation/uml/sequence/` :
-  - [ ] `01-authentification.png`
-  - [ ] `02-ajout-client.png`
-  - [ ] `03-ouverture-compte.png`
-  - [ ] `04-depot.png`
-  - [ ] `05-retrait.png`
-  - [ ] `06-virement.png`
-  - [ ] `07-consultation-historique.png`
-- [ ] Chaque diagramme montre : Acteur → Interface → Contrôleur → Service → Repository → BDD
-- [ ] Le retrait doit montrer la vérification du solde
-- [ ] Le virement doit montrer la vérification des comptes actifs
+#### Étape 1.4 — Diagrammes de séquence (5 scénarios — couverture cahier §12)
+- [x] `01-authentification` — accès sécurisé selon le rôle
+- [x] `02-creation-client-compte` — ajout client + ouverture compte
+- [x] `03-operations-financieres` — dépôt, retrait, virement
+- [x] `04-consultation-historique` — historique filtré, relevé, reçu
+- [x] `05-gestion-utilisateurs` — créer, modifier, désactiver, rôles
 
 #### Étape 1.5 — Modèle de données (MCD, MLD, schéma relationnel)
-- [ ] Créer `documentation/modele-donnees/MCD.png`
-- [ ] Créer `documentation/modele-donnees/MLD.png`
-- [ ] Créer `documentation/modele-donnees/schema-relationnel.sql` (script de référence, pas encore Flyway)
-- [ ] Créer `documentation/modele-donnees/dictionnaire-donnees.md` (tableau : nom champ, type, description, contraintes)
+- [x] Créer `documentation/modele-donnees/MCD.puml` (+ SVG)
+- [x] Créer `documentation/modele-donnees/MLD.puml` (+ SVG)
+- [x] Créer `documentation/modele-donnees/schema-relationnel.sql`
+- [x] Créer `documentation/modele-donnees/dictionnaire-donnees.md`
 
-#### Étape 1.6 — Diagramme d'activité (optionnel mais recommandé pour le rapport)
-- [ ] Créer `documentation/uml/diagramme-activite-virement.png` (flux décision : solde OK ? comptes actifs ?)
+#### Étape 1.6 — Diagramme d'activité
+- [x] Créer `documentation/uml/diagramme-activite-virement.puml` (+ SVG)
 
 #### Étape 1.7 — Validation de la conception
-- [ ] Vérifier que tous les besoins §7.1 à §7.5 ont un cas d'utilisation correspondant
-- [ ] Vérifier que les 8 règles de gestion sont reflétées dans les diagrammes
-- [ ] Faire relire ou auto-revue : la conception est-elle cohérente ?
+- [x] Vérifier que tous les besoins §7.1 à §7.5 ont un cas d'utilisation correspondant
+- [x] Vérifier que les 8 règles de gestion sont reflétées dans les diagrammes
+- [x] Auto-revue : conception cohérente avec le cahier des charges
 
 ### Outils conseillés
 - **StarUML** ou **PlantUML** (gratuit, suffisant pour un PFA)
@@ -121,11 +115,12 @@ Pas d'application à lancer. Validation par checklist :
 
 | Vérification | OK ? |
 |---|---|
-| Diagramme cas d'utilisation couvre les 3 rôles | ☐ |
-| Diagramme de classes a les 5 entités | ☐ |
-| Au moins 5 diagrammes de séquence | ☐ |
-| MCD + MLD + dictionnaire présents | ☐ |
-| Les règles de gestion (solde, comptes actifs, audit) sont visibles dans les séquences | ☐ |
+| Diagramme cas d'utilisation couvre les 3 rôles | ✓ |
+| Diagramme de classes a les 5 entités | ✓ |
+| 5 diagrammes de séquence couvrant les 8 scénarios du cahier | ✓ |
+| MCD + MLD + dictionnaire présents | ✓ |
+| Les règles de gestion (solde, comptes actifs, audit) sont visibles dans les séquences | ✓ |
+| Diagramme d'activité virement présent | ✓ |
 
 ### Commit & push
 ```bash
@@ -665,9 +660,7 @@ git push origin main
 
 ## Prochaine action
 
-**Commencer la Phase 1 — Conception.**
-
-Première tâche concrète : créer `documentation/analyse-besoin.md` et le diagramme de cas d'utilisation.
+**Phase 1 terminée.** Commencer **Phase 2 — Bootstrap Spring Boot**.
 
 ---
 

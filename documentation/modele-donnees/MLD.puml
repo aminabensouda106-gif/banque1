@@ -1,0 +1,78 @@
+@startuml MLD
+skinparam shadowing false
+skinparam linetype ortho
+
+title MLD — Modèle logique de données
+
+entity "users" as users {
+  * **id** : BIGINT <<PK>>
+  --
+  * username : VARCHAR(50) <<UK>>
+  * password_hash : VARCHAR(255)
+  * full_name : VARCHAR(100)
+  email : VARCHAR(100)
+  * role : VARCHAR(20)
+  * enabled : BOOLEAN
+  created_at : TIMESTAMPTZ
+  last_login_at : TIMESTAMPTZ
+}
+
+entity "clients" as clients {
+  * **id** : BIGINT <<PK>>
+  --
+  * client_number : VARCHAR(20) <<UK>>
+  * cin : VARCHAR(20) <<UK>>
+  * first_name : VARCHAR(50)
+  * last_name : VARCHAR(50)
+  email : VARCHAR(100)
+  phone : VARCHAR(20)
+  address : VARCHAR(255)
+  professional_info : TEXT
+  * status : VARCHAR(20)
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+}
+
+entity "accounts" as accounts {
+  * **id** : BIGINT <<PK>>
+  --
+  * account_number : VARCHAR(20) <<UK>>
+  * client_id : BIGINT <<FK>>
+  * type : VARCHAR(20)
+  * status : VARCHAR(20)
+  * balance : NUMERIC(19,4)
+  opened_at : TIMESTAMPTZ
+  closed_at : TIMESTAMPTZ
+  * version : BIGINT
+}
+
+entity "transactions" as transactions {
+  * **id** : BIGINT <<PK>>
+  --
+  * type : VARCHAR(20)
+  * amount : NUMERIC(19,4)
+  source_account_id : BIGINT <<FK>>
+  destination_account_id : BIGINT <<FK>>
+  * executed_by : BIGINT <<FK>>
+  * executed_at : TIMESTAMPTZ
+  description : VARCHAR(255)
+}
+
+entity "audit_logs" as audit_logs {
+  * **id** : BIGINT <<PK>>
+  --
+  * action : VARCHAR(50)
+  entity_type : VARCHAR(50)
+  entity_id : BIGINT
+  * performed_by : BIGINT <<FK>>
+  * performed_at : TIMESTAMPTZ
+  details : TEXT
+}
+
+clients ||--o{ accounts : client_id
+users ||--o{ transactions : executed_by
+users ||--o{ audit_logs : performed_by
+accounts ||--o{ transactions : source_account_id
+accounts ||--o{ transactions : destination_account_id
+
+@enduml

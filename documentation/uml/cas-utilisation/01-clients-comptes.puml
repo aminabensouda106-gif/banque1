@@ -6,9 +6,8 @@ skinparam nodesep 30
 skinparam ranksep 40
 skinparam linetype ortho
 
-title Gestion des clients et comptes (§7.1, §7.2)
+title Gestion des clients et comptes
 
-' --- Acteurs : un seul lien vers les cas communs ---
 actor "Personnel\nde l'agence" as personnel
 
 actor "Administrateur" as admin
@@ -19,7 +18,6 @@ admin -up-|> personnel
 agent -up-|> personnel
 chef -up-|> personnel
 
-' --- Cas d'utilisation groupés ---
 rectangle "Accès au système" {
   usecase "S'authentifier" as UC_LOGIN
   usecase "Se déconnecter" as UC_LOGOUT
@@ -28,13 +26,15 @@ rectangle "Accès au système" {
 rectangle "Clients" {
   usecase "Ajouter un client" as UC_C_ADD
   usecase "Modifier un client" as UC_C_EDIT
-  usecase "Consulter / rechercher" as UC_C_VIEW
+  usecase "Consulter la fiche client" as UC_C_VIEW
+  usecase "Rechercher un client" as UC_C_SEARCH
   usecase "Gérer le statut client" as UC_C_STATUS
 }
 
 rectangle "Comptes bancaires" {
   usecase "Ouvrir un compte" as UC_A_OPEN
   usecase "Consulter un compte" as UC_A_VIEW
+  usecase "Lister les comptes\nd'un client" as UC_A_LIST
   usecase "Gérer le statut compte" as UC_A_STATUS
 }
 
@@ -43,19 +43,23 @@ personnel --> UC_LOGOUT
 personnel --> UC_C_ADD
 personnel --> UC_C_EDIT
 personnel --> UC_C_VIEW
+personnel --> UC_C_SEARCH
 personnel --> UC_C_STATUS
 personnel --> UC_A_OPEN
 personnel --> UC_A_VIEW
+personnel --> UC_A_LIST
 personnel --> UC_A_STATUS
 
 legend bottom
   |= Détails |= |
-  | Auth | Accès selon rôle — BCrypt (R7) |
-  | Recherche | Nom, CIN, n° client, téléphone |
-  | Statut client | Activer / suspendre / désactiver |
-  | Types compte | Courant, épargne, professionnel (R1, R2) |
-  | Statut compte | Bloquer / débloquer / clôturer (R6) |
-  | Audit | Toute modification journalisée (R8) |
+  | Auth | Accès selon le rôle, mot de passe chiffré (BCrypt) |
+  | Modifier client | Informations personnelles et professionnelles |
+  | Recherche | Nom, CIN, numéro client, téléphone |
+  | Statut client | Activer, suspendre, désactiver |
+  | Types compte | Courant, épargne, professionnel |
+  | Consulter compte | Solde et statut |
+  | Statut compte | Bloquer, débloquer, clôturer |
+  | Audit | Toute modification est journalisée |
 endlegend
 
 @enduml

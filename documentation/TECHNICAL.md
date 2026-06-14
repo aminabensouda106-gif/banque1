@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 1 — Conception (étapes 1.1–1.2 en cours) |
+| **Status** | Phase 1 terminée — prêt pour Phase 2 (bootstrap Spring Boot) |
 
 ### Problématique
 
@@ -77,9 +77,51 @@ Acteur générique **Personnel de l'agence** (Admin, Agent, Chef en spécialisat
 
 Exports : `.svg` à côté de chaque `.puml`.
 
+### Diagramme de classes (étape 1.3)
+
+- `documentation/uml/diagramme-classes.puml` (+ SVG)
+- 5 entités + 5 énumérations, relations et notes R1/R2/R5
+
+### Diagrammes de séquence (étape 1.4)
+
+| Fichier | Scénarios cahier couverts |
+|---|---|
+| `01-authentification` | Authentification |
+| `02-creation-client-compte` | Ajout client, Ouverture compte |
+| `03-operations-financieres` | Dépôt, Retrait, Virement |
+| `04-consultation-historique` | Consultation historique, relevé, reçu |
+| `05-gestion-utilisateurs` | Gestion utilisateurs |
+
+### Couverture cahier des charges (diagrammes UML)
+
+| Exigence | Couvert par |
+|---|---|
+| 3 acteurs (admin, agent, chef) | Cas d'utilisation |
+| Gestion clients (CRUD, recherche, statuts) | UC 01 + séquence 02 |
+| Gestion comptes (types, solde, blocage, clôture, liste) | UC 01 + séquence 02 |
+| Transactions (dépôt, retrait, virement, historique) | UC 02 + séquence 03–04 |
+| Utilisateurs (création, rôles, activation) | UC 02 + séquence 05 |
+| Reporting (dashboard, opérations récentes, relevés) | UC 02 + séquence 04 |
+| Supervision chef (validation, audit) | UC 02 |
+| 8 règles de gestion | UC légendes, séquences alt, classe |
+| Auth BCrypt, traçabilité | Séquences 01, 03, 05 |
+
+### Modèle de données (étape 1.5)
+
+| Fichier | Contenu |
+|---|---|
+| `modele-donnees/MCD.puml` | Modèle conceptuel (+ SVG) |
+| `modele-donnees/MLD.puml` | Modèle logique (+ SVG) |
+| `modele-donnees/schema-relationnel.sql` | Schéma PostgreSQL de référence |
+| `modele-donnees/dictionnaire-donnees.md` | Dictionnaire de données |
+
+### Diagramme d'activité (étape 1.6)
+
+- `uml/diagramme-activite-virement.puml` (+ SVG)
+
 **Régénérer les SVG :**
 ```bash
-java -jar plantuml.jar -tsvg documentation/uml/cas-utilisation/*.puml
+java -jar plantuml.jar -tsvg documentation/modele-donnees/*.puml documentation/uml/**/*.puml
 ```
 
 ### Out of scope (per cahier des charges)

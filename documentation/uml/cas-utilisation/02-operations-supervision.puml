@@ -6,7 +6,7 @@ skinparam nodesep 30
 skinparam ranksep 40
 skinparam linetype ortho
 
-title Opérations et supervision (§7.3, §7.4, §7.5)
+title Opérations et supervision
 
 actor "Personnel\nde l'agence" as personnel
 
@@ -23,13 +23,15 @@ rectangle "Transactions" {
   usecase "Effectuer un retrait" as UC_RETRAIT
   usecase "Effectuer un virement" as UC_VIREMENT
   usecase "Consulter l'historique" as UC_HIST
-  usecase "Consulter relevé / reçu" as UC_RELEVE
+  usecase "Éditer un relevé\nou reçu" as UC_RELEVE
 }
 
 rectangle "Supervision" {
   usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Visualiser les opérations\nrécentes" as UC_RECENT
   usecase "Gérer les utilisateurs" as UC_USERS
   usecase "Consulter le journal d'audit" as UC_AUDIT_VIEW
+  usecase "Valider une opération\nsensible" as UC_VALIDATE
 }
 
 usecase "Contrôler l'éligibilité\nde l'opération" as UC_CHECK
@@ -40,22 +42,26 @@ personnel --> UC_VIREMENT
 personnel --> UC_HIST
 personnel --> UC_RELEVE
 personnel --> UC_DASH
+personnel --> UC_RECENT
 
 admin --> UC_USERS
 admin --> UC_AUDIT_VIEW
 chef --> UC_AUDIT_VIEW
+chef --> UC_VALIDATE
 
+UC_DEPOT ..> UC_CHECK : <<include>>
 UC_RETRAIT ..> UC_CHECK : <<include>>
 UC_VIREMENT ..> UC_CHECK : <<include>>
+UC_DASH ..> UC_RECENT : <<include>>
 
 legend bottom
   |= Détails |= |
-  | Contrôle (R3) | Solde suffisant pour retrait / virement |
-  | Contrôle (R4, R6) | Comptes source et destination actifs |
-  | Historique (R5) | Date, montant, type, utilisateur |
+  | Contrôle | Solde suffisant, compte actif |
+  | Historique | Date, heure, montant, utilisateur responsable |
   | Filtres | Date, type, compte, utilisateur |
-  | Utilisateurs | Administrateur uniquement (§7.4) |
-  | Audit (R8) | Opérations sensibles journalisées |
+  | Utilisateurs | Créer, modifier, rôles, activer/désactiver — admin seul |
+  | Validation | Chef d'agence — opérations sensibles |
+  | Audit | Opérations importantes journalisées |
 endlegend
 
 @enduml

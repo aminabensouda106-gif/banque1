@@ -1,0 +1,47 @@
+@startuml 05-gestion-utilisateurs
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Gestion des utilisateurs
+
+actor Administrateur as Admin
+participant "UserController" as C
+participant "UserService" as S
+participant "AuditService" as AUD
+database "PostgreSQL" as DB
+
+== Créer un utilisateur ==
+
+Admin -> C : POST /admin/users (username, rôle, mot de passe)
+activate C
+C -> S : createUser(dto)
+activate S
+S -> S : encoder mot de passe (BCrypt)
+S -> DB : INSERT user
+S -> AUD : log(USER_CREATED)
+AUD -> DB : INSERT audit_log
+S --> C : User
+deactivate S
+C --> Admin : Liste utilisateurs mise à jour
+deactivate C
+
+== Modifier ou désactiver ==
+
+Admin -> C : POST /admin/users/{id} (rôle, enabled)
+activate C
+C -> S : updateUser(id, dto)
+activate S
+S -> DB : UPDATE user
+S -> AUD : log(USER_UPDATED)
+AUD -> DB : INSERT audit_log
+S --> C : OK
+deactivate S
+C --> Admin : Confirmation
+deactivate C
+
+note over S, DB
+  Attribution des rôles : ADMIN, AGENT, CHEF_AGENCE
+  Compte désactivé → connexion impossible
+end note
+
+@enduml

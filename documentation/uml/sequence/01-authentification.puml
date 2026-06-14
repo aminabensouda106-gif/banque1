@@ -1,0 +1,33 @@
+@startuml 01-authentification
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Authentification
+
+actor Agent
+participant "LoginController" as C
+participant "UserDetailsService" as S
+database "PostgreSQL" as DB
+
+Agent -> C : POST /login (username, password)
+activate C
+C -> S : loadUserByUsername(username)
+activate S
+S -> DB : SELECT user WHERE username = ?
+DB --> S : User (passwordHash, role, enabled)
+S --> C : UserDetails
+deactivate S
+
+alt Identifiants valides et compte actif
+  C --> Agent : Redirection /dashboard
+else Identifiants invalides ou compte désactivé
+  C --> Agent : Page login + message d'erreur
+end
+deactivate C
+
+note over S, DB
+  Mot de passe vérifié via BCrypt
+  Accès selon le rôle attribué
+end note
+
+@enduml
