@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 4 terminée — prêt pour Phase 5 (comptes) |
+| **Status** | Phase 5 terminée — prêt pour Phase 6 (transactions) |
 
 ### Problématique
 
@@ -351,7 +351,7 @@ src/main/resources/db/migration/
 | 1 | Login / logout | P0 | Done (Phase 3) |
 | 2 | Dashboard | P1 | Done (Phase 3 stub) |
 | 3 | Add / edit / search client | P0 | Done (Phase 4) |
-| 4 | Open account for client | P0 | Not started |
+| 4 | Open account for client | P0 | Done (Phase 5) |
 | 5 | Deposit | P0 | Not started |
 | 6 | Withdraw (balance check) | P0 | Not started |
 | 7 | Transfer | P0 | Not started |
@@ -509,6 +509,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | App HTTP port 8081 (not 8080) | Port 8080 used by EDB httpd bundled with PostgreSQL on dev machine |
 | 2026-06-15 | Client number format CLI-00001 | Auto-increment from last client in DB |
 | 2026-06-15 | Audit log on client create/update/status | First use of `audit_logs` table (Phase 4) |
+| 2026-06-15 | Account number format ACC-00001 | Auto-increment from last account in DB |
+| 2026-06-15 | Close account requires zero balance | Prevents orphaned funds at closure |
 
 ---
 

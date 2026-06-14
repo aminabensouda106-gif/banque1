@@ -346,41 +346,44 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 5.1 — Base de données
-- [ ] Migration `V5__create_accounts.sql` :
+- [x] Migration `V5__create_accounts.sql` :
   - account_number (unique), type (COURANT/EPARGNE/PROFESSIONNEL)
   - status (ACTIVE/BLOCKED/CLOSED), balance NUMERIC(19,4) default 0
   - client_id FK, opened_at, closed_at, version (optimistic lock)
 
 #### Étape 5.2 — Backend
-- [ ] Entité `Account` + enums `AccountType`, `AccountStatus`
-- [ ] `AccountRepository`, `AccountService`
-- [ ] `openAccount(clientId, type)` — génère numéro (ex. ACC-00001)
-- [ ] `block`, `unblock`, `close` avec règles métier
-- [ ] `listByClient(clientId)`
+- [x] Entité `Account` + enums `AccountType`, `AccountStatus`
+- [x] `AccountRepository`, `AccountService`
+- [x] `openAccount(clientId, type)` — génère numéro (ex. ACC-00001)
+- [x] `block`, `unblock`, `close` avec règles métier
+- [x] `listByClient(clientId)`
 
 #### Étape 5.3 — Interface
-- [ ] Depuis fiche client : bouton « Ouvrir un compte » + formulaire type
-- [ ] `GET /accounts/{id}` — détail : solde, statut, type, client lié
-- [ ] `GET /accounts` — liste globale paginée (optionnel)
-- [ ] Boutons bloquer / débloquer / clôturer sur la fiche compte
+- [x] Depuis fiche client : bouton « Ouvrir un compte » + formulaire type
+- [x] `GET /accounts/{id}` — détail : solde, statut, type, client lié
+- [x] `GET /accounts` — liste globale paginée (optionnel)
+- [x] Boutons bloquer / débloquer / clôturer sur la fiche compte
 
 #### Étape 5.4 — Règles métier
-- [ ] Compte clôturé → impossible de bloquer/débloquer
-- [ ] Un client peut avoir plusieurs comptes (affichage liste sur fiche client)
+- [x] Compte clôturé → impossible de bloquer/débloquer
+- [x] Un client peut avoir plusieurs comptes (affichage liste sur fiche client)
 
 ### Comment tester (Phase 5)
 ```bash
 mvn spring-boot:run
 ```
+Ouvrir **http://localhost:8081** → Clients → fiche client → **Ouvrir un compte**.
+
 | Vérification | OK ? |
 |---|---|
-| Ouvrir compte courant pour un client existant | ☐ |
-| Ouvrir 2e compte (épargne) pour le même client | ☐ |
-| Solde initial = 0 | ☐ |
-| Bloquer un compte → statut BLOCKED | ☐ |
-| Débloquer → statut ACTIVE | ☐ |
-| Clôturer → statut CLOSED, date de clôture renseignée | ☐ |
-| Liste des comptes visible sur fiche client | ☐ |
+| Ouvrir compte courant pour un client existant | ✓ |
+| Ouvrir 2e compte (épargne) pour le même client | ✓ |
+| Solde initial = 0 | ✓ |
+| Bloquer un compte → statut BLOCKED | ✓ |
+| Débloquer → statut ACTIVE | ✓ |
+| Clôturer → statut CLOSED, date de clôture renseignée | ✓ |
+| Liste des comptes visible sur fiche client | ✓ |
+| `mvn test` passe | ✓ |
 
 ### Commit & push
 ```bash
@@ -664,7 +667,7 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 4 terminée.** Commencer **Phase 5 — Gestion des comptes bancaires**.
+**Phase 5 terminée.** Commencer **Phase 6 — Gestion des transactions**.
 
 ---
 

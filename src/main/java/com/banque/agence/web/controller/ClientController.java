@@ -3,6 +3,7 @@ package com.banque.agence.web.controller;
 import com.banque.agence.domain.entity.Client;
 import com.banque.agence.domain.enums.ClientStatus;
 import com.banque.agence.security.SecurityUser;
+import com.banque.agence.service.AccountService;
 import com.banque.agence.service.ClientService;
 import com.banque.agence.service.DuplicateResourceException;
 import com.banque.agence.service.ResourceNotFoundException;
@@ -30,9 +31,11 @@ public class ClientController {
     private static final int PAGE_SIZE = 10;
 
     private final ClientService clientService;
+    private final AccountService accountService;
 
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, AccountService accountService) {
         this.clientService = clientService;
+        this.accountService = accountService;
     }
 
     @GetMapping
@@ -93,6 +96,7 @@ public class ClientController {
         model.addAttribute("pageTitle", client.getFullName());
         model.addAttribute("activePage", "clients");
         model.addAttribute("client", client);
+        model.addAttribute("accounts", accountService.listByClient(id));
         return "clients/detail";
     }
 
