@@ -48,3 +48,9 @@ psql -U postgres -h localhost -p 5433 -c "SELECT version();"
 ```
 
 Doit afficher PostgreSQL 18.x.
+
+## Conflit de port 8080 (application web)
+
+Sur ce PC, le port **8080** est utilise par **httpd** (EnterpriseDB, installe avec PostgreSQL). Si vous ouvrez http://localhost:8080, vous verrez « Server is up and running. » — ce n'est **pas** l'application Banque Agence.
+
+L'application Spring Boot ecoute sur le port **8081** : http://localhost:8081

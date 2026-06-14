@@ -214,48 +214,50 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 3.1 — Base de données utilisateurs
-- [ ] Migration Flyway `V1__create_users.sql` :
+- [x] Migration Flyway `V2__create_users.sql` :
   - Table `users` : id, username, password_hash, full_name, email, role, enabled, created_at
-  - Enum ou VARCHAR pour role : ADMIN, AGENT, CHEF_AGENCE
-- [ ] Migration `V2__seed_users.sql` (profil dev) :
+  - Enum PostgreSQL `user_role` : ADMIN, AGENT, CHEF_AGENCE
+- [x] Données de démo (profil dev) via `DevUserInitializer` :
   - admin / admin123 (ADMIN)
   - agent / agent123 (AGENT)
   - chef / chef123 (CHEF_AGENCE)
-  - Mots de passe hashés BCrypt dans le SQL ou via `ApplicationRunner`
+  - Mots de passe hashés BCrypt
 
 #### Étape 3.2 — Couche domaine
-- [ ] Entité `User` + enum `UserRole`
-- [ ] `UserRepository`
+- [x] Entité `User` + enum `UserRole`
+- [x] `UserRepository`
 
 #### Étape 3.3 — Sécurité
-- [ ] `UserDetailsService` implémenté
-- [ ] `SecurityConfig` : form login, logout, BCrypt encoder
-- [ ] Routes protégées : tout sauf `/login`, `/css/**`, `/js/**`
-- [ ] Redirection après login → `/dashboard`
+- [x] `UserDetailsService` implémenté
+- [x] `SecurityConfig` : form login, logout, BCrypt encoder
+- [x] Routes protégées : tout sauf `/login`, `/css/**`, `/js/**`
+- [x] Redirection après login → `/dashboard`
 
 #### Étape 3.4 — Interface
-- [ ] `templates/layout/main.html` — Bootstrap 5, sidebar, navbar
-- [ ] `templates/login.html`
-- [ ] `templates/dashboard.html` — stub « Bienvenue, [nom] ([rôle]) »
-- [ ] Messages flash (succès / erreur)
-- [ ] Pages erreur 403 et 404 simples
+- [x] `templates/layout/main.html` — Bootstrap 5, sidebar, navbar
+- [x] `templates/login.html`
+- [x] `templates/dashboard.html` — stub « Bienvenue, [nom] ([rôle]) »
+- [x] Messages flash (succès / erreur)
+- [x] Pages erreur 403 et 404 simples
 
 #### Étape 3.5 — Contrôle d'accès par rôle (base)
-- [ ] Menu sidebar différent selon rôle (ex. lien « Utilisateurs » visible seulement pour ADMIN)
-- [ ] `@PreAuthorize` ou règles URL pour `/admin/**`
+- [x] Menu sidebar différent selon rôle (ex. lien « Utilisateurs » visible seulement pour ADMIN)
+- [x] Règles URL pour `/admin/**` (rôle ADMIN)
 
 ### Comment tester (Phase 3)
 ```bash
 mvn spring-boot:run
 ```
+Ouvrir **http://localhost:8081** (le port 8080 est occupé par EnterpriseDB sur ce PC — voir `postgresql-local.md`).
+
 | Vérification | OK ? |
 |---|---|
-| `http://localhost:8080` redirige vers login si non connecté | ☐ |
-| Login `admin` / `admin123` → dashboard | ☐ |
-| Login `agent` / `agent123` → dashboard, menu sans admin | ☐ |
-| Mauvais mot de passe → message d'erreur | ☐ |
-| Logout fonctionne | ☐ |
-| `mvn test` passe (au moins 1 test login MockMvc si ajouté) | ☐ |
+| `http://localhost:8081` redirige vers login si non connecté | ✓ |
+| Login `admin` / `admin123` → dashboard | ✓ |
+| Login `agent` / `agent123` → dashboard, menu sans admin | ✓ |
+| Mauvais mot de passe → message d'erreur | ✓ |
+| Logout fonctionne | ✓ |
+| `mvn test` passe (au moins 1 test login MockMvc si ajouté) | ✓ |
 
 ### Commit & push
 ```bash
@@ -659,8 +661,8 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 2 terminée.** Commencer **Phase 3 — Authentification & interface de base**.
+**Phase 3 terminée.** Commencer **Phase 4 — Gestion des clients**.
 
 ---
 
-*Dernière mise à jour : 2026-06-14*
+*Dernière mise à jour : 2026-06-15*

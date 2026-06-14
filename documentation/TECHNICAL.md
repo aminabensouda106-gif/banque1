@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 2 terminée — prêt pour Phase 3 (auth) |
+| **Status** | Phase 3 terminée — prêt pour Phase 4 (clients) |
 
 ### Problématique
 
@@ -348,8 +348,8 @@ src/main/resources/db/migration/
 
 | # | Flow | Priority | Status |
 |---|---|---|---|
-| 1 | Login / logout | P0 | Not started |
-| 2 | Dashboard | P1 | Not started |
+| 1 | Login / logout | P0 | Done (Phase 3) |
+| 2 | Dashboard | P1 | Done (Phase 3 stub) |
 | 3 | Add / edit / search client | P0 | Not started |
 | 4 | Open account for client | P0 | Not started |
 | 5 | Deposit | P0 | Not started |
@@ -415,7 +415,10 @@ SPRING_PROFILES_ACTIVE=prod
 - DB: `jdbc:postgresql://localhost:5433/banque_agence`
 - User: `banque` / password: `banque` (dev only)
 
----
+5. Lancer l'application : `mvn spring-boot:run`
+6. Ouvrir **http://localhost:8081** (port par défaut dans `application.yml`)
+
+> Sur la machine de dev du projet, le port **8080** est occupé par le serveur web EnterpriseDB (PostgreSQL). Voir `documentation/postgresql-local.md`.
 
 ## 10. Repository layout (target)
 
@@ -501,20 +504,22 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-14 | No Python, no Docker | School project — keep stack simple, Java + local PostgreSQL |
 | 2026-06-14 | Phase 1 = UML conception before any code | Required by cahier §11; see `ROADMAP.md` Phase 1 |
 | 2026-06-14 | PostgreSQL 18 on port 5433 | Port 5432 is Odoo PG 9.5 on this machine |
-| TBD | Optimistic vs pessimistic lock on balance | To validate under concurrent withdraw tests |
+| 2026-06-14 | Dev users seeded via `DevUserInitializer` | BCrypt hashes in Java, not SQL — easier to maintain |
+| 2026-06-14 | Flyway V2 creates `users` + `user_role` enum | Aligns with `schema-relationnel.sql` |
+| 2026-06-15 | App HTTP port 8081 (not 8080) | Port 8080 used by EDB httpd bundled with PostgreSQL on dev machine |
 
 ---
 
 ## 14. Non-functional requirements checklist
 
-- [ ] Authentication + role-based access (Spring Security)
-- [ ] Password hashing (BCrypt)
+- [x] Authentication + role-based access (Spring Security)
+- [x] Password hashing (BCrypt)
 - [ ] Audit log for sensitive actions
 - [ ] Input validation on all forms
 - [ ] Transactional integrity on financial operations
-- [ ] Clear UI messages (success/error)
-- [ ] Modular packages and documented setup
-- [ ] Responsive Bootstrap layout
+- [x] Clear UI messages (success/error)
+- [x] Modular packages and documented setup
+- [x] Responsive Bootstrap layout
 
 ---
 

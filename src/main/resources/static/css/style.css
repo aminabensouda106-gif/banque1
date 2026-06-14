@@ -1,25 +1,202 @@
+:root {
+    --sidebar-bg: #0d47a1;
+    --sidebar-width: 260px;
+    --header-bg: #ffffff;
+    --content-bg: #f4f6f8;
+}
+
 body {
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, -apple-system, sans-serif;
     margin: 0;
-    background: #f4f6f8;
     color: #1a1a1a;
 }
 
-.container {
-    max-width: 640px;
-    margin: 4rem auto;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+/* Login */
+.login-body {
+    background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+    min-height: 100vh;
 }
 
-h1 {
-    margin-top: 0;
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.login-header h1 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0;
     color: #0d47a1;
 }
 
-.hint {
+.login-hint {
+    font-size: 0.85rem;
     color: #666;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: #0d47a1;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+/* App shell */
+.app-body {
+    background: var(--content-bg);
+}
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-brand .brand-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.brand-text {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 0.65rem 1.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-weight: 600;
+}
+
+.sidebar-link.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.user-info {
+    margin-bottom: 0.75rem;
     font-size: 0.9rem;
+}
+
+.user-info small {
+    display: block;
+    opacity: 0.75;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-header {
+    background: var(--header-bg);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #0d47a1;
+}
+
+.app-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.welcome-card,
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.welcome-card h2 {
+    margin-top: 0;
+    font-size: 1.25rem;
+}
+
+.stat-card h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #0d47a1;
+}
+
+@media (max-width: 768px) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
 }
