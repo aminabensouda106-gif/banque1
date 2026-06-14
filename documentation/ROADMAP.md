@@ -64,24 +64,17 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 1.1 — Analyse du besoin
-- [ ] Relire `cahier-charge-PFA.pdf` en entier
-- [ ] Lister les 3 acteurs internes : Administrateur, Agent bancaire, Chef d'agence
-- [ ] Lister les 8 scénarios principaux (§12)
-- [ ] Lister les 8 règles de gestion (§8)
-- [ ] Rédiger un paragraphe « problématique » + « objectifs » dans `documentation/analyse-besoin.md`
+- [x] Relire `cahier-charge-PFA.pdf` en entier
+- [x] Lister les 3 acteurs internes : Administrateur, Agent bancaire, Chef d'agence
+- [x] Lister les 8 scénarios principaux (§12)
+- [x] Lister les 8 règles de gestion (§8)
+- [x] Problématique + objectifs documentés dans `TECHNICAL.md` §1
 
 #### Étape 1.2 — Diagramme de cas d'utilisation
-- [ ] Créer `documentation/uml/diagramme-cas-utilisation.png` (ou `.puml` + export)
-- [ ] Inclure les acteurs et les cas :
-  - S'authentifier
-  - Gérer les clients (CRUD, recherche, statut)
-  - Gérer les comptes (ouvrir, consulter, bloquer, clôturer)
-  - Effectuer un dépôt / retrait / virement
-  - Consulter l'historique des transactions
-  - Gérer les utilisateurs internes (admin)
-  - Consulter le tableau de bord
-  - Consulter le journal d'audit
-- [ ] Relier chaque cas au bon acteur avec les bonnes permissions
+- [x] Créer `documentation/uml/cas-utilisation/01-clients-comptes.puml` (+ SVG)
+- [x] Créer `documentation/uml/cas-utilisation/02-operations-supervision.puml` (+ SVG)
+- [x] Auth intégrée au diagramme clients/comptes (pas de diagramme séparé)
+- [x] Relier chaque cas au bon acteur avec les bonnes permissions
 
 #### Étape 1.3 — Diagramme de classes
 - [ ] Créer `documentation/uml/diagramme-classes.png`

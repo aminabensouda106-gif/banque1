@@ -1,0 +1,61 @@
+@startuml 02-operations-supervision
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 40
+skinparam linetype ortho
+
+title Opérations et supervision (§7.3, §7.4, §7.5)
+
+actor "Personnel\nde l'agence" as personnel
+
+actor "Administrateur" as admin
+actor "Agent bancaire" as agent
+actor "Chef d'agence" as chef
+
+admin -up-|> personnel
+agent -up-|> personnel
+chef -up-|> personnel
+
+rectangle "Transactions" {
+  usecase "Effectuer un dépôt" as UC_DEPOT
+  usecase "Effectuer un retrait" as UC_RETRAIT
+  usecase "Effectuer un virement" as UC_VIREMENT
+  usecase "Consulter l'historique" as UC_HIST
+  usecase "Consulter relevé / reçu" as UC_RELEVE
+}
+
+rectangle "Supervision" {
+  usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Gérer les utilisateurs" as UC_USERS
+  usecase "Consulter le journal d'audit" as UC_AUDIT_VIEW
+}
+
+usecase "Contrôler l'éligibilité\nde l'opération" as UC_CHECK
+
+personnel --> UC_DEPOT
+personnel --> UC_RETRAIT
+personnel --> UC_VIREMENT
+personnel --> UC_HIST
+personnel --> UC_RELEVE
+personnel --> UC_DASH
+
+admin --> UC_USERS
+admin --> UC_AUDIT_VIEW
+chef --> UC_AUDIT_VIEW
+
+UC_RETRAIT ..> UC_CHECK : <<include>>
+UC_VIREMENT ..> UC_CHECK : <<include>>
+
+legend bottom
+  |= Détails |= |
+  | Contrôle (R3) | Solde suffisant pour retrait / virement |
+  | Contrôle (R4, R6) | Comptes source et destination actifs |
+  | Historique (R5) | Date, montant, type, utilisateur |
+  | Filtres | Date, type, compte, utilisateur |
+  | Utilisateurs | Administrateur uniquement (§7.4) |
+  | Audit (R8) | Opérations sensibles journalisées |
+endlegend
+
+@enduml

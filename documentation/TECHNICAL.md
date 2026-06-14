@@ -14,7 +14,73 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 1 — Conception (no code yet) |
+| **Status** | Phase 1 — Conception (étapes 1.1–1.2 en cours) |
+
+### Problématique
+
+Une agence bancaire traite quotidiennement des données clients, comptes et mouvements financiers. Sans outil centralisé, les risques sont des erreurs de saisie, des incohérences de solde et une faible traçabilité. Le projet vise une **application web unique** pour fiabiliser ces opérations.
+
+### Objectifs (cahier §3–4)
+
+- Gérer les fiches clients et leurs informations
+- Ouvrir, consulter, bloquer et clôturer des comptes
+- Réaliser dépôts, retraits et virements avec contrôle métier
+- Consulter soldes et historiques de transactions
+- Administrer les utilisateurs internes et leurs rôles
+- Journaliser les opérations sensibles
+- Produire relevés et reçus d'opération
+
+### Acteurs internes (cahier §6)
+
+| Acteur | Rôle |
+|---|---|
+| **Administrateur** | Utilisateurs, droits, rôles, supervision globale |
+| **Agent bancaire** | Clients, comptes, opérations courantes, historiques |
+| **Chef d'agence** | Supervision, tableau de bord, journal d'audit |
+
+> Acteur **Client** (portail en ligne) : hors périmètre v1.
+
+### Scénarios principaux (cahier §12)
+
+1. Authentification
+2. Ajout d'un client
+3. Ouverture d'un compte
+4. Dépôt
+5. Retrait
+6. Virement
+7. Consultation historique
+8. Gestion utilisateurs
+
+### Règles de gestion (cahier §8)
+
+| # | Règle |
+|---|---|
+| R1 | Un client peut posséder un ou plusieurs comptes |
+| R2 | Un compte appartient à un seul client |
+| R3 | Retrait refusé si solde insuffisant |
+| R4 | Virement : compte source et destination actifs |
+| R5 | Chaque transaction : date, heure, utilisateur exécutant |
+| R6 | Compte bloqué ou clôturé : pas d'opérations ordinaires |
+| R7 | Mots de passe stockés chiffrés (BCrypt) |
+| R8 | Opérations importantes → journal d'audit |
+
+### Diagrammes de cas d'utilisation (étape 1.2)
+
+2 diagrammes PlantUML dans `documentation/uml/cas-utilisation/` (SVG uniquement) :
+
+| Fichier | Contenu |
+|---|---|
+| `01-clients-comptes.puml` | Accès (auth), clients (§7.1), comptes (§7.2) |
+| `02-operations-supervision.puml` | Transactions (§7.3), utilisateurs (§7.4), reporting (§7.5) |
+
+Acteur générique **Personnel de l'agence** (Admin, Agent, Chef en spécialisation) pour éviter les liens redondants.
+
+Exports : `.svg` à côté de chaque `.puml`.
+
+**Régénérer les SVG :**
+```bash
+java -jar plantuml.jar -tsvg documentation/uml/cas-utilisation/*.puml
+```
 
 ### Out of scope (per cahier des charges)
 
