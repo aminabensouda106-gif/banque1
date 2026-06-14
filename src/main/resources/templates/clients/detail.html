@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="welcome-card mb-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="h4 mb-1" th:text="${client.fullName}">Nom client</h2>
+                <p class="text-muted mb-0">
+                    <span th:text="${client.clientNumber}">CLI-00001</span>
+                    · CIN <span th:text="${client.cin}">CIN</span>
+                </p>
+            </div>
+            <span class="badge fs-6"
+                  th:classappend="' text-bg-' + ${client.status.badgeClass}"
+                  th:text="${client.status.label}">Actif</span>
+        </div>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3">E-mail</dt>
+            <dd class="col-sm-9" th:text="${client.email != null ? client.email : '—'}">—</dd>
+            <dt class="col-sm-3">Téléphone</dt>
+            <dd class="col-sm-9" th:text="${client.phone != null ? client.phone : '—'}">—</dd>
+            <dt class="col-sm-3">Adresse</dt>
+            <dd class="col-sm-9" th:text="${client.address != null ? client.address : '—'}">—</dd>
+            <dt class="col-sm-3">Informations pro.</dt>
+            <dd class="col-sm-9" th:text="${client.professionalInfo != null ? client.professionalInfo : '—'}">—</dd>
+            <dt class="col-sm-3">Créé le</dt>
+            <dd class="col-sm-9" th:text="${#temporals.format(client.createdAt, 'dd/MM/yyyy HH:mm')}">—</dd>
+            <dt class="col-sm-3">Modifié le</dt>
+            <dd class="col-sm-9" th:text="${#temporals.format(client.updatedAt, 'dd/MM/yyyy HH:mm')}">—</dd>
+        </dl>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-primary">Modifier</a>
+        <a th:href="@{/clients}" class="btn btn-outline-secondary">Retour à la liste</a>
+
+        <form th:if="${client.status.name() != 'ACTIVE'}" th:action="@{/clients/{id}/status(id=${client.id})}"
+              method="post" class="d-inline">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="status" value="ACTIVE">
+            <button type="submit" class="btn btn-success">Activer</button>
+        </form>
+        <form th:if="${client.status.name() != 'SUSPENDED'}" th:action="@{/clients/{id}/status(id=${client.id})}"
+              method="post" class="d-inline">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="status" value="SUSPENDED">
+            <button type="submit" class="btn btn-warning">Suspendre</button>
+        </form>
+        <form th:if="${client.status.name() != 'INACTIVE'}" th:action="@{/clients/{id}/status(id=${client.id})}"
+              method="post" class="d-inline">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="status" value="INACTIVE">
+            <button type="submit" class="btn btn-secondary">Désactiver</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

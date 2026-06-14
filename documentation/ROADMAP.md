@@ -281,46 +281,49 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 4.1 — Base de données
-- [ ] Migration `V3__create_clients.sql` :
+- [x] Migration `V3__create_clients.sql` :
   - client_number (unique), cin (unique), first_name, last_name, email, phone, address
   - professional_info, status (ACTIVE/SUSPENDED/INACTIVE), created_at, updated_at
 
 #### Étape 4.2 — Backend
-- [ ] Entité `Client` + enum `ClientStatus`
-- [ ] `ClientRepository` avec méthodes de recherche
-- [ ] `ClientService` : create, update, findById, search, changeStatus
-- [ ] Génération auto `clientNumber` (ex. CLI-00001)
+- [x] Entité `Client` + enum `ClientStatus`
+- [x] `ClientRepository` avec méthodes de recherche
+- [x] `ClientService` : create, update, findById, search, changeStatus
+- [x] Génération auto `clientNumber` (ex. CLI-00001)
 
 #### Étape 4.3 — Contrôleur & vues
-- [ ] `GET /clients` — liste paginée
-- [ ] `GET /clients/new` + `POST /clients` — création
-- [ ] `GET /clients/{id}` — fiche détail
-- [ ] `GET /clients/{id}/edit` + `POST /clients/{id}` — modification
-- [ ] `GET /clients/search?q=...` — recherche par nom, CIN, n° client, téléphone
-- [ ] Actions : activer / suspendre / désactiver
+- [x] `GET /clients` — liste paginée
+- [x] `GET /clients/new` + `POST /clients` — création
+- [x] `GET /clients/{id}` — fiche détail
+- [x] `GET /clients/{id}/edit` + `POST /clients/{id}` — modification
+- [x] `GET /clients/search?q=...` — recherche par nom, CIN, n° client, téléphone
+- [x] Actions : activer / suspendre / désactiver
 
 #### Étape 4.4 — Validation
-- [ ] `@NotBlank`, `@Email`, CIN unique (message d'erreur en français)
-- [ ] Formulaires Thymeleaf avec affichage des erreurs
+- [x] `@NotBlank`, `@Email`, CIN unique (message d'erreur en français)
+- [x] Formulaires Thymeleaf avec affichage des erreurs
 
 #### Étape 4.5 — Audit (première utilisation)
-- [ ] Migration `V4__create_audit_logs.sql`
-- [ ] Entité `AuditLog` + service
-- [ ] Logger création et modification client
+- [x] Migration `V4__create_audit_logs.sql`
+- [x] Entité `AuditLog` + service
+- [x] Logger création et modification client
 
 ### Comment tester (Phase 4)
 ```bash
 mvn spring-boot:run
 ```
+Ouvrir **http://localhost:8081/clients** (login : agent / agent123).
+
 | Vérification | OK ? |
 |---|---|
-| Créer un client avec toutes les infos | ☐ |
-| Recherche par nom fonctionne | ☐ |
-| Recherche par CIN fonctionne | ☐ |
-| Doublon CIN refusé avec message clair | ☐ |
-| Suspendre un client change son statut | ☐ |
-| Fiche détail affiche toutes les infos | ☐ |
-| Pagination sur la liste (si > 10 clients) | ☐ |
+| Créer un client avec toutes les infos | ✓ |
+| Recherche par nom fonctionne | ✓ |
+| Recherche par CIN fonctionne | ✓ |
+| Doublon CIN refusé avec message clair | ✓ |
+| Suspendre un client change son statut | ✓ |
+| Fiche détail affiche toutes les infos | ✓ |
+| Pagination sur la liste (si > 10 clients) | ✓ |
+| `mvn test` passe | ✓ |
 
 ### Commit & push
 ```bash
@@ -661,7 +664,7 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 3 terminée.** Commencer **Phase 4 — Gestion des clients**.
+**Phase 4 terminée.** Commencer **Phase 5 — Gestion des comptes bancaires**.
 
 ---
 

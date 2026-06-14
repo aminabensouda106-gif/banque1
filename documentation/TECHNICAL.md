@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 3 terminée — prêt pour Phase 4 (clients) |
+| **Status** | Phase 4 terminée — prêt pour Phase 5 (comptes) |
 
 ### Problématique
 
@@ -350,7 +350,7 @@ src/main/resources/db/migration/
 |---|---|---|---|
 | 1 | Login / logout | P0 | Done (Phase 3) |
 | 2 | Dashboard | P1 | Done (Phase 3 stub) |
-| 3 | Add / edit / search client | P0 | Not started |
+| 3 | Add / edit / search client | P0 | Done (Phase 4) |
 | 4 | Open account for client | P0 | Not started |
 | 5 | Deposit | P0 | Not started |
 | 6 | Withdraw (balance check) | P0 | Not started |
@@ -507,6 +507,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-14 | Dev users seeded via `DevUserInitializer` | BCrypt hashes in Java, not SQL — easier to maintain |
 | 2026-06-14 | Flyway V2 creates `users` + `user_role` enum | Aligns with `schema-relationnel.sql` |
 | 2026-06-15 | App HTTP port 8081 (not 8080) | Port 8080 used by EDB httpd bundled with PostgreSQL on dev machine |
+| 2026-06-15 | Client number format CLI-00001 | Auto-increment from last client in DB |
+| 2026-06-15 | Audit log on client create/update/status | First use of `audit_logs` table (Phase 4) |
 
 ---
 
@@ -514,8 +516,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 
 - [x] Authentication + role-based access (Spring Security)
 - [x] Password hashing (BCrypt)
-- [ ] Audit log for sensitive actions
-- [ ] Input validation on all forms
+- [x] Audit log for sensitive actions
+- [x] Input validation on all forms
 - [ ] Transactional integrity on financial operations
 - [x] Clear UI messages (success/error)
 - [x] Modular packages and documented setup

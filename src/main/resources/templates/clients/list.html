@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="toolbar-card mb-3">
+        <form th:action="@{/clients}" method="get" class="row g-2 align-items-end">
+            <div class="col-md-8">
+                <label for="q" class="form-label">Recherche</label>
+                <input type="text" id="q" name="q" class="form-control"
+                       placeholder="Nom, CIN, n° client, téléphone…"
+                       th:value="${query}">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">Rechercher</button>
+                <a th:href="@{/clients/new}" class="btn btn-success">Nouveau client</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="welcome-card">
+        <div th:if="${clients.empty}" class="text-muted">
+            Aucun client trouvé.
+        </div>
+        <div th:unless="${clients.empty}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>N° client</th>
+                    <th>Nom</th>
+                    <th>CIN</th>
+                    <th>Téléphone</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="client : ${clients}">
+                    <td th:text="${client.clientNumber}">CLI-00001</td>
+                    <td th:text="${client.fullName}">Nom</td>
+                    <td th:text="${client.cin}">CIN</td>
+                    <td th:text="${client.phone != null ? client.phone : '—'}">—</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="' text-bg-' + ${client.status.badgeClass}"
+                              th:text="${client.status.label}">Actif</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/clients/{id}(id=${client.id})}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${clients.totalPages > 1}" class="mt-3">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${clients.first} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/clients(q=${query}, page=${clients.number - 1})}">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Page ' + (${clients.number} + 1) + ' / ' + ${clients.totalPages}">Page</span>
+                </li>
+                <li class="page-item" th:classappend="${clients.last} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/clients(q=${query}, page=${clients.number + 1})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

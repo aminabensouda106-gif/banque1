@@ -20,7 +20,9 @@
             <a th:href="@{/dashboard}" class="sidebar-link" th:classappend="${activePage == 'dashboard'} ? ' active'">
                 Tableau de bord
             </a>
-            <a href="#" class="sidebar-link disabled">Clients</a>
+            <a th:href="@{/clients}" class="sidebar-link" th:classappend="${activePage == 'clients'} ? ' active'">
+                Clients
+            </a>
             <a href="#" class="sidebar-link disabled">Comptes</a>
             <a href="#" class="sidebar-link disabled">Opérations</a>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}"
