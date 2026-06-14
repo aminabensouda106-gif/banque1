@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Planning — development not started |
+| **Status** | Phase 1 — Conception (no code yet) |
 
 ### Out of scope (per cahier des charges)
 
@@ -27,8 +27,6 @@
 ---
 
 ## 2. Technology stack
-
-> **Python is not used.** The entire application is **Java / Spring Boot** only (backend, security, business logic, server-rendered UI via Thymeleaf). No Flask, Django, or Python scripts in this project.
 
 ### Chosen stack
 
@@ -54,14 +52,20 @@
 4. **PostgreSQL** — robust relational DB; good for financial consistency and constraints.
 5. **Flyway** — versioned SQL; reproducible schema; easy to demo and defend at soutenance.
 
+### Explicitly excluded
+
+| Option | Reason |
+|---|---|
+| **Python** (Flask/Django) | Not used — project is Java-only per team decision |
+| Spring Boot + React | Two codebases; unnecessary for a school CRUD app |
+| Docker | Not needed — local PostgreSQL install is enough |
+| Microservices / CI complexe | Overkill for a PFA |
+
 ### Alternatives considered (not chosen)
 
 | Option | Reason not chosen |
 |---|---|
-| Python (Flask/Django) | Explicitly excluded — project is Java-only |
-| Django + PostgreSQL | Not used; Java/Spring chosen instead |
-| Spring Boot + React | Two codebases; slower solo iteration for this scope |
-| MySQL | Equally valid; PostgreSQL preferred for stricter constraints and JSON if needed later |
+| MySQL | Equally valid per cahier; PostgreSQL chosen for constraints and academic demo |
 
 ---
 
@@ -290,7 +294,11 @@ SPRING_DATASOURCE_PASSWORD
 SPRING_PROFILES_ACTIVE=prod
 ```
 
-### Local dev defaults (`application-dev.yml`)
+### Local dev setup (no Docker)
+
+1. Install PostgreSQL locally (Windows installer or existing school setup).
+2. Create database and user manually (see `ROADMAP.md` Phase 2).
+3. Configure `application-dev.yml`:
 
 - DB: `jdbc:postgresql://localhost:5432/banque_agence`
 - User: `banque` / password: `banque` (dev only)
@@ -378,7 +386,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-14 | Virement = single `Transaction` row with source + destination | Simpler history and reporting |
 | 2026-06-14 | Client portal deferred to v2 | Per cahier: client is optional actor |
 | 2026-06-14 | Docs live under `documentation/` | Keeps project root clean; all PFA docs in one place |
-| 2026-06-14 | No Python — Java/Spring Boot only | Team decision; full stack in one JVM monolith |
+| 2026-06-14 | No Python, no Docker | School project — keep stack simple, Java + local PostgreSQL |
+| 2026-06-14 | Phase 1 = UML conception before any code | Required by cahier §11; see `ROADMAP.md` Phase 1 |
 | TBD | Optimistic vs pessimistic lock on balance | To validate under concurrent withdraw tests |
 
 ---

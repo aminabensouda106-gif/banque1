@@ -1,744 +1,681 @@
 # ROADMAP — Agence bancaire PFA
 
-> Phased plan for **solo development**: detailed steps, **run & test after every phase**, then **commit and push to GitHub**.
-> Technical reference: [`TECHNICAL.md`](./TECHNICAL.md).
+> Plan par **phases** pour développement **solo**, projet **école**, sans sur-ingénierie.
+> Stack : **Java + Spring Boot** uniquement (pas de Python).
+> Détails techniques : [`TECHNICAL.md`](./TECHNICAL.md) · Exigences : [`cahier-charge-PFA.pdf`](./cahier-charge-PFA.pdf)
 
 ---
 
-## Stack reminder
+## Principes du projet
 
-| Used | Not used |
+| Principe | Application |
 |---|---|
-| Java 21, Spring Boot 3, Maven | **Python** (Flask, Django, scripts) |
-| Thymeleaf, Bootstrap 5, HTML/CSS/JS | React, separate SPA |
-| PostgreSQL, Flyway, Spring Security | MySQL (optional only) |
-
-Every phase ends with a **runnable, testable** application on `main`.
+| **Répondre au cahier des charges** | Chaque phase mappe une section du PDF (§7, règles de gestion, scénarios §12) |
+| **Projet école** | Pas de Docker, pas de microservices, pas de CI complexe — PostgreSQL installé localement suffit |
+| **Java uniquement** | Spring Boot 3 + Thymeleaf + PostgreSQL — pas de Python, pas de React séparé |
+| **Tester après chaque phase** | L'app doit être lançable (ou les diagrammes validés en Phase 1) avant commit + push GitHub |
+| **Un commit propre par phase** | Message clair, push sur `main` à la fin de chaque phase |
 
 ---
 
-## Workflow after each phase
+## Vue d'ensemble
 
-Repeat this checklist at the end of **every** phase before moving on:
-
-### 1. Build & automated tests
-
-```bash
-./mvnw clean test
+```
+Phase 1          Phase 2         Phase 3        Phase 4       Phase 5       Phase 6        Phase 7        Phase 8         Phase 9
+Conception   →   Bootstrap   →   Auth      →   Clients   →   Comptes   →   Transactions → Utilisateurs → Reporting   →   Finalisation
+(UML + BDD)      (Spring)        (login)        (§7.1)        (§7.2)        (§7.3)         (§7.4)         (§7.5)          (soutenance)
+3–5 jours        1 jour          2 jours        2–3 jours     2 jours       3 jours        2 jours        2 jours         2 jours
 ```
 
-- [ ] Build succeeds (`BUILD SUCCESS`)
-- [ ] All existing tests pass (0 failures)
+**Durée estimée :** 3–4 semaines à rythme régulier.
 
-### 2. Run locally
+---
 
+## Rituel de fin de phase (à répéter à chaque fois)
+
+### 1. Vérifier
+- Cocher toutes les étapes de la phase dans ce fichier.
+- Exécuter la section **« Comment tester »** de la phase.
+
+### 2. Committer
 ```bash
-# Start PostgreSQL (Docker example)
-docker run -d --name banque-pg -e POSTGRES_DB=banque_agence -e POSTGRES_USER=banque -e POSTGRES_PASSWORD=banque -p 5432:5432 postgres:16
-
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+git add .
+git commit -m "<message indiqué dans la phase>"
 ```
 
-- [ ] App starts on `http://localhost:8080` without stack trace
-- [ ] Flyway migrations apply cleanly (check console logs)
-
-### 3. Manual smoke test
-
-- [ ] Complete the **Manual test checklist** for the current phase (below)
-- [ ] No regression on features from previous phases
-
-### 4. Git commit & GitHub push
-
+### 3. Pousser sur GitHub
 ```bash
-git status
-git add -A
-git commit -m "feat(<scope>): phase N — <short description>"
 git push origin main
 ```
 
-**Rules:**
-- One phase = at least **one meaningful commit** on `main` (multiple small commits during the phase are fine).
-- Tag optional milestones: `git tag -a phase-2-clients -m "Phase 2 complete"`
-- Never push secrets (`.env`, real passwords).
-- Update `documentation/TECHNICAL.md` §7 checklist before pushing.
+### 4. Mettre à jour la doc
+- `TECHNICAL.md` §7 (checklist) et §13 (décisions) si du code a changé.
 
 ---
 
-## Overview
+## Phase 1 — Conception & modélisation UML
 
-```
-Phase 0 ──► Phase 1 ──► Phase 2 ──► Phase 3 ──► Phase 4 ──► Phase 5 ──► Phase 6 ──► Phase 7
- Bootstrap   Auth+UI     Clients     Accounts    Transactions  Users       Dashboard   Ship
- ~1 day      ~2 days     ~2 days     ~2 days     ~3 days       ~2 days     ~2 days     ~2 days
-```
+**Objectif :** Analyser le cahier des charges et produire les diagrammes **avant tout code**, comme exigé en §11 du cahier.
 
-**Global definition of done:** All P0 flows work, security + audit in place, `mvn test` green, demo rehearsed, GitHub history shows one clean commit per phase minimum.
+**Livrable :** Dossier de conception complet dans `documentation/`.
 
----
+**Référence cahier :** §6 (acteurs), §7 (besoins), §8 (règles de gestion), §11 (modélisation), §12 (scénarios).
 
-# Phase 0 — Project bootstrap
+### Étapes détaillées
 
-**Goal:** Empty Spring Boot shell that compiles, runs, and connects to PostgreSQL.  
-**Duration:** ~1 day  
-**GitHub commit message:** `chore: phase 0 — Spring Boot bootstrap with PostgreSQL and Flyway`
+#### Étape 1.1 — Analyse du besoin
+- [ ] Relire `cahier-charge-PFA.pdf` en entier
+- [ ] Lister les 3 acteurs internes : Administrateur, Agent bancaire, Chef d'agence
+- [ ] Lister les 8 scénarios principaux (§12)
+- [ ] Lister les 8 règles de gestion (§8)
+- [ ] Rédiger un paragraphe « problématique » + « objectifs » dans `documentation/analyse-besoin.md`
 
----
+#### Étape 1.2 — Diagramme de cas d'utilisation
+- [ ] Créer `documentation/uml/diagramme-cas-utilisation.png` (ou `.puml` + export)
+- [ ] Inclure les acteurs et les cas :
+  - S'authentifier
+  - Gérer les clients (CRUD, recherche, statut)
+  - Gérer les comptes (ouvrir, consulter, bloquer, clôturer)
+  - Effectuer un dépôt / retrait / virement
+  - Consulter l'historique des transactions
+  - Gérer les utilisateurs internes (admin)
+  - Consulter le tableau de bord
+  - Consulter le journal d'audit
+- [ ] Relier chaque cas au bon acteur avec les bonnes permissions
 
-## Step 0.1 — Initialize the Java project
+#### Étape 1.3 — Diagramme de classes
+- [ ] Créer `documentation/uml/diagramme-classes.png`
+- [ ] Modéliser les classes principales :
+  - `User`, `Client`, `Account`, `Transaction`, `AuditLog`
+  - Énumérations : `UserRole`, `AccountType`, `AccountStatus`, `ClientStatus`, `TransactionType`
+- [ ] Afficher les relations : Client 1—* Account, User 1—* Transaction, etc.
+- [ ] Annoter les attributs clés (`balance: BigDecimal`, `passwordHash`, `version` pour verrouillage)
 
-- [ ] Create project via [start.spring.io](https://start.spring.io) or Maven manually
-- [ ] Set `groupId`: `com.banque.agence`, `artifactId`: `banque-agence`
-- [ ] Java **21**, packaging **Jar**, build **Maven**
-- [ ] Add starters: Web, Security, JPA, Thymeleaf, Validation, Flyway, PostgreSQL, DevTools
-- [ ] Add `BanqueAgenceApplication.java` main class
-- [ ] Verify `./mvnw clean compile` succeeds
+#### Étape 1.4 — Diagrammes de séquence (scénarios majeurs)
+- [ ] Créer un fichier par scénario dans `documentation/uml/sequence/` :
+  - [ ] `01-authentification.png`
+  - [ ] `02-ajout-client.png`
+  - [ ] `03-ouverture-compte.png`
+  - [ ] `04-depot.png`
+  - [ ] `05-retrait.png`
+  - [ ] `06-virement.png`
+  - [ ] `07-consultation-historique.png`
+- [ ] Chaque diagramme montre : Acteur → Interface → Contrôleur → Service → Repository → BDD
+- [ ] Le retrait doit montrer la vérification du solde
+- [ ] Le virement doit montrer la vérification des comptes actifs
 
-## Step 0.2 — Package structure
+#### Étape 1.5 — Modèle de données (MCD, MLD, schéma relationnel)
+- [ ] Créer `documentation/modele-donnees/MCD.png`
+- [ ] Créer `documentation/modele-donnees/MLD.png`
+- [ ] Créer `documentation/modele-donnees/schema-relationnel.sql` (script de référence, pas encore Flyway)
+- [ ] Créer `documentation/modele-donnees/dictionnaire-donnees.md` (tableau : nom champ, type, description, contraintes)
 
-- [ ] Create empty packages per `TECHNICAL.md` §3:
-  - `config`, `domain.entity`, `domain.enums`, `repository`, `service`
-  - `web.controller`, `web.dto`, `web.advice`, `security`, `audit`
-- [ ] Add placeholder `.gitkeep` or empty classes only if needed for compile
+#### Étape 1.6 — Diagramme d'activité (optionnel mais recommandé pour le rapport)
+- [ ] Créer `documentation/uml/diagramme-activite-virement.png` (flux décision : solde OK ? comptes actifs ?)
 
-## Step 0.3 — Configuration files
+#### Étape 1.7 — Validation de la conception
+- [ ] Vérifier que tous les besoins §7.1 à §7.5 ont un cas d'utilisation correspondant
+- [ ] Vérifier que les 8 règles de gestion sont reflétées dans les diagrammes
+- [ ] Faire relire ou auto-revue : la conception est-elle cohérente ?
 
-- [ ] `src/main/resources/application.yml` — app name, default profile `dev`
-- [ ] `src/main/resources/application-dev.yml` — datasource URL, user, password, JPA `ddl-auto: validate`, Flyway enabled
-- [ ] `src/main/resources/application-prod.yml` — env-based datasource (no hardcoded secrets)
+### Outils conseillés
+- **StarUML** ou **PlantUML** (gratuit, suffisant pour un PFA)
+- **MySQL Workbench** ou draw.io pour MCD/MLD
+- Pas besoin d'autre outil
 
-## Step 0.4 — Database & Docker helper
+### Comment tester (Phase 1)
+Pas d'application à lancer. Validation par checklist :
 
-- [ ] Document PostgreSQL setup in `README.md` (local install + Docker one-liner)
-- [ ] Optional: `docker-compose.yml` with PostgreSQL 16 service
+| Vérification | OK ? |
+|---|---|
+| Diagramme cas d'utilisation couvre les 3 rôles | ☐ |
+| Diagramme de classes a les 5 entités | ☐ |
+| Au moins 5 diagrammes de séquence | ☐ |
+| MCD + MLD + dictionnaire présents | ☐ |
+| Les règles de gestion (solde, comptes actifs, audit) sont visibles dans les séquences | ☐ |
 
-## Step 0.5 — Project hygiene
-
-- [ ] `.gitignore` — `target/`, `.idea/`, `.vscode/`, `*.iml`, `.env`
-- [ ] `README.md` — prerequisites (Java 21, Maven, PostgreSQL), run commands
-- [ ] Move planning docs already in `documentation/` (TECHNICAL, ROADMAP, cahier PDF)
-
-## Step 0.6 — Minimal runnable endpoint
-
-- [ ] Add `HomeController` returning a simple Thymeleaf page or static `index.html`: "Banque Agence — Phase 0 OK"
-- [ ] Temporarily permit all requests in Security (full lockdown in Phase 1)
-
----
-
-### Phase 0 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | BUILD SUCCESS (0 tests or 1 context test) |
-| 2 | Start PostgreSQL | DB `banque_agence` reachable on port 5432 |
-| 3 | `mvnw spring-boot:run` | App listens on :8080 |
-| 4 | Open `http://localhost:8080` | Placeholder page visible |
-| 5 | Stop app, restart | Starts again without manual DB fixes |
-
-### Phase 0 — GitHub
-
+### Commit & push
 ```bash
-git add -A
-git commit -m "chore: phase 0 — Spring Boot bootstrap with PostgreSQL and Flyway"
+git add documentation/
+git commit -m "docs(conception): add UML diagrams, data model and requirements analysis"
 git push origin main
 ```
 
----
-
-# Phase 1 — Foundation (auth, schema, UI shell)
-
-**Goal:** Login works, users table exists, shared Bootstrap layout, role-based access skeleton.  
-**Duration:** ~2 days  
-**GitHub commit message:** `feat: phase 1 — authentication, user schema and UI layout`
+### Critères de sortie
+- Tous les fichiers UML et modèle de données sont dans `documentation/`
+- Tu peux expliquer chaque diagramme à l'oral en soutenance
+- **Aucun code applicatif** — on code à partir de la Phase 2
 
 ---
 
-## Step 1.1 — Database: users table
+## Phase 2 — Bootstrap du projet Spring Boot
 
-- [ ] `V1__init_schema.sql` — create `users` table:
-  - `id`, `username` (unique), `password_hash`, `full_name`, `email`
-  - `role` (enum: ADMIN, AGENT, CHEF_AGENCE), `enabled`, `created_at`, `last_login_at`
-- [ ] `V2__seed_dev_users.sql` — seed 3 users (one per role), BCrypt passwords documented in README for dev only:
-  - `admin` / `admin123` → ADMIN
-  - `agent` / `agent123` → AGENT
-  - `chef` / `chef123` → CHEF_AGENCE
+**Objectif :** Projet Java qui compile, démarre et se connecte à PostgreSQL local.
 
-## Step 1.2 — User domain layer
+**Référence cahier :** §10 (contraintes techniques), §13.2 (code source, scripts SQL).
 
-- [ ] `UserRole` enum
-- [ ] `User` JPA entity mapping to `users`
-- [ ] `UserRepository` extends `JpaRepository`
-- [ ] `CustomUserDetailsService` implements `UserDetailsService`
+### Prérequis (installation locale, sans Docker)
+- [ ] Java 21 installé (`java -version`)
+- [ ] Maven installé ou utiliser le wrapper `mvnw`
+- [ ] PostgreSQL installé localement
+- [ ] Créer la base manuellement :
+  ```sql
+  CREATE DATABASE banque_agence;
+  CREATE USER banque WITH PASSWORD 'banque';
+  GRANT ALL PRIVILEGES ON DATABASE banque_agence TO banque;
+  ```
 
-## Step 1.3 — Spring Security
+### Étapes détaillées
 
-- [ ] `SecurityConfig` — form login at `/login`, logout at `/logout`
-- [ ] BCrypt password encoder bean
-- [ ] URL rules:
-  - `/login`, `/css/**`, `/js/**` — public
-  - `/admin/**` — ADMIN only
-  - `/users/**` — ADMIN only (prep for Phase 5)
-  - everything else — authenticated
-- [ ] Disabled user (`enabled = false`) cannot authenticate
+#### Étape 2.1 — Initialiser le projet
+- [ ] Générer projet Spring Boot 3 (start.spring.io ou à la main) :
+  - Dependencies : Web, Thymeleaf, Security, Data JPA, Validation, PostgreSQL, Flyway
+- [ ] Group : `com.banque.agence` · Artifact : `banque-agence`
+- [ ] Java 21
 
-## Step 1.4 — Thymeleaf UI shell
+#### Étape 2.2 — Structure des packages
+- [ ] Créer les packages selon `TECHNICAL.md` §3 :
+  - `config`, `domain.entity`, `domain.enums`, `repository`, `service`, `web.controller`, `security`, `audit`
 
-- [ ] `templates/layout/main.html` — Bootstrap 5 sidebar + navbar
-- [ ] `templates/login.html` — login form, error message display
-- [ ] `templates/dashboard/index.html` — stub: "Bienvenue, {username} ({role})"
-- [ ] `static/css/app.css` — minimal custom styles
-- [ ] Sidebar links (disabled/placeholder OK): Tableau de bord, Clients, Comptes, Opérations, Historique
+#### Étape 2.3 — Configuration
+- [ ] `application.yml` : profil actif `dev`
+- [ ] `application-dev.yml` : URL JDBC, user, password locaux
+- [ ] Désactiver Flyway temporairement ou migration vide `V1__placeholder.sql` si besoin
 
-## Step 1.5 — Web layer basics
+#### Étape 2.4 — Fichiers projet
+- [ ] `.gitignore` (target/, .idea/, *.class, .env)
+- [ ] `README.md` à la racine : prérequis, création BDD, commande de lancement
 
-- [ ] `DashboardController` — GET `/` or `/dashboard`
-- [ ] `LoginController` — GET `/login`
-- [ ] `GlobalExceptionHandler` — friendly error pages
-- [ ] `templates/error/403.html`, `404.html`
-- [ ] Flash message fragment for success/error alerts
+#### Étape 2.5 — Page de test
+- [ ] Controller simple `GET /` → page Thymeleaf « Banque Agence — en construction »
+- [ ] Ou endpoint health : l'app répond sur `http://localhost:8080`
 
-## Step 1.6 — Smoke test class
-
-- [ ] `BanqueAgenceApplicationTests` — context loads
-- [ ] `SecurityIntegrationTest` — unauthenticated GET `/dashboard` redirects to login
-
----
-
-### Phase 1 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass |
-| 2 | Open `/login` without auth | Login form shown |
-| 3 | Login as `admin` / `admin123` | Redirect to dashboard, name + ADMIN shown |
-| 4 | Logout | Back to login, `/dashboard` blocked |
-| 5 | Login as `agent` | Dashboard accessible |
-| 6 | Wrong password | Error message, no crash |
-| 7 | Visit `/admin/test` as agent | 403 Forbidden page |
-| 8 | Restart app | Seed users still work, Flyway does not re-run V1/V2 |
-
-### Phase 1 — GitHub
-
+### Comment tester (Phase 2)
 ```bash
-git add -A
-git commit -m "feat: phase 1 — authentication, user schema and UI layout"
+# Compiler
+mvn clean compile
+
+# Lancer (PostgreSQL doit tourner)
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| `mvn clean compile` sans erreur | ☐ |
+| App démarre sur port 8080 | ☐ |
+| Page d'accueil s'affiche dans le navigateur | ☐ |
+| Connexion PostgreSQL OK (pas d'erreur dans les logs) | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "chore: initialize Spring Boot project with PostgreSQL and dev config"
 git push origin main
-git tag -a phase-1-foundation -m "Auth and UI shell complete"
 ```
 
----
-
-# Phase 2 — Client management
-
-**Goal:** Full client CRUD + multicriteria search per cahier §7.1.  
-**Duration:** ~2 days  
-**GitHub commit message:** `feat: phase 2 — client management with search and status`
+### Critères de sortie
+- Projet buildable et lançable
+- README explique comment installer et lancer sans Docker
 
 ---
 
-## Step 2.1 — Database: clients table
+## Phase 3 — Authentification & interface de base
 
-- [ ] `V3__create_clients.sql`:
-  - `id`, `client_number` (unique), `cin` (unique), `first_name`, `last_name`
-  - `email`, `phone`, `address`, `professional_info`
-  - `status` (ACTIVE, SUSPENDED, INACTIVE), `created_at`, `updated_at`
+**Objectif :** Login sécurisé, rôles, layout commun — fondation pour tout le reste.
 
-## Step 2.2 — Client domain layer
+**Référence cahier :** §6 (acteurs), §7.4 (auth), §8 règle 7 (mots de passe chiffrés), scénario §12 « Authentification ».
 
-- [ ] `ClientStatus` enum
-- [ ] `Client` entity + `ClientRepository`
-- [ ] `ClientService` — create, update, findById, search, changeStatus
-- [ ] `ClientNumberGenerator` — auto-generate unique client number (e.g. `CLI-2026-00001`)
+### Étapes détaillées
 
-## Step 2.3 — Validation
+#### Étape 3.1 — Base de données utilisateurs
+- [ ] Migration Flyway `V1__create_users.sql` :
+  - Table `users` : id, username, password_hash, full_name, email, role, enabled, created_at
+  - Enum ou VARCHAR pour role : ADMIN, AGENT, CHEF_AGENCE
+- [ ] Migration `V2__seed_users.sql` (profil dev) :
+  - admin / admin123 (ADMIN)
+  - agent / agent123 (AGENT)
+  - chef / chef123 (CHEF_AGENCE)
+  - Mots de passe hashés BCrypt dans le SQL ou via `ApplicationRunner`
 
-- [ ] `ClientForm` DTO with Bean Validation (`@NotBlank`, `@Email`, CIN format)
-- [ ] Unique CIN check in service → clear error message
+#### Étape 3.2 — Couche domaine
+- [ ] Entité `User` + enum `UserRole`
+- [ ] `UserRepository`
 
-## Step 2.4 — Controllers & views
+#### Étape 3.3 — Sécurité
+- [ ] `UserDetailsService` implémenté
+- [ ] `SecurityConfig` : form login, logout, BCrypt encoder
+- [ ] Routes protégées : tout sauf `/login`, `/css/**`, `/js/**`
+- [ ] Redirection après login → `/dashboard`
 
-- [ ] `ClientController`:
-  - GET `/clients` — paginated list
-  - GET `/clients/new`, POST `/clients` — create
-  - GET `/clients/{id}` — detail
-  - GET `/clients/{id}/edit`, POST `/clients/{id}` — update
-  - POST `/clients/{id}/status` — activate / suspend / deactivate
-- [ ] Templates: `clients/list.html`, `form.html`, `detail.html`
-- [ ] Search form on list: name, CIN, client number, phone (query params)
+#### Étape 3.4 — Interface
+- [ ] `templates/layout/main.html` — Bootstrap 5, sidebar, navbar
+- [ ] `templates/login.html`
+- [ ] `templates/dashboard.html` — stub « Bienvenue, [nom] ([rôle]) »
+- [ ] Messages flash (succès / erreur)
+- [ ] Pages erreur 403 et 404 simples
 
-## Step 2.5 — Navigation & UX
+#### Étape 3.5 — Contrôle d'accès par rôle (base)
+- [ ] Menu sidebar différent selon rôle (ex. lien « Utilisateurs » visible seulement pour ADMIN)
+- [ ] `@PreAuthorize` ou règles URL pour `/admin/**`
 
-- [ ] Enable "Clients" link in sidebar
-- [ ] Flash messages on create/update/status change
-- [ ] Empty state when no clients
-- [ ] Pagination controls (page size 10)
-
-## Step 2.6 — Audit log (minimal)
-
-- [ ] `V4__create_audit_logs.sql` — audit_logs table
-- [ ] `AuditLog` entity + `AuditService.log(action, entityType, entityId, details)`
-- [ ] Log on client create, update, status change
-
-## Step 2.7 — Tests
-
-- [ ] `ClientServiceTest` — duplicate CIN rejected
-- [ ] `ClientServiceTest` — search by phone returns match
-
----
-
-### Phase 2 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass |
-| 2 | Login as agent → Clients | List page loads |
-| 3 | Create client with valid data | Success flash, appears in list |
-| 4 | Create client with same CIN | Validation error, not saved |
-| 5 | Search by last name | Filtered results |
-| 6 | Search by CIN | Exact match found |
-| 7 | Edit client phone | Updated on detail page |
-| 8 | Suspend client | Status badge changes to SUSPENDED |
-| 9 | Reactivate client | Status back to ACTIVE |
-| 10 | Phase 1 login/logout | Still works |
-
-### Phase 2 — GitHub
-
+### Comment tester (Phase 3)
 ```bash
-git add -A
-git commit -m "feat: phase 2 — client management with search and status"
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| `http://localhost:8080` redirige vers login si non connecté | ☐ |
+| Login `admin` / `admin123` → dashboard | ☐ |
+| Login `agent` / `agent123` → dashboard, menu sans admin | ☐ |
+| Mauvais mot de passe → message d'erreur | ☐ |
+| Logout fonctionne | ☐ |
+| `mvn test` passe (au moins 1 test login MockMvc si ajouté) | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(auth): add login, roles, layout and user seed data"
 git push origin main
-git tag -a phase-2-clients -m "Client CRUD complete"
 ```
 
----
-
-# Phase 3 — Account management
-
-**Goal:** Open, view, block, unblock, close accounts per cahier §7.2.  
-**Duration:** ~2 days  
-**GitHub commit message:** `feat: phase 3 — bank account lifecycle management`
+### Critères de sortie
+- Les 3 rôles peuvent se connecter
+- Layout prêt pour les modules suivants
 
 ---
 
-## Step 3.1 — Database: accounts table
+## Phase 4 — Gestion des clients
 
-- [ ] `V5__create_accounts.sql`:
-  - `id`, `account_number` (unique), `type` (COURANT, EPARGNE, PROFESSIONNEL)
-  - `status` (ACTIVE, BLOCKED, CLOSED), `balance` NUMERIC(19,4) default 0
-  - `client_id` FK, `opened_at`, `closed_at`, `version` (optimistic lock)
+**Objectif :** CRUD clients complet + recherche multicritère.
 
-## Step 3.2 — Account domain layer
+**Référence cahier :** §7.1, scénario §12 « Ajout d'un client ».
 
-- [ ] `AccountType`, `AccountStatus` enums
-- [ ] `Account` entity with `BigDecimal balance`, `@Version`
-- [ ] `AccountRepository`
-- [ ] `AccountService` — open, findById, findByClient, block, unblock, close
-- [ ] `AccountNumberGenerator` — e.g. `ACC-2026-00001`
+### Étapes détaillées
 
-## Step 3.3 — Business rules in service
+#### Étape 4.1 — Base de données
+- [ ] Migration `V3__create_clients.sql` :
+  - client_number (unique), cin (unique), first_name, last_name, email, phone, address
+  - professional_info, status (ACTIVE/SUSPENDED/INACTIVE), created_at, updated_at
 
-- [ ] Cannot open account for INACTIVE client
-- [ ] Close sets `closed_at`, status CLOSED, balance must be 0 (or warn)
-- [ ] Blocked account stays blocked until explicit unblock
-- [ ] `AccountService.assertOperable(account)` — throws if not ACTIVE (used in Phase 4)
+#### Étape 4.2 — Backend
+- [ ] Entité `Client` + enum `ClientStatus`
+- [ ] `ClientRepository` avec méthodes de recherche
+- [ ] `ClientService` : create, update, findById, search, changeStatus
+- [ ] Génération auto `clientNumber` (ex. CLI-00001)
 
-## Step 3.4 — Controllers & views
+#### Étape 4.3 — Contrôleur & vues
+- [ ] `GET /clients` — liste paginée
+- [ ] `GET /clients/new` + `POST /clients` — création
+- [ ] `GET /clients/{id}` — fiche détail
+- [ ] `GET /clients/{id}/edit` + `POST /clients/{id}` — modification
+- [ ] `GET /clients/search?q=...` — recherche par nom, CIN, n° client, téléphone
+- [ ] Actions : activer / suspendre / désactiver
 
-- [ ] `AccountController`:
-  - GET `/accounts` — list all (paginated)
-  - GET `/clients/{clientId}/accounts/new`, POST — open account for client
-  - GET `/accounts/{id}` — detail (balance, type, status, client link)
-  - POST `/accounts/{id}/block`, `/unblock`, `/close`
-- [ ] Client detail page — section "Comptes du client" with list + "Ouvrir un compte"
-- [ ] Templates: `accounts/list.html`, `detail.html`, `open-form.html`
+#### Étape 4.4 — Validation
+- [ ] `@NotBlank`, `@Email`, CIN unique (message d'erreur en français)
+- [ ] Formulaires Thymeleaf avec affichage des erreurs
 
-## Step 3.5 — Navigation
+#### Étape 4.5 — Audit (première utilisation)
+- [ ] Migration `V4__create_audit_logs.sql`
+- [ ] Entité `AuditLog` + service
+- [ ] Logger création et modification client
 
-- [ ] Enable "Comptes" in sidebar
-- [ ] Audit log on open, block, unblock, close
-
-## Step 3.6 — Tests
-
-- [ ] `AccountServiceTest` — open account for active client
-- [ ] `AccountServiceTest` — cannot open for inactive client
-- [ ] `AccountServiceTest` — close blocked account flow
-
----
-
-### Phase 3 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass |
-| 2 | Open compte courant for client | Account created, balance 0.00 |
-| 3 | Open second account (épargne) same client | Both listed on client detail |
-| 4 | View account detail | Correct type, status ACTIVE, client name |
-| 5 | Block account | Status BLOCKED, badge visible |
-| 6 | Try unblock | Status ACTIVE again |
-| 7 | Close account (balance 0) | Status CLOSED, closed_at set |
-| 8 | Accounts list page | Pagination works |
-| 9 | Phases 1–2 regression | Login + clients still work |
-
-### Phase 3 — GitHub
-
+### Comment tester (Phase 4)
 ```bash
-git add -A
-git commit -m "feat: phase 3 — bank account lifecycle management"
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Créer un client avec toutes les infos | ☐ |
+| Recherche par nom fonctionne | ☐ |
+| Recherche par CIN fonctionne | ☐ |
+| Doublon CIN refusé avec message clair | ☐ |
+| Suspendre un client change son statut | ☐ |
+| Fiche détail affiche toutes les infos | ☐ |
+| Pagination sur la liste (si > 10 clients) | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(clients): add CRUD, search and status management"
 git push origin main
-git tag -a phase-3-accounts -m "Account management complete"
 ```
 
----
-
-# Phase 4 — Transactions (core banking)
-
-**Goal:** Deposit, withdraw, transfer with balance integrity per cahier §7.3.  
-**Duration:** ~3 days  
-**GitHub commit message:** `feat: phase 4 — deposits, withdrawals, transfers and history`
+### Critères de sortie
+- Tous les points §7.1 couverts et démontrables
 
 ---
 
-## Step 4.1 — Database: transactions table
+## Phase 5 — Gestion des comptes bancaires
 
-- [ ] `V6__create_transactions.sql`:
-  - `id`, `type` (DEPOT, RETRAIT, VIREMENT), `amount` NUMERIC(19,4)
-  - `source_account_id` (nullable), `destination_account_id` (nullable)
-  - `executed_by` FK users, `executed_at`, `description`
+**Objectif :** Ouvrir, consulter, bloquer, débloquer, clôturer des comptes.
 
-## Step 4.2 — Transaction domain layer
+**Référence cahier :** §7.2, règles §8 n°1-2 et 6, scénario §12 « Ouverture d'un compte ».
 
-- [ ] `TransactionType` enum
-- [ ] `Transaction` entity + `TransactionRepository`
-- [ ] `TransactionService` with `@Transactional`:
-  - `deposit(accountId, amount, user)` — credit destination
-  - `withdraw(accountId, amount, user)` — check balance ≥ amount, debit
-  - `transfer(sourceId, destId, amount, user)` — both ACTIVE, debit + credit
+### Étapes détaillées
 
-## Step 4.3 — Business rules (critical)
+#### Étape 5.1 — Base de données
+- [ ] Migration `V5__create_accounts.sql` :
+  - account_number (unique), type (COURANT/EPARGNE/PROFESSIONNEL)
+  - status (ACTIVE/BLOCKED/CLOSED), balance NUMERIC(19,4) default 0
+  - client_id FK, opened_at, closed_at, version (optimistic lock)
 
-- [ ] Reject withdraw if `balance < amount` → user-friendly message
-- [ ] Reject operations on BLOCKED or CLOSED accounts
-- [ ] Reject transfer to same account
-- [ ] Reject zero or negative amounts
-- [ ] Use `@Version` on Account — handle `OptimisticLockingFailureException`
-- [ ] Each transaction records `executedBy` + `executedAt`
+#### Étape 5.2 — Backend
+- [ ] Entité `Account` + enums `AccountType`, `AccountStatus`
+- [ ] `AccountRepository`, `AccountService`
+- [ ] `openAccount(clientId, type)` — génère numéro (ex. ACC-00001)
+- [ ] `block`, `unblock`, `close` avec règles métier
+- [ ] `listByClient(clientId)`
 
-## Step 4.4 — Controllers & views
+#### Étape 5.3 — Interface
+- [ ] Depuis fiche client : bouton « Ouvrir un compte » + formulaire type
+- [ ] `GET /accounts/{id}` — détail : solde, statut, type, client lié
+- [ ] `GET /accounts` — liste globale paginée (optionnel)
+- [ ] Boutons bloquer / débloquer / clôturer sur la fiche compte
 
-- [ ] `TransactionController`:
-  - GET/POST `/operations/deposit`
-  - GET/POST `/operations/withdraw`
-  - GET/POST `/operations/transfer`
-  - GET `/transactions` — history with filters (date from/to, type, account number, user)
-- [ ] Templates: `operations/deposit.html`, `withdraw.html`, `transfer.html`, `transactions/list.html`
-- [ ] Account selector dropdowns (active accounts only)
+#### Étape 5.4 — Règles métier
+- [ ] Compte clôturé → impossible de bloquer/débloquer
+- [ ] Un client peut avoir plusieurs comptes (affichage liste sur fiche client)
 
-## Step 4.5 — Navigation & audit
-
-- [ ] Enable "Opérations" and "Historique" in sidebar
-- [ ] Audit log entry for every financial operation
-
-## Step 4.6 — Tests (mandatory this phase)
-
-- [ ] `TransactionServiceTest` — deposit increases balance
-- [ ] `TransactionServiceTest` — withdraw insufficient funds throws
-- [ ] `TransactionServiceTest` — withdraw on blocked account throws
-- [ ] `TransactionServiceTest` — transfer updates both balances
-- [ ] `TransactionServiceTest` — transfer blocked if source inactive
-
----
-
-### Phase 4 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass (including transaction tests) |
-| 2 | Deposit 10 000 on courant | Balance = 10 000.00 |
-| 3 | Withdraw 500 | Balance = 9 500.00 |
-| 4 | Withdraw 99 999 | Error: solde insuffisant |
-| 5 | Transfer 1 000 courant → épargne | Courant 8 500, épargne 1 000 |
-| 6 | Deposit on blocked account | Operation rejected |
-| 7 | History — filter by account | Shows only that account's ops |
-| 8 | History — filter by type DEPOT | Correct filter |
-| 9 | Each row shows agent name + timestamp | Traçabilité OK |
-| 10 | Full flow from Phase 0–3 | No regression |
-
-### Phase 4 — GitHub
-
+### Comment tester (Phase 5)
 ```bash
-git add -A
-git commit -m "feat: phase 4 — deposits, withdrawals, transfers and history"
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Ouvrir compte courant pour un client existant | ☐ |
+| Ouvrir 2e compte (épargne) pour le même client | ☐ |
+| Solde initial = 0 | ☐ |
+| Bloquer un compte → statut BLOCKED | ☐ |
+| Débloquer → statut ACTIVE | ☐ |
+| Clôturer → statut CLOSED, date de clôture renseignée | ☐ |
+| Liste des comptes visible sur fiche client | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(accounts): add open, view, block and close account flows"
 git push origin main
-git tag -a phase-4-transactions -m "Core banking operations complete"
 ```
 
----
-
-# Phase 5 — Internal user management
-
-**Goal:** Admin manages staff accounts per cahier §7.4.  
-**Duration:** ~2 days  
-**GitHub commit message:** `feat: phase 5 — internal user administration`
+### Critères de sortie
+- Tous les points §7.2 couverts
+- Comptes liés correctement aux clients
 
 ---
 
-## Step 5.1 — User administration service
+## Phase 6 — Gestion des transactions
 
-- [ ] `UserAdminService` — create, update, enable, disable, setPassword
-- [ ] Password always BCrypt-hashed on create/reset
-- [ ] Prevent admin from disabling themselves
+**Objectif :** Dépôt, retrait, virement + historique — cœur métier du projet.
 
-## Step 5.2 — Controllers & views (ADMIN only)
+**Référence cahier :** §7.3, règles §8 n°3-5, scénarios §12 dépôt/retrait/virement/historique.
 
-- [ ] `UserAdminController`:
-  - GET `/users` — paginated list
-  - GET/POST `/users/new` — create with role
-  - GET/POST `/users/{id}/edit` — edit name, email, role
-  - POST `/users/{id}/enable`, `/disable`
-  - POST `/users/{id}/reset-password`
-- [ ] Templates: `users/list.html`, `form.html`
+### Étapes détaillées
 
-## Step 5.3 — Security hardening
+#### Étape 6.1 — Base de données
+- [ ] Migration `V6__create_transactions.sql` :
+  - type (DEPOT/RETRAIT/VIREMENT), amount, source_account_id, destination_account_id
+  - executed_by FK users, executed_at, description
 
-- [ ] Confirm `/users/**` requires ADMIN role
-- [ ] CHEF_AGENCE and AGENT get 403 on `/users`
+#### Étape 6.2 — Backend
+- [ ] Entité `Transaction` + enum `TransactionType`
+- [ ] `TransactionService` avec `@Transactional` :
+  - **deposit(accountId, amount, user)** → crédite le compte
+  - **withdraw(accountId, amount, user)** → vérifie solde ≥ montant, débite
+  - **transfer(sourceId, destId, amount, user)** → vérifie les 2 comptes ACTIVE, débite/crédite
+- [ ] Refuser si compte BLOCKED ou CLOSED
+- [ ] Refuser si montant ≤ 0
+- [ ] Chaque opération → entrée `AuditLog`
 
-## Step 5.4 — Seed update (optional)
+#### Étape 6.3 — Interface
+- [ ] Menu « Opérations » avec 3 formulaires : Dépôt, Retrait, Virement
+- [ ] Sélection compte par numéro ou liste déroulante
+- [ ] Message succès avec nouveau solde
+- [ ] `GET /transactions` — historique paginé
+- [ ] Filtres : date début/fin, type, n° compte, utilisateur
 
-- [ ] No change to Flyway seeds — new users created via UI only after Phase 5
+#### Étape 6.4 — Tests unitaires (simples)
+- [ ] Test : retrait avec solde insuffisant → exception
+- [ ] Test : virement vers compte bloqué → exception
+- [ ] Test : dépôt augmente le solde
 
-## Step 5.5 — Audit & tests
-
-- [ ] Audit log on user create, disable, role change
-- [ ] `UserAdminServiceTest` — disabled user cannot authenticate
-- [ ] `UserAdminServiceTest` — create user with AGENT role
-
----
-
-### Phase 5 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass |
-| 2 | Login as admin → Users | User list with 3 seed users |
-| 3 | Create new agent user | Can login with new credentials |
-| 4 | Disable that user | Login fails |
-| 5 | Re-enable user | Login works again |
-| 6 | Login as agent → `/users` | 403 Forbidden |
-| 7 | Change user role AGENT → CHEF_AGENCE | Role updated in list |
-| 8 | Phases 1–4 regression | Banking flows still work |
-
-### Phase 5 — GitHub
-
+### Comment tester (Phase 6)
 ```bash
-git add -A
-git commit -m "feat: phase 5 — internal user administration"
+mvn test
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Dépôt 1000 → solde = 1000 | ☐ |
+| Retrait 300 → solde = 700 | ☐ |
+| Retrait 800 → refusé (solde insuffisant) | ☐ |
+| Virement 200 vers autre compte → soldes mis à jour | ☐ |
+| Virement depuis compte bloqué → refusé | ☐ |
+| Historique affiche date, montant, type, utilisateur | ☐ |
+| Filtre par type DEPOT fonctionne | ☐ |
+| `mvn test` passe | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(transactions): add deposit, withdraw, transfer and history"
 git push origin main
-git tag -a phase-5-users -m "User admin complete"
 ```
 
----
-
-# Phase 6 — Reporting & dashboard
-
-**Goal:** Dashboard KPIs, recent ops, statements per cahier §7.5.  
-**Duration:** ~2 days  
-**GitHub commit message:** `feat: phase 6 — dashboard, statements and receipts`
+### Critères de sortie
+- Les 8 règles de gestion liées aux transactions sont respectées
+- Scénarios dépôt, retrait, virement démontrables de bout en bout
 
 ---
 
-## Step 6.1 — Dashboard service
+## Phase 7 — Gestion des utilisateurs internes
 
-- [ ] `DashboardService` queries:
-  - Total clients (active count)
-  - Total active accounts
-  - Today's transaction count + total volume
-  - Last 10 transactions (join account + user)
+**Objectif :** L'administrateur gère les comptes du personnel.
 
-## Step 6.2 — Dashboard UI
+**Référence cahier :** §7.4, scénario §12 « Gestion utilisateurs ».
 
-- [ ] Replace dashboard stub with KPI cards + recent transactions table
-- [ ] CHEF_AGENCE and ADMIN see full stats; AGENT sees simplified view (optional)
+### Étapes détaillées
 
-## Step 6.3 — Account statement
+#### Étape 7.1 — Backend
+- [ ] `UserService` : create, update, enable, disable
+- [ ] Hash BCrypt à la création / changement de mot de passe
+- [ ] Interdire suppression du dernier admin
 
-- [ ] GET `/accounts/{id}/statement?from=&to=` — transactions in period
-- [ ] Running balance column (optional but impressive)
-- [ ] Print-friendly CSS (`@media print`)
+#### Étape 7.2 — Interface (ADMIN uniquement)
+- [ ] `GET /admin/users` — liste
+- [ ] `GET /admin/users/new` + `POST` — créer avec rôle
+- [ ] `GET /admin/users/{id}/edit` + `POST` — modifier nom, email, rôle
+- [ ] Activer / désactiver un compte
+- [ ] Formulaire définir mot de passe
 
-## Step 6.4 — Transaction receipt
+#### Étape 7.3 — Sécurité
+- [ ] `@PreAuthorize("hasRole('ADMIN')")` sur tout `/admin/users/**`
+- [ ] Utilisateur désactivé → `enabled=false` → login impossible
 
-- [ ] GET `/transactions/{id}/receipt` — printable receipt (HTML)
-- [ ] Shows: type, amount, accounts, date, agent, reference
-
-## Step 6.5 — PDF export (P2 — optional)
-
-- [ ] Add OpenPDF dependency
-- [ ] GET `/accounts/{id}/statement.pdf` — same data as HTML statement
-- [ ] Skip if time-constrained; HTML print is enough for P0
-
-## Step 6.6 — Tests
-
-- [ ] `DashboardServiceTest` — counts match seeded data
-
----
-
-### Phase 6 — Manual test checklist
-
-| # | Action | Expected result |
-|---|---|---|
-| 1 | `mvnw clean test` | All tests pass |
-| 2 | Login as chef → Dashboard | KPI cards show real numbers |
-| 3 | Recent transactions table | Last ops visible with amounts |
-| 4 | Open statement for account (last 30 days) | Correct transactions listed |
-| 5 | Print statement (Ctrl+P) | Layout readable, no sidebar clutter |
-| 6 | Open receipt for a deposit | All fields correct |
-| 7 | PDF export (if implemented) | File downloads and opens |
-| 8 | Full banking flow regression | End-to-end still works |
-
-### Phase 6 — GitHub
-
+### Comment tester (Phase 7)
 ```bash
-git add -A
-git commit -m "feat: phase 6 — dashboard, statements and receipts"
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Agent ne peut pas accéder à `/admin/users` (403) | ☐ |
+| Admin crée un nouvel agent | ☐ |
+| Nouvel agent peut se connecter | ☐ |
+| Admin désactive un agent → login refusé | ☐ |
+| Admin modifie le rôle d'un utilisateur | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(users): add admin user management with role assignment"
 git push origin main
-git tag -a phase-6-reporting -m "Dashboard and reporting complete"
 ```
 
----
-
-# Phase 7 — Polish, tests, documentation, ship
-
-**Goal:** Demo-ready, academically defensible, GitHub repo presentable.  
-**Duration:** ~2 days  
-**GitHub commit message:** `chore: phase 7 — demo data, tests, docs and soutenance prep`
+### Critères de sortie
+- Tous les points §7.4 couverts
 
 ---
 
-## Step 7.1 — Demo dataset
+## Phase 8 — Tableau de bord & reporting
 
-- [ ] `V7__demo_data.sql` (dev profile only) OR Java `ApplicationRunner` seed:
-  - 5 clients, 8 accounts, 20 transactions
-- [ ] Document demo credentials and sample data in README
+**Objectif :** Supervision, relevés, reçus — dernière couche fonctionnelle.
 
-## Step 7.2 — Complete test suite
+**Référence cahier :** §7.5.
 
-- [ ] Reach ~10–15 tests total (see `TECHNICAL.md` §12)
-- [ ] `mvnw clean test` — 100% pass rate
-- [ ] Optional: one `@SpringBootTest` end-to-end login → deposit flow
+### Étapes détaillées
 
-## Step 7.3 — UI polish
+#### Étape 8.1 — Tableau de bord
+- [ ] Remplacer le stub dashboard par des vraies données :
+  - Nombre total de clients actifs
+  - Nombre de comptes actifs
+  - Nombre et montant des transactions du jour
+- [ ] Tableau des 10 dernières opérations
+- [ ] Chef d'agence voit les mêmes stats (supervision)
 
-- [ ] Consistent French labels across all pages
-- [ ] Format amounts: `10 000,00 MAD` or `10 000.00 DH`
-- [ ] Status badges (ACTIVE = green, BLOCKED = red, etc.)
-- [ ] Mobile-responsive sidebar (Bootstrap collapse)
+#### Étape 8.2 — Relevé de compte
+- [ ] `GET /accounts/{id}/statement` — liste des transactions du compte
+- [ ] Filtre par période (date début / fin)
+- [ ] Affichage solde courant en en-tête
 
-## Step 7.4 — Documentation
+#### Étape 8.3 — Reçu d'opération
+- [ ] `GET /transactions/{id}/receipt` — page imprimable (HTML simple)
+- [ ] Infos : type, montant, date, comptes, agent responsable
 
-- [ ] `documentation/manuel-utilisateur.md` — screenshots + steps per role
-- [ ] `documentation/demo-script.md` — 5–7 min soutenance walkthrough
-- [ ] Update `README.md` — features list, tech stack, test commands, demo users
-- [ ] Update `TECHNICAL.md` §7 — all flows marked Done
+#### Étape 8.4 — Export PDF (si le temps le permet)
+- [ ] Export PDF du relevé avec OpenPDF — **optionnel**, le HTML imprimable suffit pour le cahier
 
-## Step 7.5 — UML & data model (rapport)
+#### Étape 8.5 — Journal d'audit (consultation)
+- [ ] `GET /admin/audit` — liste paginée des actions sensibles
+- [ ] Accessible ADMIN et CHEF_AGENCE
 
-- [ ] `documentation/uml/` — use case, class, sequence diagrams
-- [ ] `documentation/modele-donnees/` — MCD, MLD, dictionary
-- [ ] Align diagrams with actual code (not aspirational)
-
-## Step 7.6 — Production sanity
-
-- [ ] `application-prod.yml` loads from env vars
-- [ ] `mvnw clean package` produces runnable JAR
-- [ ] `java -jar target/banque-agence-*.jar --spring.profiles.active=prod` documented
-
-## Step 7.7 — Final GitHub hygiene
-
-- [ ] README badge or clear "PFA Banque Agence" title
-- [ ] Clean commit history on `main` (one commit per phase minimum)
-- [ ] Tags: `phase-0` through `phase-7` (optional)
-- [ ] Remove any dev secrets from tracked files
-
----
-
-### Phase 7 — Manual test checklist (full demo rehearsal)
-
-| # | Step | Role |
-|---|---|---|
-| 1 | Login | agent |
-| 2 | Create client, search by CIN | agent |
-| 3 | Open courant + épargne | agent |
-| 4 | Deposit 10 000 | agent |
-| 5 | Withdraw 500 | agent |
-| 6 | Transfer 1 000 | agent |
-| 7 | View filtered history | agent |
-| 8 | View receipt | agent |
-| 9 | Login, view dashboard KPIs | chef |
-| 10 | Login, manage users | admin |
-| 11 | `mvnw clean test` | — |
-| 12 | `mvnw clean package` | — |
-
-### Phase 7 — GitHub
-
+### Comment tester (Phase 8)
 ```bash
-git add -A
-git commit -m "chore: phase 7 — demo data, tests, docs and soutenance prep"
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Dashboard affiche des chiffres réels (pas des zéros fixes) | ☐ |
+| 10 dernières opérations visibles | ☐ |
+| Relevé d'un compte filtré par date | ☐ |
+| Reçu imprimable depuis une transaction | ☐ |
+| Journal d'audit liste les opérations passées | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(reporting): add dashboard, statements, receipts and audit log view"
 git push origin main
-git tag -a v1.0.0-pfa -m "PFA demo-ready release"
 ```
 
----
-
-## Parallel track — Analysis & conception (rapport)
-
-Run alongside coding; sync after Phases 3 and 4:
-
-| Deliverable | Folder | Best time to finalize |
-|---|---|---|
-| Cas d'utilisation | `documentation/uml/` | After Phase 2 |
-| Diagramme de classes | `documentation/uml/` | After Phase 4 |
-| Diagrammes de séquence | `documentation/uml/` | After Phase 4 |
-| MCD / MLD | `documentation/modele-donnees/` | After Phase 3 |
-| Dictionnaire de données | `documentation/modele-donnees/` | After MLD |
+### Critères de sortie
+- Tous les points §7.5 couverts (PDF optionnel)
 
 ---
 
-## GitHub commit map (summary)
+## Phase 9 — Finalisation & préparation soutenance
 
-| Phase | Suggested commit message | Tag |
-|---|---|---|
-| 0 | `chore: phase 0 — Spring Boot bootstrap with PostgreSQL and Flyway` | `phase-0-bootstrap` |
-| 1 | `feat: phase 1 — authentication, user schema and UI layout` | `phase-1-foundation` |
-| 2 | `feat: phase 2 — client management with search and status` | `phase-2-clients` |
-| 3 | `feat: phase 3 — bank account lifecycle management` | `phase-3-accounts` |
-| 4 | `feat: phase 4 — deposits, withdrawals, transfers and history` | `phase-4-transactions` |
-| 5 | `feat: phase 5 — internal user administration` | `phase-5-users` |
-| 6 | `feat: phase 6 — dashboard, statements and receipts` | `phase-6-reporting` |
-| 7 | `chore: phase 7 — demo data, tests, docs and soutenance prep` | `v1.0.0-pfa` |
+**Objectif :** Projet propre, documenté, prêt à présenter.
+
+**Référence cahier :** §13 (livrables), §15 (conclusion).
+
+### Étapes détaillées
+
+#### Étape 9.1 — Données de démonstration
+- [ ] Script seed ou SQL manuel : 5 clients, 8 comptes, 20 transactions variées
+- [ ] Documenter les identifiants de test dans le README
+
+#### Étape 9.2 — Qualité
+- [ ] Relire tous les libellés UI en français
+- [ ] Messages d'erreur explicites partout
+- [ ] `mvn test` — tous les tests passent
+- [ ] Parcours complet sans bug bloquant
+
+#### Étape 9.3 — Documentation
+- [ ] `documentation/manuel-utilisateur.md` — guide court avec captures
+- [ ] `documentation/demo-script.md` — scénario 5–7 min pour la soutenance
+- [ ] Mettre à jour `TECHNICAL.md` §7 checklist (tout en Done)
+- [ ] README final : installation PostgreSQL, lancement, comptes de test
+
+#### Étape 9.4 — Rapport & présentation
+- [ ] Intégrer les diagrammes Phase 1 dans le rapport
+- [ ] PowerPoint : contexte → conception → démo → conclusion
+- [ ] Vérifier que le rapport cite le cahier des charges et les règles de gestion
+
+#### Étape 9.5 — Revue cahier des charges
+- [ ] Checklist finale — chaque section du cahier est couverte :
+
+| Section cahier | Couvert par |
+|---|---|
+| §7.1 Clients | Phase 4 |
+| §7.2 Comptes | Phase 5 |
+| §7.3 Transactions | Phase 6 |
+| §7.4 Utilisateurs | Phase 7 |
+| §7.5 Reporting | Phase 8 |
+| §8 Règles de gestion | Phases 5–6 + audit |
+| §9 Sécurité NFR | Phase 3 |
+| §11 Modélisation | Phase 1 |
+| §12 Scénarios | Phases 3–8 |
+
+### Comment tester (Phase 9)
+```bash
+mvn clean test
+mvn spring-boot:run
+# Suivre documentation/demo-script.md du début à la fin
+```
+| Vérification | OK ? |
+|---|---|
+| Démo complète en < 10 minutes sans erreur | ☐ |
+| `mvn clean test` OK | ☐ |
+| README à jour | ☐ |
+| Manuel utilisateur rédigé | ☐ |
+| GitHub à jour avec tout le code | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "docs: add user manual, demo script and finalize project for presentation"
+git push origin main
+```
+
+### Critères de sortie
+- Projet défendable académiquement
+- Dépôt GitHub complet et à jour
 
 ---
 
-## Soutenance demo script (7 minutes)
+## Scénario de démo soutenance (5–7 min)
 
-1. **Login** as agent
-2. **Créer client** + recherche CIN
-3. **Ouvrir** compte courant + épargne
-4. **Dépôt** 10 000 MAD
-5. **Retrait** 500 MAD (show solde check)
-6. **Virement** 1 000 MAD
-7. **Historique** filtré + reçu
-8. **Login** chef → tableau de bord
-9. **Login** admin → gestion utilisateurs
-10. Mentionner **Java/Spring Boot**, **BCrypt**, **journal d'audit**, **Flyway**
-
----
-
-## Next action
-
-**Start Phase 0, Step 0.1** — initialize Spring Boot project on `main`.
-
-When ready, say *"start phase 0"* and we implement Step 0.1 through 0.6, then run the Phase 0 test checklist and push to GitHub.
+1. Login **agent** → créer client → rechercher par CIN
+2. Ouvrir compte **courant** + compte **épargne**
+3. **Dépôt** 10 000 MAD
+4. **Retrait** 500 MAD → montrer refus si montant trop élevé
+5. **Virement** 1 000 MAD courant → épargne
+6. **Historique** filtré par compte
+7. Login **chef d'agence** → **dashboard**
+8. Login **admin** → gestion utilisateur + **journal d'audit**
+9. Montrer **relevé** et **reçu** imprimable
 
 ---
 
-*Last updated: 2026-06-14*
+## Ce qu'on ne fait PAS (volontairement)
+
+- Docker / Kubernetes
+- Python / Flask / Django
+- React / Angular séparé
+- API REST publique / Swagger (sauf si utile en interne — pas nécessaire)
+- Microservices
+- Portail client en ligne
+- Cartes bancaires / GAB
+- CI/CD GitHub Actions (optionnel, pas requis)
+- Tests à 100 % de couverture
+
+---
+
+## Prochaine action
+
+**Commencer la Phase 1 — Conception.**
+
+Première tâche concrète : créer `documentation/analyse-besoin.md` et le diagramme de cas d'utilisation.
+
+---
+
+*Dernière mise à jour : 2026-06-14*
