@@ -520,28 +520,28 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 8.1 — Tableau de bord
-- [ ] Remplacer le stub dashboard par des vraies données :
+- [x] Remplacer le stub dashboard par des vraies données :
   - Nombre total de clients actifs
   - Nombre de comptes actifs
   - Nombre et montant des transactions du jour
-- [ ] Tableau des 10 dernières opérations
-- [ ] Chef d'agence voit les mêmes stats (supervision)
+- [x] Tableau des 10 dernières opérations
+- [x] Chef d'agence voit les mêmes stats (supervision)
 
 #### Étape 8.2 — Relevé de compte
-- [ ] `GET /accounts/{id}/statement` — liste des transactions du compte
-- [ ] Filtre par période (date début / fin)
-- [ ] Affichage solde courant en en-tête
+- [x] `GET /accounts/{id}/statement` — liste des transactions du compte
+- [x] Filtre par période (date début / fin)
+- [x] Affichage solde courant en en-tête
 
 #### Étape 8.3 — Reçu d'opération
-- [ ] `GET /transactions/{id}/receipt` — page imprimable (HTML simple)
-- [ ] Infos : type, montant, date, comptes, agent responsable
+- [x] `GET /transactions/{id}/receipt` — page imprimable (HTML simple)
+- [x] Infos : type, montant, date, comptes, agent responsable
 
 #### Étape 8.4 — Export PDF (si le temps le permet)
 - [ ] Export PDF du relevé avec OpenPDF — **optionnel**, le HTML imprimable suffit pour le cahier
 
 #### Étape 8.5 — Journal d'audit (consultation)
-- [ ] `GET /admin/audit` — liste paginée des actions sensibles
-- [ ] Accessible ADMIN et CHEF_AGENCE
+- [x] `GET /admin/audit` — liste paginée des actions sensibles
+- [x] Accessible ADMIN et CHEF_AGENCE
 
 ### Comment tester (Phase 8)
 ```bash

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="welcome-card">
+        <div th:if="${logs.empty}" class="text-muted">Aucune entrée dans le journal d'audit.</div>
+        <div th:unless="${logs.empty}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Entité</th>
+                    <th>Utilisateur</th>
+                    <th>Détails</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="log : ${logs}">
+                    <td th:text="${#temporals.format(log.performedAt, 'dd/MM/yyyy HH:mm')}">—</td>
+                    <td th:text="${log.action}">ACTION</td>
+                    <td>
+                        <span th:text="${log.entityType}">Type</span>
+                        <span th:if="${log.entityId != null}" th:text="' #' + ${log.entityId}">#1</span>
+                    </td>
+                    <td th:text="${log.performedBy.fullName}">User</td>
+                    <td th:text="${log.details != null ? log.details : '—'}">—</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${logs.totalPages > 1}" class="mt-3">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${logs.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/admin/audit(page=${logs.number - 1})}">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Page ' + (${logs.number} + 1) + ' / ' + ${logs.totalPages}">Page</span>
+                </li>
+                <li class="page-item" th:classappend="${logs.last} ? ' disabled'">
+                    <a class="page-link" th:href="@{/admin/audit(page=${logs.number + 1})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

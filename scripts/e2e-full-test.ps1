@@ -151,6 +151,17 @@ try {
     Record-Test 'Transactions' 'Huge amount validation (no 500)' (
         ($overflowPage.StatusCode -eq 200) -and ($overflowPage.Content -match 'lev|Montant|deposit')
     ) 'form error not server error'
+
+    $txPage = Invoke-WebRequest "$base/transactions" -WebSession $agent -UseBasicParsing
+    $txId = 0
+    if ($txPage.Content -match '/transactions/(\d+)/receipt') { $txId = [long]$Matches[1] }
+    Record-Test 'Transactions' 'Receipt link in history' ($txId -gt 0) "txId=$txId"
+    if ($txId -gt 0) {
+        $receipt = Invoke-WebRequest "$base/transactions/$txId/receipt" -WebSession $agent -UseBasicParsing
+        Record-Test 'Reporting' 'Transaction receipt page' (
+            ($receipt.StatusCode -eq 200) -and ($receipt.Content -match 'Banque Agence') -and ($receipt.Content -match 'Imprimer') -and ($receipt.Content -match 'Montant')
+        ) 'printable receipt'
+    }
 } catch { Record-Test 'Transactions' 'Transaction flow' $false $_.Exception.Message }
 
 # --- USERS (ADMIN) ---
@@ -175,13 +186,48 @@ try {
     Record-Test 'Users' 'Last admin protected' ($disableAdmin.Content -match 'administrateur') 'error shown'
 } catch { Record-Test 'Users' 'Admin user mgmt' $false $_.Exception.Message }
 
+# --- REPORTING (Phase 8) ---
+try {
+    $dash = Invoke-WebRequest "$base/dashboard" -WebSession $agent -UseBasicParsing
+    Record-Test 'Reporting' 'Dashboard KPI cards' (
+        ($dash.Content -match 'Clients actifs') -and
+        ($dash.Content -match 'Comptes actifs') -and
+        ($dash.Content -match "aujourd'hui") -and
+        ($dash.Content -match 'Volume du jour')
+    ) 'real stats labels'
+    Record-Test 'Reporting' 'Dashboard recent operations' (
+        ($dash.Content -match '10 derni') -and ($dash.Content -match '/transactions/\d+/receipt')
+    ) 'recent ops table'
+
+    $stmt = Invoke-WebRequest "$base/accounts/$acc1/statement" -WebSession $agent -UseBasicParsing
+    Record-Test 'Reporting' 'Account statement page' (
+        ($stmt.StatusCode -eq 200) -and ($stmt.Content -match 'Solde courant') -and ($stmt.Content -match 'ACC-')
+    ) 'statement with balance'
+    $stmtFilter = Invoke-WebRequest "$base/accounts/$acc1/statement?fromDate=2020-01-01&toDate=2099-12-31" -WebSession $agent -UseBasicParsing
+    $stmtBody = if ($stmtFilter.Content -match '(?s)<tbody>(.*?)</tbody>') { $Matches[1] } else { '' }
+    $stmtRows = if ($stmtBody) { ([regex]::Matches($stmtBody, '<tr>')).Count } else { 0 }
+    Record-Test 'Reporting' 'Statement date filter' ($stmtRows -ge 1) "rows=$stmtRows"
+
+    $chefAudit = HttpStatus $ch '/admin/audit'
+    Record-Test 'Reporting' 'Chef can access audit log' ($chefAudit -eq 200) "HTTP $chefAudit"
+    $adminAudit = HttpStatus $admin '/admin/audit'
+    Record-Test 'Reporting' 'Admin can access audit log' ($adminAudit -eq 200) "HTTP $adminAudit"
+    Record-Test 'Reporting' 'Agent blocked from audit' ((HttpStatus $agent '/admin/audit') -eq 403) 'HTTP 403'
+
+    $auditPage = Invoke-WebRequest "$base/admin/audit" -WebSession $admin -UseBasicParsing
+    Record-Test 'Reporting' 'Audit log has entries' (
+        ($auditPage.Content -match 'TRANSACTION_') -or ($auditPage.Content -match 'CLIENT_') -or ($auditPage.Content -match 'ACCOUNT_')
+    ) 'past actions listed'
+} catch { Record-Test 'Reporting' 'Reporting flow' $false $_.Exception.Message }
+
 # --- PAGES SMOKE ---
 $pages = @(
     @{ M = 'UI'; N = 'Dashboard'; P = '/dashboard' },
     @{ M = 'UI'; N = 'Clients list'; P = '/clients' },
     @{ M = 'UI'; N = 'Accounts list'; P = '/accounts' },
     @{ M = 'UI'; N = 'Operations'; P = '/operations' },
-    @{ M = 'UI'; N = 'Transactions'; P = '/transactions' }
+    @{ M = 'UI'; N = 'Transactions'; P = '/transactions' },
+    @{ M = 'UI'; N = 'Account statement'; P = "/accounts/$acc1/statement" }
 )
 foreach ($pg in $pages) {
     Record-Test $pg.M $pg.N ((HttpStatus $agent $pg.P) -eq 200) 'HTTP 200'

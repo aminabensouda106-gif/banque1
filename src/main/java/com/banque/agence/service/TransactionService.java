@@ -38,11 +38,6 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Account> listOperableAccounts() {
-        return accountRepository.findAllByStatusWithClient(AccountStatus.ACTIVE);
-    }
-
-    @Transactional(readOnly = true)
     public Page<Transaction> search(TransactionType type,
                                     String accountNumber,
                                     Long userId,
@@ -62,6 +57,17 @@ public class TransactionService {
                 ),
                 pageable
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Transaction findById(Long id) {
+        return transactionRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Opération introuvable."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> listOperableAccounts() {
+        return accountRepository.findAllByStatusWithClient(AccountStatus.ACTIVE);
     }
 
     @Transactional

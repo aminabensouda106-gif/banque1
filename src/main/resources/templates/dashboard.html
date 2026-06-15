@@ -10,24 +10,71 @@
             <strong th:text="${roleLabel}">Rôle</strong>.
         </p>
     </div>
+
     <div class="row g-3 mt-2">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="stat-card">
-                <h3>Clients</h3>
-                <p class="text-muted"><a th:href="@{/clients}">Gérer les clients</a></p>
+                <h3>Clients actifs</h3>
+                <p class="stat-value" th:text="${stats.activeClients}">0</p>
+                <p class="text-muted mb-0"><a th:href="@{/clients}">Gérer les clients</a></p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="stat-card">
-                <h3>Comptes</h3>
-                <p class="text-muted"><a th:href="@{/accounts}">Gérer les comptes</a></p>
+                <h3>Comptes actifs</h3>
+                <p class="stat-value" th:text="${stats.activeAccounts}">0</p>
+                <p class="text-muted mb-0"><a th:href="@{/accounts}">Gérer les comptes</a></p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="stat-card">
-                <h3>Opérations</h3>
-                <p class="text-muted"><a th:href="@{/operations}">Dépôt, retrait, virement</a></p>
+                <h3>Opérations aujourd'hui</h3>
+                <p class="stat-value" th:text="${stats.todayTransactionCount}">0</p>
+                <p class="text-muted mb-0"><a th:href="@{/operations}">Nouvelle opération</a></p>
             </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>Volume du jour</h3>
+                <p class="stat-value"
+                   th:text="${#numbers.formatDecimal(stats.todayTransactionAmount, 1, 2)} + ' MAD'">0,00 MAD</p>
+                <p class="text-muted mb-0"><a th:href="@{/transactions}">Historique complet</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="welcome-card mt-3">
+        <h3 class="h5">10 dernières opérations</h3>
+        <div th:if="${recentTransactions.isEmpty()}" class="text-muted">Aucune opération enregistrée.</div>
+        <div th:unless="${recentTransactions.isEmpty()}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Montant</th>
+                    <th>Compte(s)</th>
+                    <th>Agent</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tx : ${recentTransactions}">
+                    <td th:text="${#temporals.format(tx.executedAt, 'dd/MM/yyyy HH:mm')}">—</td>
+                    <td th:text="${tx.type.label}">Type</td>
+                    <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)} + ' MAD'">0,00</td>
+                    <td>
+                        <span th:if="${tx.sourceAccount != null}" th:text="${tx.sourceAccount.accountNumber}">SRC</span>
+                        <span th:if="${tx.type.name() == 'VIREMENT'}"> → </span>
+                        <span th:if="${tx.destinationAccount != null}" th:text="${tx.destinationAccount.accountNumber}">DST</span>
+                    </td>
+                    <td th:text="${tx.executedBy.fullName}">Agent</td>
+                    <td>
+                        <a th:href="@{/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary">Reçu</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </section>

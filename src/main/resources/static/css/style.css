@@ -191,6 +191,52 @@ body {
     color: #0d47a1;
 }
 
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.25rem 0 0.5rem;
+    color: #1a1a1a;
+}
+
+.receipt-body {
+    background: #f4f6f8;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.receipt-container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.receipt-header .brand-icon {
+    margin: 0 auto;
+}
+
+.receipt-details dt {
+    color: #666;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .receipt-body {
+        background: #fff;
+        padding: 0;
+    }
+
+    .receipt-container {
+        box-shadow: none;
+        max-width: 100%;
+    }
+}
+
 .toolbar-card {
     background: #fff;
     border-radius: 8px;

@@ -36,8 +36,10 @@
                class="sidebar-link" th:classappend="${activePage == 'users'} ? ' active'">
                 Utilisateurs
             </a>
-            <a href="#" class="sidebar-link disabled" sec:authorize="hasRole('CHEF_AGENCE')">Reporting</a>
-            <a href="#" class="sidebar-link disabled" sec:authorize="hasRole('ADMIN')">Journal d'audit</a>
+            <a sec:authorize="hasAnyRole('ADMIN', 'CHEF_AGENCE')" th:href="@{/admin/audit}"
+               class="sidebar-link" th:classappend="${activePage == 'audit'} ? ' active'">
+                Journal d'audit
+            </a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">

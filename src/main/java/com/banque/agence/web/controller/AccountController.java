@@ -2,13 +2,16 @@ package com.banque.agence.web.controller;
 
 import com.banque.agence.domain.entity.Account;
 import com.banque.agence.domain.entity.Client;
+import com.banque.agence.domain.entity.Transaction;
 import com.banque.agence.domain.enums.AccountType;
 import com.banque.agence.security.SecurityUser;
 import com.banque.agence.service.AccountService;
 import com.banque.agence.service.BusinessRuleException;
 import com.banque.agence.service.ClientService;
 import com.banque.agence.service.ResourceNotFoundException;
+import com.banque.agence.service.TransactionService;
 import com.banque.agence.web.dto.OpenAccountForm;
+import com.banque.agence.web.dto.StatementFilterForm;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +36,14 @@ public class AccountController {
 
     private final AccountService accountService;
     private final ClientService clientService;
+    private final TransactionService transactionService;
 
-    public AccountController(AccountService accountService, ClientService clientService) {
+    public AccountController(AccountService accountService,
+                             ClientService clientService,
+                             TransactionService transactionService) {
         this.accountService = accountService;
         this.clientService = clientService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping
@@ -59,6 +66,29 @@ public class AccountController {
         model.addAttribute("activePage", "accounts");
         model.addAttribute("account", account);
         return "accounts/detail";
+    }
+
+    @GetMapping("/{id}/statement")
+    public String statement(
+            @PathVariable Long id,
+            @ModelAttribute StatementFilterForm filter,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model) {
+        Account account = accountService.findById(id);
+        Page<Transaction> transactions = transactionService.search(
+                null,
+                account.getAccountNumber(),
+                null,
+                filter.getFromDate(),
+                filter.getToDate(),
+                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "executedAt"))
+        );
+        model.addAttribute("pageTitle", "Relevé — " + account.getAccountNumber());
+        model.addAttribute("activePage", "accounts");
+        model.addAttribute("account", account);
+        model.addAttribute("transactions", transactions);
+        model.addAttribute("filter", filter);
+        return "accounts/statement";
     }
 
     @GetMapping("/client/{clientId}/new")

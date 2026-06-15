@@ -37,6 +37,7 @@
     <div class="d-flex flex-wrap gap-2">
         <a th:href="@{/clients/{id}(id=${account.client.id})}" class="btn btn-outline-secondary">Fiche client</a>
         <a th:href="@{/accounts}" class="btn btn-outline-secondary">Tous les comptes</a>
+        <a th:href="@{/accounts/{id}/statement(id=${account.id})}" class="btn btn-outline-primary">Relevé de compte</a>
         <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/deposit(accountId=${account.id})}" class="btn btn-primary btn-sm">Dépôt</a>
         <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/withdraw(accountId=${account.id})}" class="btn btn-warning btn-sm">Retrait</a>
 

@@ -1,6 +1,7 @@
 package com.banque.agence.repository;
 
 import com.banque.agence.domain.entity.Client;
+import com.banque.agence.domain.enums.ClientStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
+
+    long countByStatus(ClientStatus status);
 
     boolean existsByCin(String cin);
 

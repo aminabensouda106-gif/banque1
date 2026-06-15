@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 7 terminée — prêt pour Phase 8 (reporting) |
+| **Status** | Phase 8 terminée — prêt pour Phase 9 (finalisation) |
 
 ### Problématique
 
@@ -349,7 +349,7 @@ src/main/resources/db/migration/
 | # | Flow | Priority | Status |
 |---|---|---|---|
 | 1 | Login / logout | P0 | Done (Phase 3) |
-| 2 | Dashboard | P1 | Done (Phase 3 stub) |
+| 2 | Dashboard | P1 | Done (Phase 8) |
 | 3 | Add / edit / search client | P0 | Done (Phase 4) |
 | 4 | Open account for client | P0 | Done (Phase 5) |
 | 5 | Deposit | P0 | Done (Phase 6) |
@@ -357,8 +357,8 @@ src/main/resources/db/migration/
 | 7 | Transfer | P0 | Done (Phase 6) |
 | 8 | Transaction history + filters | P1 | Done (Phase 6) |
 | 9 | User management (admin) | P1 | Done (Phase 7) |
-| 10 | Audit log | P1 | Not started |
-| 11 | Statement / receipt PDF | P2 | Not started |
+| 10 | Audit log | P1 | Done (Phase 8) |
+| 11 | Statement / receipt PDF | P2 | Done (Phase 8 — HTML imprimable) |
 
 ---
 
@@ -515,6 +515,10 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | Flyway V6 creates `transactions` + `transaction_type` enum | Aligns with schema-relationnel.sql |
 | 2026-06-15 | Admin user CRUD at `/admin/users/**` with `@PreAuthorize` | Phase 7 — role assignment, enable/disable, password reset |
 | 2026-06-15 | Block disable/demote of last active ADMIN | Prevents lockout of administration |
+| 2026-06-15 | Dashboard KPIs via `DashboardService` | Phase 8 — active clients/accounts, today's volume |
+| 2026-06-15 | Account statement at `/accounts/{id}/statement` | Phase 8 — date filter + current balance header |
+| 2026-06-15 | Printable receipt at `/transactions/{id}/receipt` | Phase 8 — HTML print, no OpenPDF dependency |
+| 2026-06-15 | Audit log view at `/admin/audit` for ADMIN + CHEF | Phase 8 — paginated consultation |
 
 ---
 
@@ -555,4 +559,4 @@ When starting a new session or feature:
 
 ---
 
-*Last updated: 2026-06-15 — Phase 7 (user management)*
+*Last updated: 2026-06-15 — Phase 8 (reporting)*
