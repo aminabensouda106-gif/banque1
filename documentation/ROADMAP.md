@@ -407,31 +407,31 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 6.1 — Base de données
-- [ ] Migration `V6__create_transactions.sql` :
+- [x] Migration `V6__create_transactions.sql` :
   - type (DEPOT/RETRAIT/VIREMENT), amount, source_account_id, destination_account_id
   - executed_by FK users, executed_at, description
 
 #### Étape 6.2 — Backend
-- [ ] Entité `Transaction` + enum `TransactionType`
-- [ ] `TransactionService` avec `@Transactional` :
+- [x] Entité `Transaction` + enum `TransactionType`
+- [x] `TransactionService` avec `@Transactional` :
   - **deposit(accountId, amount, user)** → crédite le compte
   - **withdraw(accountId, amount, user)** → vérifie solde ≥ montant, débite
   - **transfer(sourceId, destId, amount, user)** → vérifie les 2 comptes ACTIVE, débite/crédite
-- [ ] Refuser si compte BLOCKED ou CLOSED
-- [ ] Refuser si montant ≤ 0
-- [ ] Chaque opération → entrée `AuditLog`
+- [x] Refuser si compte BLOCKED ou CLOSED
+- [x] Refuser si montant ≤ 0
+- [x] Chaque opération → entrée `AuditLog`
 
 #### Étape 6.3 — Interface
-- [ ] Menu « Opérations » avec 3 formulaires : Dépôt, Retrait, Virement
-- [ ] Sélection compte par numéro ou liste déroulante
-- [ ] Message succès avec nouveau solde
-- [ ] `GET /transactions` — historique paginé
-- [ ] Filtres : date début/fin, type, n° compte, utilisateur
+- [x] Menu « Opérations » avec 3 formulaires : Dépôt, Retrait, Virement
+- [x] Sélection compte par numéro ou liste déroulante
+- [x] Message succès avec nouveau solde
+- [x] `GET /transactions` — historique paginé
+- [x] Filtres : date début/fin, type, n° compte, utilisateur
 
 #### Étape 6.4 — Tests unitaires (simples)
-- [ ] Test : retrait avec solde insuffisant → exception
-- [ ] Test : virement vers compte bloqué → exception
-- [ ] Test : dépôt augmente le solde
+- [x] Test : retrait avec solde insuffisant → exception
+- [x] Test : virement vers compte bloqué → exception
+- [x] Test : dépôt augmente le solde
 
 ### Comment tester (Phase 6)
 ```bash
@@ -440,14 +440,14 @@ mvn spring-boot:run
 ```
 | Vérification | OK ? |
 |---|---|
-| Dépôt 1000 → solde = 1000 | ☐ |
-| Retrait 300 → solde = 700 | ☐ |
-| Retrait 800 → refusé (solde insuffisant) | ☐ |
-| Virement 200 vers autre compte → soldes mis à jour | ☐ |
-| Virement depuis compte bloqué → refusé | ☐ |
-| Historique affiche date, montant, type, utilisateur | ☐ |
-| Filtre par type DEPOT fonctionne | ☐ |
-| `mvn test` passe | ☐ |
+| Dépôt 1000 → solde = 1000 | ✓ |
+| Retrait 300 → solde = 700 | ✓ |
+| Retrait 800 → refusé (solde insuffisant) | ✓ |
+| Virement 200 vers autre compte → soldes mis à jour | ✓ |
+| Virement depuis compte bloqué → refusé | ✓ |
+| Historique affiche date, montant, type, utilisateur | ✓ |
+| Filtre par type DEPOT fonctionne | ✓ |
+| `mvn test` passe | ✓ |
 
 ### Commit & push
 ```bash
@@ -667,7 +667,7 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 5 terminée.** Commencer **Phase 6 — Gestion des transactions**.
+**Phase 6 terminée.** Commencer **Phase 7 — Gestion des utilisateurs internes**.
 
 ---
 

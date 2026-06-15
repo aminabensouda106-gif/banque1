@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 5 terminée — prêt pour Phase 6 (transactions) |
+| **Status** | Phase 6 terminée — prêt pour Phase 7 (utilisateurs) |
 
 ### Problématique
 
@@ -352,10 +352,10 @@ src/main/resources/db/migration/
 | 2 | Dashboard | P1 | Done (Phase 3 stub) |
 | 3 | Add / edit / search client | P0 | Done (Phase 4) |
 | 4 | Open account for client | P0 | Done (Phase 5) |
-| 5 | Deposit | P0 | Not started |
-| 6 | Withdraw (balance check) | P0 | Not started |
-| 7 | Transfer | P0 | Not started |
-| 8 | Transaction history + filters | P1 | Not started |
+| 5 | Deposit | P0 | Done (Phase 6) |
+| 6 | Withdraw (balance check) | P0 | Done (Phase 6) |
+| 7 | Transfer | P0 | Done (Phase 6) |
+| 8 | Transaction history + filters | P1 | Done (Phase 6) |
 | 9 | User management (admin) | P1 | Not started |
 | 10 | Audit log | P1 | Not started |
 | 11 | Statement / receipt PDF | P2 | Not started |
@@ -511,6 +511,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | Audit log on client create/update/status | First use of `audit_logs` table (Phase 4) |
 | 2026-06-15 | Account number format ACC-00001 | Auto-increment from last account in DB |
 | 2026-06-15 | Close account requires zero balance | Prevents orphaned funds at closure |
+| 2026-06-15 | Transaction history via JPA Specifications | Avoids PostgreSQL enum typing issue with nullable JPQL params |
+| 2026-06-15 | Flyway V6 creates `transactions` + `transaction_type` enum | Aligns with schema-relationnel.sql |
 
 ---
 
@@ -520,7 +522,7 @@ Target: **~10–15 focused tests**, not 100% coverage.
 - [x] Password hashing (BCrypt)
 - [x] Audit log for sensitive actions
 - [x] Input validation on all forms
-- [ ] Transactional integrity on financial operations
+- [x] Transactional integrity on financial operations
 - [x] Clear UI messages (success/error)
 - [x] Modular packages and documented setup
 - [x] Responsive Bootstrap layout
@@ -551,4 +553,4 @@ When starting a new session or feature:
 
 ---
 
-*Last updated: 2026-06-14 — Planning phase*
+*Last updated: 2026-06-15 — Phase 6 (transactions)*

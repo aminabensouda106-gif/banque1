@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="stat-card h-100">
+                <h3>Dépôt</h3>
+                <p class="text-muted">Créditer un compte actif.</p>
+                <a th:href="@{/operations/deposit}" class="btn btn-primary">Nouveau dépôt</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card h-100">
+                <h3>Retrait</h3>
+                <p class="text-muted">Débiter un compte (solde suffisant).</p>
+                <a th:href="@{/operations/withdraw}" class="btn btn-warning">Nouveau retrait</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card h-100">
+                <h3>Virement</h3>
+                <p class="text-muted">Transférer entre deux comptes actifs.</p>
+                <a th:href="@{/operations/transfer}" class="btn btn-success">Nouveau virement</a>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a th:href="@{/transactions}" class="btn btn-outline-secondary">Voir l'historique</a>
+    </div>
+</section>
+</body>
+</html>

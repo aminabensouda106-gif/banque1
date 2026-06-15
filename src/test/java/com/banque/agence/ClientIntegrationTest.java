@@ -3,6 +3,7 @@ package com.banque.agence;
 import com.banque.agence.domain.enums.ClientStatus;
 import com.banque.agence.repository.AccountRepository;
 import com.banque.agence.repository.AuditLogRepository;
+import com.banque.agence.repository.TransactionRepository;
 import com.banque.agence.repository.ClientRepository;
 import com.banque.agence.repository.UserRepository;
 import com.banque.agence.service.ClientService;
@@ -45,6 +46,9 @@ class ClientIntegrationTest {
     private ClientRepository clientRepository;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
@@ -56,6 +60,7 @@ class ClientIntegrationTest {
     @BeforeEach
     void cleanClients() {
         auditLogRepository.deleteAll();
+        transactionRepository.deleteAll();
         accountRepository.deleteAll();
         clientRepository.deleteAll();
     }

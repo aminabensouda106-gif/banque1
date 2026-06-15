@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="toolbar-card mb-3">
+        <form th:action="@{/transactions}" method="get" th:object="${filter}" class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label for="type" class="form-label">Type</label>
+                <select id="type" class="form-select" th:field="*{type}">
+                    <option value="">Tous</option>
+                    <option th:each="t : ${transactionTypes}" th:value="${t.name()}" th:text="${t.label}">Type</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="accountNumber" class="form-label">N° compte</label>
+                <input type="text" id="accountNumber" class="form-control" th:field="*{accountNumber}"
+                       placeholder="ACC-00001">
+            </div>
+            <div class="col-md-2">
+                <label for="userId" class="form-label">Utilisateur</label>
+                <select id="userId" class="form-select" th:field="*{userId}">
+                    <option value="">Tous</option>
+                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName}">User</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="fromDate" class="form-label">Du</label>
+                <input type="date" id="fromDate" class="form-control" th:field="*{fromDate}">
+            </div>
+            <div class="col-md-2">
+                <label for="toDate" class="form-label">Au</label>
+                <input type="date" id="toDate" class="form-control" th:field="*{toDate}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="welcome-card">
+        <div th:if="${transactions.empty}" class="text-muted">Aucune opération trouvée.</div>
+        <div th:unless="${transactions.empty}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Montant</th>
+                    <th>Compte(s)</th>
+                    <th>Utilisateur</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tx : ${transactions}">
+                    <td th:text="${#temporals.format(tx.executedAt, 'dd/MM/yyyy HH:mm')}">—</td>
+                    <td th:text="${tx.type.label}">Type</td>
+                    <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)} + ' MAD'">0,00</td>
+                    <td>
+                        <span th:if="${tx.sourceAccount != null}" th:text="${tx.sourceAccount.accountNumber}">SRC</span>
+                        <span th:if="${tx.type.name() == 'VIREMENT'}"> → </span>
+                        <span th:if="${tx.destinationAccount != null}" th:text="${tx.destinationAccount.accountNumber}">DST</span>
+                    </td>
+                    <td th:text="${tx.executedBy.fullName}">Agent</td>
+                    <td th:text="${tx.description != null ? tx.description : '—'}">—</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${transactions.totalPages > 1}" class="mt-3">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${transactions.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/transactions(page=${transactions.number - 1}, type=${filter.type}, accountNumber=${filter.accountNumber}, userId=${filter.userId}, fromDate=${filter.fromDate}, toDate=${filter.toDate})}">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Page ' + (${transactions.number} + 1) + ' / ' + ${transactions.totalPages}">Page</span>
+                </li>
+                <li class="page-item" th:classappend="${transactions.last} ? ' disabled'">
+                    <a class="page-link" th:href="@{/transactions(page=${transactions.number + 1}, type=${filter.type}, accountNumber=${filter.accountNumber}, userId=${filter.userId}, fromDate=${filter.fromDate}, toDate=${filter.toDate})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

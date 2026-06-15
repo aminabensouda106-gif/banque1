@@ -1,6 +1,7 @@
 package com.banque.agence.repository;
 
 import com.banque.agence.domain.entity.Account;
+import com.banque.agence.domain.enums.AccountStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -25,4 +26,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByIdWithClient(@Param("id") Long id);
 
     Optional<Account> findTopByOrderByIdDesc();
+
+    @EntityGraph(attributePaths = "client")
+    @Query("SELECT a FROM Account a WHERE a.status = :status ORDER BY a.accountNumber")
+    List<Account> findAllByStatusWithClient(@Param("status") AccountStatus status);
+
+    @EntityGraph(attributePaths = "client")
+    Optional<Account> findByAccountNumber(String accountNumber);
 }
