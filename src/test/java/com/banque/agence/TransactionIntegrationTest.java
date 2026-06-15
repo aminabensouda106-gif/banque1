@@ -169,6 +169,38 @@ class TransactionIntegrationTest {
     }
 
     @Test
+    void filterByDepotTypeAndAccountNumber() {
+        var user = userRepository.findByUsername("agent").orElseThrow();
+        transactionService.deposit(accountId1, new BigDecimal("500"), user, null);
+        String accountNumber = accountService.findById(accountId1).getAccountNumber();
+
+        var page = transactionService.search(
+                TransactionType.DEPOT, accountNumber, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getTotalElements()).isEqualTo(1);
+        assertThat(page.getContent().getFirst().getType()).isEqualTo(TransactionType.DEPOT);
+    }
+
+    @Test
+    void depositWithExcessiveAmountFails() {
+        var user = userRepository.findByUsername("agent").orElseThrow();
+        assertThatThrownBy(() -> transactionService.deposit(
+                accountId1, new BigDecimal("1000000000000000"), user, null))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("limite");
+    }
+
+    @Test
+    @WithUserDetails("agent")
+    void depositWithExcessiveAmountViaHttpShowsError() throws Exception {
+        mockMvc.perform(post("/operations/deposit")
+                        .with(csrf())
+                        .param("accountId", accountId1.toString())
+                        .param("amount", "1000000000000000"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("operations/deposit"));
+    }
+
+    @Test
     @WithUserDetails("agent")
     void operationsAndHistoryPagesAccessible() throws Exception {
         mockMvc.perform(get("/operations")).andExpect(status().isOk()).andExpect(view().name("operations/index"));

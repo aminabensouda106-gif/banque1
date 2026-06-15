@@ -1,6 +1,8 @@
 package com.banque.agence.web.dto;
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -15,6 +17,8 @@ public class TransferForm {
 
     @NotNull(message = "Le montant est obligatoire.")
     @DecimalMin(value = "0.01", message = "Le montant doit être supérieur à zéro.")
+    @DecimalMax(value = "999999999999999.9999", message = "Le montant est trop élevé.")
+    @Digits(integer = 15, fraction = 4, message = "Format de montant invalide.")
     private BigDecimal amount;
 
     private String description;

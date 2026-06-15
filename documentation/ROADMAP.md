@@ -471,20 +471,20 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 7.1 — Backend
-- [ ] `UserService` : create, update, enable, disable
-- [ ] Hash BCrypt à la création / changement de mot de passe
-- [ ] Interdire suppression du dernier admin
+- [x] `UserService` : create, update, enable, disable
+- [x] Hash BCrypt à la création / changement de mot de passe
+- [x] Interdire suppression du dernier admin
 
 #### Étape 7.2 — Interface (ADMIN uniquement)
-- [ ] `GET /admin/users` — liste
-- [ ] `GET /admin/users/new` + `POST` — créer avec rôle
-- [ ] `GET /admin/users/{id}/edit` + `POST` — modifier nom, email, rôle
-- [ ] Activer / désactiver un compte
-- [ ] Formulaire définir mot de passe
+- [x] `GET /admin/users` — liste
+- [x] `GET /admin/users/new` + `POST` — créer avec rôle
+- [x] `GET /admin/users/{id}/edit` + `POST` — modifier nom, email, rôle
+- [x] Activer / désactiver un compte
+- [x] Formulaire définir mot de passe
 
 #### Étape 7.3 — Sécurité
-- [ ] `@PreAuthorize("hasRole('ADMIN')")` sur tout `/admin/users/**`
-- [ ] Utilisateur désactivé → `enabled=false` → login impossible
+- [x] `@PreAuthorize("hasRole('ADMIN')")` sur tout `/admin/users/**`
+- [x] Utilisateur désactivé → `enabled=false` → login impossible
 
 ### Comment tester (Phase 7)
 ```bash
@@ -492,11 +492,12 @@ mvn spring-boot:run
 ```
 | Vérification | OK ? |
 |---|---|
-| Agent ne peut pas accéder à `/admin/users` (403) | ☐ |
-| Admin crée un nouvel agent | ☐ |
-| Nouvel agent peut se connecter | ☐ |
-| Admin désactive un agent → login refusé | ☐ |
-| Admin modifie le rôle d'un utilisateur | ☐ |
+| Agent ne peut pas accéder à `/admin/users` (403) | ✓ |
+| Admin crée un nouvel agent | ✓ |
+| Nouvel agent peut se connecter | ✓ |
+| Admin désactive un agent → login refusé | ✓ |
+| Admin modifie le rôle d'un utilisateur | ✓ |
+| `mvn test` passe | ✓ |
 
 ### Commit & push
 ```bash
@@ -667,7 +668,7 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 6 terminée.** Commencer **Phase 7 — Gestion des utilisateurs internes**.
+**Phase 7 terminée.** Commencer **Phase 8 — Tableau de bord & reporting**.
 
 ---
 

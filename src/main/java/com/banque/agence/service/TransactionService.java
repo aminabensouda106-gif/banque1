@@ -66,8 +66,9 @@ public class TransactionService {
 
     @Transactional
     public TransactionResult deposit(Long accountId, BigDecimal amount, User user, String description) {
-        validateAmount(amount);
+        amount = normalizeAndValidateAmount(amount);
         Account account = loadOperableAccount(accountId);
+        MonetaryLimits.validateBalanceAfterCredit(account.getBalance(), amount);
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
 
@@ -79,7 +80,7 @@ public class TransactionService {
 
     @Transactional
     public TransactionResult withdraw(Long accountId, BigDecimal amount, User user, String description) {
-        validateAmount(amount);
+        amount = normalizeAndValidateAmount(amount);
         Account account = loadOperableAccount(accountId);
         if (account.getBalance().compareTo(amount) < 0) {
             throw new BusinessRuleException("Solde insuffisant pour effectuer ce retrait.");
@@ -95,7 +96,7 @@ public class TransactionService {
 
     @Transactional
     public TransferResult transfer(Long sourceId, Long destinationId, BigDecimal amount, User user, String description) {
-        validateAmount(amount);
+        amount = normalizeAndValidateAmount(amount);
         if (sourceId.equals(destinationId)) {
             throw new BusinessRuleException("Les comptes source et destination doivent être différents.");
         }
@@ -107,6 +108,7 @@ public class TransactionService {
             throw new BusinessRuleException("Solde insuffisant pour effectuer ce virement.");
         }
 
+        MonetaryLimits.validateBalanceAfterCredit(destination.getBalance(), amount);
         source.setBalance(source.getBalance().subtract(amount));
         destination.setBalance(destination.getBalance().add(amount));
         accountRepository.save(source);
@@ -133,7 +135,7 @@ public class TransactionService {
                                            String description) {
         Transaction tx = new Transaction();
         tx.setType(type);
-        tx.setAmount(amount);
+        tx.setAmount(MonetaryLimits.normalize(amount));
         tx.setSourceAccount(source);
         tx.setDestinationAccount(destination);
         tx.setExecutedBy(user);
@@ -152,9 +154,8 @@ public class TransactionService {
         return account;
     }
 
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessRuleException("Le montant doit être strictement positif.");
-        }
+    private BigDecimal normalizeAndValidateAmount(BigDecimal amount) {
+        MonetaryLimits.validatePositiveAmount(amount);
+        return MonetaryLimits.normalize(amount);
     }
 }

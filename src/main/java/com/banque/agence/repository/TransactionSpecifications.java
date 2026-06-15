@@ -44,9 +44,11 @@ public final class TransactionSpecifications {
             }
             if (accountNumber != null && !accountNumber.isBlank()) {
                 String pattern = "%" + accountNumber.trim().toLowerCase() + "%";
+                var sourceJoin = root.join("sourceAccount", JoinType.LEFT);
+                var destinationJoin = root.join("destinationAccount", JoinType.LEFT);
                 predicates.add(cb.or(
-                        cb.like(cb.lower(root.get("sourceAccount").get("accountNumber")), pattern),
-                        cb.like(cb.lower(root.get("destinationAccount").get("accountNumber")), pattern)
+                        cb.like(cb.lower(sourceJoin.get("accountNumber")), pattern),
+                        cb.like(cb.lower(destinationJoin.get("accountNumber")), pattern)
                 ));
             }
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="toolbar-card mb-3 d-flex justify-content-end">
+        <a th:href="@{/admin/users/new}" class="btn btn-success">Nouvel utilisateur</a>
+    </div>
+
+    <div class="welcome-card">
+        <div th:if="${users.empty}" class="text-muted">Aucun utilisateur.</div>
+        <div th:unless="${users.empty}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Identifiant</th>
+                    <th>Nom</th>
+                    <th>E-mail</th>
+                    <th>Rôle</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.username}">admin</td>
+                    <td th:text="${user.fullName}">Nom</td>
+                    <td th:text="${user.email != null ? user.email : '—'}">—</td>
+                    <td th:text="${user.role.label}">Rôle</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${user.enabled} ? ' text-bg-success' : ' text-bg-secondary'"
+                              th:text="${user.enabled ? 'Actif' : 'Inactif'}">Actif</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex flex-wrap gap-1 justify-content-end">
+                            <a th:href="@{/admin/users/{id}/edit(id=${user.id})}"
+                               class="btn btn-sm btn-outline-primary">Modifier</a>
+                            <a th:href="@{/admin/users/{id}/password(id=${user.id})}"
+                               class="btn btn-sm btn-outline-secondary">Mot de passe</a>
+                            <form th:if="${!user.enabled}" th:action="@{/admin/users/{id}/enable(id=${user.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Activer</button>
+                            </form>
+                            <form th:if="${user.enabled}" th:action="@{/admin/users/{id}/disable(id=${user.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-warning">Désactiver</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${users.totalPages > 1}" class="mt-3">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${users.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/admin/users(page=${users.number - 1})}">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Page ' + (${users.number} + 1) + ' / ' + ${users.totalPages}">Page</span>
+                </li>
+                <li class="page-item" th:classappend="${users.last} ? ' disabled'">
+                    <a class="page-link" th:href="@{/admin/users(page=${users.number + 1})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

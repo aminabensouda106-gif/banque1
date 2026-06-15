@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 6 terminée — prêt pour Phase 7 (utilisateurs) |
+| **Status** | Phase 7 terminée — prêt pour Phase 8 (reporting) |
 
 ### Problématique
 
@@ -356,7 +356,7 @@ src/main/resources/db/migration/
 | 6 | Withdraw (balance check) | P0 | Done (Phase 6) |
 | 7 | Transfer | P0 | Done (Phase 6) |
 | 8 | Transaction history + filters | P1 | Done (Phase 6) |
-| 9 | User management (admin) | P1 | Not started |
+| 9 | User management (admin) | P1 | Done (Phase 7) |
 | 10 | Audit log | P1 | Not started |
 | 11 | Statement / receipt PDF | P2 | Not started |
 
@@ -513,6 +513,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | Close account requires zero balance | Prevents orphaned funds at closure |
 | 2026-06-15 | Transaction history via JPA Specifications | Avoids PostgreSQL enum typing issue with nullable JPQL params |
 | 2026-06-15 | Flyway V6 creates `transactions` + `transaction_type` enum | Aligns with schema-relationnel.sql |
+| 2026-06-15 | Admin user CRUD at `/admin/users/**` with `@PreAuthorize` | Phase 7 — role assignment, enable/disable, password reset |
+| 2026-06-15 | Block disable/demote of last active ADMIN | Prevents lockout of administration |
 
 ---
 
@@ -553,4 +555,4 @@ When starting a new session or feature:
 
 ---
 
-*Last updated: 2026-06-15 — Phase 6 (transactions)*
+*Last updated: 2026-06-15 — Phase 7 (user management)*
