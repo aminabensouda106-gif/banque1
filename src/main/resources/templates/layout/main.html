@@ -32,6 +32,9 @@
             <a th:href="@{/transactions}" class="sidebar-link" th:classappend="${activePage == 'transactions'} ? ' active'">
                 Historique
             </a>
+            <a th:href="@{/checkbook-orders}" class="sidebar-link" th:classappend="${activePage == 'checkbook-orders'} ? ' active'">
+                Chéquiers
+            </a>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}"
                class="sidebar-link" th:classappend="${activePage == 'users'} ? ' active'">
                 Utilisateurs

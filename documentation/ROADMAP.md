@@ -661,31 +661,33 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 11.1 — Base de données
-- [ ] Migration `V8__create_checkbook_orders.sql` :
+- [x] Migration `V8__create_checkbook_orders.sql` :
   - Enum `checkbook_order_status` : PENDING, PROCESSING, DELIVERED, CANCELLED
   - Table `checkbook_orders` : id, order_number (unique), account_id FK, client_id FK, quantity (défaut 1), status, requested_at, processed_at, delivered_at, requested_by FK users, notes
-- [ ] Index : `checkbook_orders(account_id)`, `checkbook_orders(status)`
+- [x] Migration `V9__add_checkbook_sheet_count.sql` : colonne `sheet_count` (FEUILLES_20 | FEUILLES_40, défaut FEUILLES_20)
+- [x] Index : `checkbook_orders(account_id)`, `checkbook_orders(status)`
 
 #### Étape 11.2 — Backend
-- [ ] Entité `CheckbookOrder` + enum `CheckbookOrderStatus`
-- [ ] `CheckbookOrderService` :
-  - **requestCheckbook(accountId, quantity, user)** — génère n° (ex. CHQ-00001)
+- [x] Entité `CheckbookOrder` + enums `CheckbookOrderStatus`, `CheckbookSheetCount`
+- [x] `CheckbookOrderService` :
+  - **requestCheckbook(accountId, quantity, sheetCount, user)** — génère n° (ex. CHQ-00001)
   - Compte **COURANT** ou **PROFESSIONNEL** et **ACTIVE** uniquement (pas épargne)
   - Une seule commande **PENDING** par compte à la fois
   - **updateStatus(orderId, newStatus, user)** — transitions valides + dates
   - Audit : `CHECKBOOK_ORDER_CREATED`, `CHECKBOOK_ORDER_STATUS_CHANGED`
-- [ ] Pas de modification du solde
+- [x] Pas de modification du solde
 
 #### Étape 11.3 — Interface
-- [ ] Depuis fiche compte : bouton **Commander un chéquier** (si éligible)
-- [ ] `GET /checkbook-orders` — liste paginée avec filtre statut
-- [ ] Fiche commande : détail + actions changer statut (agent / chef)
-- [ ] Sur fiche client : liste des commandes liées
+- [x] Depuis fiche compte : bouton **Commander un chéquier** (si éligible), choix **20 ou 40 feuillets**
+- [x] `GET /checkbook-orders` — liste paginée avec filtre statut
+- [x] Fiche commande : détail + actions changer statut (agent / chef)
+- [x] Sur fiche client : liste des commandes liées
 
 #### Étape 11.4 — Tests
-- [ ] Test : commande sur compte épargne → refus
-- [ ] Test : deuxième commande PENDING sur même compte → refus
-- [ ] Test : workflow PENDING → PROCESSING → DELIVERED
+- [x] Test : commande sur compte épargne → refus
+- [x] Test : deuxième commande PENDING sur même compte → refus
+- [x] Test : workflow PENDING → PROCESSING → DELIVERED
+- [x] Test : commande avec format 40 feuillets
 
 ### Règles métier (extension)
 
@@ -702,13 +704,14 @@ mvn spring-boot:run
 ```
 | Vérification | OK ? |
 |---|---|
-| Commander chéquier sur compte courant actif → statut PENDING | ☐ |
-| Commander sur compte épargne → refus | ☐ |
-| Deuxième demande PENDING → refus | ☐ |
-| Passer en PROCESSING puis DELIVERED | ☐ |
-| Liste des commandes filtrable par statut | ☐ |
-| Audit journalisé | ☐ |
-| `mvn test` passe | ☐ |
+| Commander chéquier sur compte courant actif → statut PENDING | ✓ |
+| Commander sur compte épargne → refus | ✓ |
+| Deuxième demande PENDING → refus | ✓ |
+| Passer en PROCESSING puis DELIVERED | ✓ |
+| Commander chéquier 40 feuillets → sheet_count enregistré | ✓ |
+| Liste des commandes filtrable par statut | ✓ |
+| Audit journalisé | ✓ |
+| `mvn test` passe | ✓ |
 
 ### Commit & push
 ```bash
@@ -829,16 +832,16 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 10 terminée.** Commencer **Phase 11 — Commande de chéquier**.
+**Phase 11 terminée.** Commencer **Phase 12 — Finalisation & soutenance**.
 
 ### Mise à jour conception v1.1 (documentation)
 
 - [x] Cas d'utilisation : paiement facture, commande chéquier (`02-operations-supervision`, `01-clients-comptes`)
 - [x] Diagramme de classes : `BillProvider`, `BillPayment`, `CheckbookOrder`
 - [x] Séquences : `06-paiement-facture`, `07-commande-chequier`
-- [x] MCD / MLD / schéma relationnel / dictionnaire étendus
-- [ ] Régénérer les SVG PlantUML après modification des `.puml`
+- [x] MCD / MLD / schéma relationnel / dictionnaire étendus (dont `sheet_count` V9)
+- [x] Régénérer les SVG PlantUML après modification des `.puml`
 
 ---
 
-*Dernière mise à jour : 2026-06-17*
+*Dernière mise à jour : 2026-06-17 (conception v1.1 + SVG régénérés)*

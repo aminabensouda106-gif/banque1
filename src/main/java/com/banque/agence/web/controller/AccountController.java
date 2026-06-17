@@ -7,6 +7,7 @@ import com.banque.agence.domain.enums.AccountType;
 import com.banque.agence.security.SecurityUser;
 import com.banque.agence.service.AccountService;
 import com.banque.agence.service.BusinessRuleException;
+import com.banque.agence.service.CheckbookOrderService;
 import com.banque.agence.service.ClientService;
 import com.banque.agence.service.ResourceNotFoundException;
 import com.banque.agence.service.TransactionService;
@@ -37,13 +38,16 @@ public class AccountController {
     private final AccountService accountService;
     private final ClientService clientService;
     private final TransactionService transactionService;
+    private final CheckbookOrderService checkbookOrderService;
 
     public AccountController(AccountService accountService,
                              ClientService clientService,
-                             TransactionService transactionService) {
+                             TransactionService transactionService,
+                             CheckbookOrderService checkbookOrderService) {
         this.accountService = accountService;
         this.clientService = clientService;
         this.transactionService = transactionService;
+        this.checkbookOrderService = checkbookOrderService;
     }
 
     @GetMapping
@@ -65,6 +69,8 @@ public class AccountController {
         model.addAttribute("pageTitle", account.getAccountNumber());
         model.addAttribute("activePage", "accounts");
         model.addAttribute("account", account);
+        model.addAttribute("canRequestCheckbook", checkbookOrderService.canRequestCheckbook(id));
+        model.addAttribute("checkbookOrders", checkbookOrderService.listByAccount(id));
         return "accounts/detail";
     }
 

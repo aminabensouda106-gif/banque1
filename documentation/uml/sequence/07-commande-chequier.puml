@@ -10,8 +10,8 @@ participant "CheckbookOrderService" as svc
 participant "AccountService" as acc
 database "PostgreSQL" as db
 
-agent -> ctrl : Depuis fiche compte :\ndemander chéquier (quantité)
-ctrl -> svc : requestCheckbook(accountId, quantity, user)
+agent -> ctrl : Depuis fiche compte :\nquantité + format (20/40 feuillets)
+ctrl -> svc : requestCheckbook(accountId, quantity, sheetCount, user)
 
 svc -> acc : findAccount + vérifier type/statut
 alt compte épargne ou non éligible
@@ -23,7 +23,7 @@ else compte courant/pro actif
     svc --> ctrl : erreur doublon
     ctrl --> agent : message d'erreur
   else OK
-    svc -> db : INSERT checkbook_order\nstatut PENDING
+    svc -> db : INSERT checkbook_order\nstatut PENDING, sheet_count
     svc -> db : audit log CHECKBOOK_ORDER_CREATED
     svc --> ctrl : CheckbookOrder
     ctrl --> agent : confirmation + n° demande

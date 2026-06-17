@@ -101,6 +101,8 @@ CREATE TABLE checkbook_orders (
     account_id    BIGINT                 NOT NULL REFERENCES accounts(id),
     client_id     BIGINT                 NOT NULL REFERENCES clients(id),
     quantity      INTEGER                NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    sheet_count   VARCHAR(20)            NOT NULL DEFAULT 'FEUILLES_20'
+        CHECK (sheet_count IN ('FEUILLES_20', 'FEUILLES_40')),
     status        checkbook_order_status NOT NULL DEFAULT 'PENDING',
     requested_at  TIMESTAMPTZ            NOT NULL DEFAULT NOW(),
     processed_at  TIMESTAMPTZ,

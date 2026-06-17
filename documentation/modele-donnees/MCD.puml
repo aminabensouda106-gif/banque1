@@ -71,6 +71,7 @@ entity "COMMANDE_CHEQUIER" as chq {
   --
   numéro commande
   quantité
+  format feuillets
   statut
   date demande
   date traitement

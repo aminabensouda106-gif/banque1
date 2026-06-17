@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="toolbar-card mb-3">
+        <form th:action="@{/checkbook-orders}" method="get" th:object="${filter}" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label for="status" class="form-label">Statut</label>
+                <select id="status" class="form-select" th:field="*{status}">
+                    <option value="">Tous</option>
+                    <option th:each="s : ${orderStatuses}" th:value="${s.name()}" th:text="${s.label}">Statut</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
+                <a th:href="@{/checkbook-orders/new}" class="btn btn-success">Nouvelle demande</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="welcome-card">
+        <div th:if="${orders.empty}" class="text-muted">Aucune commande de chéquier trouvée.</div>
+        <div th:unless="${orders.empty}" class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>N° commande</th>
+                    <th>Date</th>
+                    <th>Compte</th>
+                    <th>Client</th>
+                    <th>Qté</th>
+                    <th>Format</th>
+                    <th>Statut</th>
+                    <th>Agent</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderNumber}">CHQ-00001</td>
+                    <td th:text="${#temporals.format(order.requestedAt, 'dd/MM/yyyy HH:mm')}">—</td>
+                    <td th:text="${order.account.accountNumber}">ACC-00001</td>
+                    <td th:text="${order.client.fullName}">Client</td>
+                    <td th:text="${order.quantity}">1</td>
+                    <td th:text="${order.sheetCount.label}">20 feuillets</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="' text-bg-' + ${order.status.badgeClass}"
+                              th:text="${order.status.label}">En attente</span>
+                    </td>
+                    <td th:text="${order.requestedBy.fullName}">Agent</td>
+                    <td class="text-end">
+                        <a th:href="@{/checkbook-orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${orders.totalPages > 1}" class="mt-3">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${orders.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/checkbook-orders(page=${orders.number - 1}, status=${filter.status})}">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Page ' + (${orders.number} + 1) + ' / ' + ${orders.totalPages}">Page</span>
+                </li>
+                <li class="page-item" th:classappend="${orders.last} ? ' disabled'">
+                    <a class="page-link" th:href="@{/checkbook-orders(page=${orders.number + 1}, status=${filter.status})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+</body>
+</html>

@@ -71,6 +71,43 @@
         </div>
     </div>
 
+    <div th:if="${!checkbookOrders.isEmpty()}" class="welcome-card mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-0">Commandes de chéquier</h3>
+            <a th:href="@{/checkbook-orders}" class="btn btn-sm btn-outline-secondary">Toutes</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>N° commande</th>
+                    <th>Compte</th>
+                    <th>Format</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${checkbookOrders}">
+                    <td th:text="${order.orderNumber}">CHQ-00001</td>
+                    <td th:text="${order.account.accountNumber}">ACC-00001</td>
+                    <td th:text="${order.quantity + ' × ' + order.sheetCount.label}">1 × 20 feuillets</td>
+                    <td th:text="${#temporals.format(order.requestedAt, 'dd/MM/yyyy')}">—</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="' text-bg-' + ${order.status.badgeClass}"
+                              th:text="${order.status.label}">En attente</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/checkbook-orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="d-flex flex-wrap gap-2">
         <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-primary">Modifier</a>
         <a th:href="@{/clients}" class="btn btn-outline-secondary">Retour à la liste</a>

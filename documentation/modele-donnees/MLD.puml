@@ -85,6 +85,7 @@ entity "checkbook_orders" as checkbook_orders {
   * account_id : BIGINT <<FK>>
   * client_id : BIGINT <<FK>>
   * quantity : INTEGER
+  * sheet_count : VARCHAR(20)
   * status : VARCHAR(20)
   * requested_at : TIMESTAMPTZ
   processed_at : TIMESTAMPTZ

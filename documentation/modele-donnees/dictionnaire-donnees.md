@@ -101,6 +101,7 @@
 | account_id | BIGINT | FK → accounts, NOT NULL | Compte concerné |
 | client_id | BIGINT | FK → clients, NOT NULL | Client demandeur |
 | quantity | INTEGER | NOT NULL, > 0, défaut 1 | Nombre de chéquiers |
+| sheet_count | VARCHAR(20) | NOT NULL, défaut FEUILLES_20 | Format : FEUILLES_20 (20 feuillets) ou FEUILLES_40 (40 feuillets) |
 | status | ENUM | NOT NULL | PENDING, PROCESSING, DELIVERED ou CANCELLED |
 | requested_at | TIMESTAMPTZ | NOT NULL | Date de la demande |
 | processed_at | TIMESTAMPTZ | | Date passage en traitement |

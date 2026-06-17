@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 10 terminée — prêt pour Phase 11 (commande chéquier) |
+| **Status** | Phase 11 terminée — prêt pour Phase 12 (finalisation) |
 
 ### Problématique
 
@@ -141,6 +141,10 @@ Exports : `.svg` à côté de chaque `.puml`.
 - `uml/diagramme-activite-virement.puml` (+ SVG)
 
 **Régénérer les SVG :**
+```bash
+python scripts/generate-plantuml-svgs.py
+```
+Alternative locale si PlantUML est installé :
 ```bash
 java -jar plantuml.jar -tsvg documentation/modele-donnees/*.puml documentation/uml/**/*.puml
 ```
@@ -336,6 +340,7 @@ AuditLog
 
 #### `CheckbookOrder` (v1.1)
 - `id`, `orderNumber` (unique), `account`, `client`, `quantity`
+- `sheetCount`: FEUILLES_20 | FEUILLES_40 (20 ou 40 feuillets par chéquier)
 - `status`: PENDING | PROCESSING | DELIVERED | CANCELLED
 - `requestedAt`, `processedAt`, `deliveredAt`
 - `requestedBy` (User), `notes` (optional)
@@ -370,6 +375,7 @@ AuditLog
 |---|---|
 | V7 | `bill_providers`, `bill_payments`, extend `transaction_type` |
 | V8 | `checkbook_orders`, enum `checkbook_order_status` |
+| V9 | `checkbook_orders.sheet_count` (FEUILLES_20 \| FEUILLES_40) |
 
 ---
 
@@ -417,7 +423,7 @@ src/main/resources/db/migration/
 | 10 | Audit log | P1 | Done (Phase 8) |
 | 11 | Statement / receipt PDF | P2 | Done (Phase 8 — HTML imprimable) |
 | 12 | Bill payment + receipt | P1 | Done (Phase 10) |
-| 13 | Checkbook order workflow | P2 | Planned (Phase 11) |
+| 13 | Checkbook order workflow | P2 | Done (Phase 11) |
 
 ---
 
@@ -586,6 +592,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-14 | Catalogue `bill_providers` seed (LYDEC, ONEE, IAM…) | Liste fermée pour formulaire agent |
 | 2026-06-17 | Bill payment at `/operations/bill-payment` | Phase 10 — `BillPaymentService`, Flyway V7, redirect to receipt |
 | 2026-06-17 | Receipt extended with provider + reference | `BillPayment` loaded by transaction id on receipt page |
+| 2026-06-17 | Checkbook orders at `/checkbook-orders/**` | Phase 11 — workflow PENDING→PROCESSING→DELIVERED, no balance impact |
+| 2026-06-17 | `CheckbookSheetCount` 20/40 feuillets | Flyway V9 — choix à la demande, affiché dans listes et fiches |
 
 ---
 

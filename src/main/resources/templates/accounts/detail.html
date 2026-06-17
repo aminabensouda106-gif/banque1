@@ -40,6 +40,7 @@
         <a th:href="@{/accounts/{id}/statement(id=${account.id})}" class="btn btn-outline-primary">Relevé de compte</a>
         <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/deposit(accountId=${account.id})}" class="btn btn-primary btn-sm">Dépôt</a>
         <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/withdraw(accountId=${account.id})}" class="btn btn-warning btn-sm">Retrait</a>
+        <a th:if="${canRequestCheckbook}" th:href="@{/checkbook-orders/new(accountId=${account.id})}" class="btn btn-outline-info btn-sm">Commander un chéquier</a>
 
         <form th:if="${account.status.name() == 'ACTIVE'}"
               th:action="@{/accounts/{id}/block(id=${account.id})}" method="post" class="d-inline">
@@ -53,6 +54,40 @@
               th:action="@{/accounts/{id}/close(id=${account.id})}" method="post" class="d-inline">
             <button type="submit" class="btn btn-secondary">Clôturer</button>
         </form>
+    </div>
+
+    <div th:if="${!checkbookOrders.isEmpty()}" class="welcome-card mb-3">
+        <h3 class="h5 mb-3">Commandes de chéquier</h3>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>N° commande</th>
+                    <th>Date</th>
+                    <th>Qté</th>
+                    <th>Format</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${checkbookOrders}">
+                    <td th:text="${order.orderNumber}">CHQ-00001</td>
+                    <td th:text="${#temporals.format(order.requestedAt, 'dd/MM/yyyy')}">—</td>
+                    <td th:text="${order.quantity}">1</td>
+                    <td th:text="${order.sheetCount.label}">20 feuillets</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="' text-bg-' + ${order.status.badgeClass}"
+                              th:text="${order.status.label}">En attente</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/checkbook-orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 </body>

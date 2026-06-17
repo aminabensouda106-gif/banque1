@@ -4,6 +4,7 @@ import com.banque.agence.domain.entity.Client;
 import com.banque.agence.domain.enums.ClientStatus;
 import com.banque.agence.security.SecurityUser;
 import com.banque.agence.service.AccountService;
+import com.banque.agence.service.CheckbookOrderService;
 import com.banque.agence.service.ClientService;
 import com.banque.agence.service.DuplicateResourceException;
 import com.banque.agence.service.ResourceNotFoundException;
@@ -32,10 +33,14 @@ public class ClientController {
 
     private final ClientService clientService;
     private final AccountService accountService;
+    private final CheckbookOrderService checkbookOrderService;
 
-    public ClientController(ClientService clientService, AccountService accountService) {
+    public ClientController(ClientService clientService,
+                            AccountService accountService,
+                            CheckbookOrderService checkbookOrderService) {
         this.clientService = clientService;
         this.accountService = accountService;
+        this.checkbookOrderService = checkbookOrderService;
     }
 
     @GetMapping
@@ -97,6 +102,7 @@ public class ClientController {
         model.addAttribute("activePage", "clients");
         model.addAttribute("client", client);
         model.addAttribute("accounts", accountService.listByClient(id));
+        model.addAttribute("checkbookOrders", checkbookOrderService.listByClient(id));
         return "clients/detail";
     }
 

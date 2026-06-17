@@ -38,6 +38,10 @@ package "domain.enums" {
     DELIVERED
     CANCELLED
   }
+  enum CheckbookSheetCount {
+    FEUILLES_20
+    FEUILLES_40
+  }
 }
 
 package "domain.entity" {
@@ -107,6 +111,7 @@ package "domain.entity" {
     - id : Long
     - orderNumber : String
     - quantity : int
+    - sheetCount : CheckbookSheetCount
     - status : CheckbookOrderStatus
     - requestedAt : Instant
     - processedAt : Instant
@@ -153,6 +158,7 @@ end note
 note bottom of CheckbookOrder
   Extension v1.1 — pas d'impact sur le solde
   Compte COURANT ou PROFESSIONNEL actif
+  Format : 20 ou 40 feuillets (sheetCount)
 end note
 
 note bottom of Transaction

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="welcome-card mb-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="h4 mb-1" th:text="${order.orderNumber}">CHQ-00001</h2>
+                <p class="text-muted mb-0">
+                    Compte <a th:href="@{/accounts/{id}(id=${order.account.id})}"
+                              th:text="${order.account.accountNumber}">ACC-00001</a>
+                    · Client <a th:href="@{/clients/{id}(id=${order.client.id})}"
+                                th:text="${order.client.fullName}">Client</a>
+                </p>
+            </div>
+            <span class="badge fs-6"
+                  th:classappend="' text-bg-' + ${order.status.badgeClass}"
+                  th:text="${order.status.label}">En attente</span>
+        </div>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nombre de chéquiers</dt>
+            <dd class="col-sm-9" th:text="${order.quantity}">1</dd>
+            <dt class="col-sm-3">Format</dt>
+            <dd class="col-sm-9" th:text="${order.sheetCount.label}">20 feuillets</dd>
+            <dt class="col-sm-3">Demandée le</dt>
+            <dd class="col-sm-9" th:text="${#temporals.format(order.requestedAt, 'dd/MM/yyyy HH:mm')}">—</dd>
+            <dt class="col-sm-3">En traitement le</dt>
+            <dd class="col-sm-9"
+                th:text="${order.processedAt != null ? #temporals.format(order.processedAt, 'dd/MM/yyyy HH:mm') : '—'}">—</dd>
+            <dt class="col-sm-3">Livrée le</dt>
+            <dd class="col-sm-9"
+                th:text="${order.deliveredAt != null ? #temporals.format(order.deliveredAt, 'dd/MM/yyyy HH:mm') : '—'}">—</dd>
+            <dt class="col-sm-3">Saisie par</dt>
+            <dd class="col-sm-9" th:text="${order.requestedBy.fullName}">Agent</dd>
+            <dt class="col-sm-3">Notes</dt>
+            <dd class="col-sm-9" th:text="${order.notes != null ? order.notes : '—'}">—</dd>
+        </dl>
+    </div>
+
+    <div th:if="${!nextStatuses.isEmpty()}" class="welcome-card mb-3">
+        <h3 class="h6 mb-3">Changer le statut</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <form th:each="next : ${nextStatuses}"
+                  th:action="@{/checkbook-orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                <input type="hidden" name="status" th:value="${next.name()}">
+                <button type="submit" class="btn btn-sm"
+                        th:classappend="${next.name() == 'CANCELLED'} ? ' btn-outline-secondary' : ' btn-primary'"
+                        th:text="${next.label}">Statut</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a th:href="@{/checkbook-orders}" class="btn btn-outline-secondary">Toutes les commandes</a>
+        <a th:href="@{/accounts/{id}(id=${order.account.id})}" class="btn btn-outline-primary">Fiche compte</a>
+    </div>
+</section>
+</body>
+</html>
