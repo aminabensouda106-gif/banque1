@@ -424,6 +424,8 @@ src/main/resources/db/migration/
 | 11 | Statement / receipt PDF | P2 | Done (Phase 8 — HTML imprimable) |
 | 12 | Bill payment + receipt | P1 | Done (Phase 10) |
 | 13 | Checkbook order workflow | P2 | Done (Phase 11) |
+| 14 | Demo seed data (dev) | P2 | Done (Phase 12) |
+| 15 | User manual + demo script | P2 | Done (Phase 12) |
 
 ---
 
@@ -594,6 +596,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-17 | Receipt extended with provider + reference | `BillPayment` loaded by transaction id on receipt page |
 | 2026-06-17 | Checkbook orders at `/checkbook-orders/**` | Phase 11 — workflow PENDING→PROCESSING→DELIVERED, no balance impact |
 | 2026-06-17 | `CheckbookSheetCount` 20/40 feuillets | Flyway V9 — choix à la demande, affiché dans listes et fiches |
+| 2026-06-17 | `DevDemoDataInitializer` | Phase 12 — seed dev idempotent (5 clients, 8 comptes, 20 tx, 2 bills, 2 chq) |
+| 2026-06-17 | Docs soutenance | `manuel-utilisateur.md`, `demo-script.md`, `presentation-outline.md`, README |
 
 ---
 

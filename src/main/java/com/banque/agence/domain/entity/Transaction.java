@@ -103,6 +103,10 @@ public class Transaction {
         return executedAt;
     }
 
+    public void setExecutedAt(Instant executedAt) {
+        this.executedAt = executedAt;
+    }
+
     public String getDescription() {
         return description;
     }

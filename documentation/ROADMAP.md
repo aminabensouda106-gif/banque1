@@ -735,28 +735,30 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 12.1 — Données de démonstration
-- [ ] Script seed ou SQL manuel : 5 clients, 8 comptes, 20 transactions variées, **2 paiements facture**, **2 commandes chéquier**
-- [ ] Documenter les identifiants de test dans le README
+- [x] `DevDemoDataInitializer` (profil dev) : 5 clients, 8 comptes, 20 transactions, 2 paiements facture, 2 commandes chéquier
+- [x] Script `documentation/demo-reset.sql` + guide [demo-data.md](demo-data.md)
+- [x] Identifiants de test documentés dans le README
 
 #### Étape 12.2 — Qualité
-- [ ] Relire tous les libellés UI en français
-- [ ] Messages d'erreur explicites partout
-- [ ] `mvn test` — tous les tests passent
-- [ ] Parcours complet sans bug bloquant
+- [x] Libellés UI en français (revue globale)
+- [x] Messages d'erreur métier explicites (`BusinessRuleException`)
+- [x] `mvn test` — tous les tests passent
+- [ ] Parcours complet manuel (suivre demo-script.md avant soutenance)
 
 #### Étape 12.3 — Documentation
-- [ ] `documentation/manuel-utilisateur.md` — guide court avec captures
-- [ ] `documentation/demo-script.md` — scénario 5–7 min pour la soutenance
-- [ ] Mettre à jour `TECHNICAL.md` §7 checklist (tout en Done)
-- [ ] README final : installation PostgreSQL, lancement, comptes de test
+- [x] `documentation/manuel-utilisateur.md`
+- [x] `documentation/demo-script.md` — scénario 5–7 min
+- [x] `TECHNICAL.md` §7 checklist (tout en Done)
+- [x] README final : installation, lancement, comptes de test
 
 #### Étape 12.4 — Rapport & présentation
-- [ ] Intégrer les diagrammes Phase 1 dans le rapport
-- [ ] PowerPoint : contexte → conception → démo → conclusion
-- [ ] Vérifier que le rapport cite le cahier des charges et les règles de gestion
+- [x] `documentation/presentation-outline.md` — structure slides + checklist rapport
+- [ ] Intégrer les diagrammes SVG dans le rapport Word/PDF
+- [ ] Rédiger le PowerPoint final (contenu guidé par presentation-outline.md)
+- [ ] Vérifier citations cahier des charges dans le rapport écrit
 
 #### Étape 12.5 — Revue cahier des charges
-- [ ] Checklist finale — chaque section du cahier est couverte :
+- [x] Checklist finale documentée dans [presentation-outline.md](presentation-outline.md)
 
 | Section cahier | Couvert par |
 |---|---|
@@ -780,11 +782,11 @@ mvn spring-boot:run
 ```
 | Vérification | OK ? |
 |---|---|
-| Démo complète en < 10 minutes sans erreur | ☐ |
-| `mvn clean test` OK | ☐ |
-| README à jour | ☐ |
-| Manuel utilisateur rédigé | ☐ |
-| GitHub à jour avec tout le code | ☐ |
+| Démo complète en < 10 minutes sans erreur | ☐ (à valider avant soutenance) |
+| `mvn clean test` OK | ✓ |
+| README à jour | ✓ |
+| Manuel utilisateur rédigé | ✓ |
+| GitHub à jour avec tout le code | ☐ (push après commit) |
 
 ### Commit & push
 ```bash
@@ -832,7 +834,11 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 11 terminée.** Commencer **Phase 12 — Finalisation & soutenance**.
+**Phase 12 — documentation et seed livrés.** Actions restantes côté étudiant :
+
+1. Rédiger le **rapport** et le **PowerPoint** (voir `presentation-outline.md`)
+2. Valider la **démo live** une fois (`demo-script.md`)
+3. **Commit + push** final sur GitHub
 
 ### Mise à jour conception v1.1 (documentation)
 

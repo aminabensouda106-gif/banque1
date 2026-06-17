@@ -124,6 +124,10 @@ public class CheckbookOrder {
         return requestedAt;
     }
 
+    public void setRequestedAt(Instant requestedAt) {
+        this.requestedAt = requestedAt;
+    }
+
     public Instant getProcessedAt() {
         return processedAt;
     }
