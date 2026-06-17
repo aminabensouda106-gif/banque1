@@ -34,13 +34,16 @@ public class CheckbookOrderService {
     private final CheckbookOrderRepository checkbookOrderRepository;
     private final AccountRepository accountRepository;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     public CheckbookOrderService(CheckbookOrderRepository checkbookOrderRepository,
                                  AccountRepository accountRepository,
-                                 AuditService auditService) {
+                                 AuditService auditService,
+                                 NotificationService notificationService) {
         this.checkbookOrderRepository = checkbookOrderRepository;
         this.accountRepository = accountRepository;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -118,6 +121,7 @@ public class CheckbookOrderService {
         auditService.log(user, "CHECKBOOK_ORDER_CREATED", ENTITY_TYPE, saved.getId(),
                 saved.getOrderNumber() + " — compte " + account.getAccountNumber()
                         + " — " + quantity + " chéquier(s) " + sheetCount.getLabel());
+        notificationService.notifyChefsAboutNewCheckbookOrder(saved);
         return saved;
     }
 
@@ -151,6 +155,7 @@ public class CheckbookOrderService {
         CheckbookOrder saved = checkbookOrderRepository.save(order);
         auditService.log(user, "CHECKBOOK_ORDER_STATUS_CHANGED", ENTITY_TYPE, saved.getId(),
                 saved.getOrderNumber() + " : " + current.getLabel() + " → " + newStatus.getLabel());
+        notificationService.notifyRequesterAboutStatusChange(saved, current, user);
         return saved;
     }
 

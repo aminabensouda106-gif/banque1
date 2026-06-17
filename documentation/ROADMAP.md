@@ -18,22 +18,38 @@
 
 ---
 
-## Vue d'ensemble
+## Organisation en pistes (flexibilité)
+
+Les **numéros de phase** sont conservés pour l'historique Git. L'**ordre logique** recommandé pour développer ou étendre le projet :
+
+| Ordre logique | Phase | Piste | Contenu |
+|---|---|---|---|
+| 1 → 8 | **1–8** | **Noyau** | Cahier des charges (§7.1–§7.5) — implémenté |
+| 9 → 10 | **10–11** | **Extensions agence** | Paiement facture, commande chéquier (v1.1) |
+| 11 → 12 | **13–14** | **Canal client** | Notifications personnel + portail client (v1.2 → v2) |
+| **13 (dernier)** | **12** | **Clôture** | Démo, doc, soutenance — **après toutes les fonctionnalités** |
+
+> **Phase 9** : numéro non utilisé (réservé). Les extensions ont été numérotées 10–11 pour laisser le noyau 1–8 intact.
+
+### Seed de démo modulaire (profil `dev`)
+
+Chaque brique peut évoluer indépendamment sans réinitialiser toute la base :
+
+| Ordre | Composant | Déclenchement | Rôle |
+|---|---|---|---|
+| 1 | `DevUserInitializer` | si `users` vide | admin, agent, chef |
+| 2 | `DevDemoDataInitializer` | si `clients` vide | clients, comptes, transactions, factures, chéquiers |
+| 3 | `DemoPortalSync` | à chaque démarrage (`portal-sync-enabled`) | active le portail pour Ahmed / Youssef si manquant |
+
+Configuration : `application-dev.yml` → `banque.demo.seed-enabled`, `banque.demo.portal-sync-enabled`.
 
 ```
-Phase 1–8   : cahier des charges (§7.1–§7.5) — implémenté
-Phase 10    : Paiement facture + reçu (extension v1.1)
-Phase 11    : Commande de chéquier (extension v1.1)
-Phase 12    : Finalisation & soutenance
+Piste Noyau          Piste Extensions       Piste Canal client        Piste Clôture
+Phase 1 … 8    →     Phase 10, 11    →     Phase 13, 14       →     Phase 12
+(conception→report)  (facture, chéquier)   (notifs, portail)        (démo, soutenance)
 ```
 
-```
-Phase 1 … Phase 8          Phase 10              Phase 11              Phase 12
-Conception → … → Reporting → Paiement facture → Commande chéquier → Finalisation
-(UML+BDD)    (§7.1–§7.5)     (+ reçu)             (workflow statuts)    (soutenance)
-```
-
-**Durée estimée :** 3–4 semaines (cahier) + **4–5 jours** pour les extensions v1.1.
+**Durée estimée :** 3–4 semaines (cahier) + **4–6 jours** pour les extensions.
 
 ---
 
@@ -726,7 +742,123 @@ git push origin main
 
 ---
 
+## Phase 13 — Notifications & alertes métier (A + B)
+
+**Objectif :** Améliorer la supervision sans complexifier le périmètre cahier — centre de notifications in-app et alertes sur le tableau de bord.
+
+**Référence :** extension v1.2 (piste Canal client), workflow chéquier Phase 11.
+
+### Partie A — Centre de notifications
+
+- [x] Migration Flyway `V10__create_notifications.sql`
+- [x] Entité `Notification`, enum `NotificationType`
+- [x] `NotificationService` : création, liste paginée, compteur non lues, marquer lu / tout lu
+- [x] Déclencheurs : nouvelle commande chéquier → tous les chefs actifs ; changement statut → agent demandeur (si ≠ acteur)
+- [x] `NotificationController` : `/notifications`, POST marquer lu
+- [x] UI : cloche + badge dans le layout, page liste, CSS
+- [x] `NotificationModelAdvice` : `unreadNotificationCount` sur toutes les pages
+
+### Partie B — Alertes tableau de bord
+
+- [x] `DashboardStats` : `pendingCheckbookOrders`, `processingCheckbookOrders`
+- [x] `CheckbookOrderRepository.countByStatus`
+- [x] Bandeau **Alertes métier** sur `/dashboard` avec liens filtrés `/checkbook-orders?status=...`
+
+### Documentation & conception
+
+- [x] MCD / MLD / `schema-relationnel.sql` / dictionnaire — table `notifications`
+- [x] Diagramme de classes : `Notification`, `NotificationType`
+- [x] Cas d'utilisation `02-operations-supervision` : notifications + alertes
+- [x] Séquences `07-commande-chequier` (mise à jour), `08-notifications` (nouveau)
+- [x] `TECHNICAL.md`, `manuel-utilisateur.md`, `demo-script.md`, `demo-reset.sql`
+- [x] Régénérer les SVG PlantUML
+
+### Tests
+
+- [x] `NotificationIntegrationTest` (création, statut, page, marquer lu, dashboard)
+- [x] Nettoyage `notifications` dans les tests d'intégration existants
+
+### Comment tester (Phase 13)
+```bash
+mvn test
+mvn spring-boot:run
+# Agent : créer une commande chéquier
+# Chef : cloche badge → /notifications → dashboard alertes
+```
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(phase-13): add notification center and dashboard checkbook alerts"
+git push origin main
+```
+
+### Critères de sortie
+- Notifications visibles et marquables comme lues
+- Dashboard affiche les alertes chéquier avec liens filtrés
+- Tests verts, conception alignée
+
+---
+
+## Phase 14 — Portail client & notifications client
+
+**Objectif :** Nouvel acteur **Client bancaire** avec espace en ligne (`/portal/**`) : consultation + notifications sur les opérations effectuées en agence.
+
+**Référence :** évolution v2 — acteur Client du cahier des charges.
+
+### 14.1 — Authentification client
+
+- [x] Migration Flyway `V11__client_portal.sql` (`password_hash`, `portal_enabled`, `last_login_at`)
+- [x] `notifications.client_id` (destinataire client ou personnel)
+- [x] `SecurityClient` + chargement composite dans `UserDetailsServiceImpl`
+- [x] Spring Security : `/portal/**` → `ROLE_CLIENT`, personnel → routes agence
+- [x] Redirection post-login : client → `/portal/dashboard`, personnel → `/dashboard`
+
+### 14.2 — Espace client (consultation)
+
+- [x] Tableau de bord : comptes, soldes, opérations récentes
+- [x] Mes comptes, historique filtré, reçus imprimables
+- [x] Suivi commandes chéquier
+- [x] Layout dédié `portal/layout.html`
+
+### 14.3 — Notifications client
+
+- [x] Types : dépôt, retrait, virement (émis/reçu), facture, chéquier (demande + statut)
+- [x] Déclenchement dans `TransactionService`, `BillPaymentService`, `CheckbookOrderService`
+- [x] Centre `/portal/notifications` (cloche + badge)
+
+### 14.4 — Démo & tests
+
+- [x] `DemoPortalSync` — portail Ahmed / Youssef (`client123`), resync à chaque démarrage
+- [x] `PortalIntegrationTest` (5 tests) — login, accès, isolation, notifications
+
+### 14.5 — Documentation & conception
+
+- [x] `03-portail-client.puml`, `09-portail-client-notifications.puml`
+- [x] MLD / schéma / dictionnaire / diagramme de classes
+- [x] ROADMAP, TECHNICAL, manuel, demo-script, demo-data
+- [x] Régénérer les SVG PlantUML
+
+### Comment tester (Phase 14)
+```bash
+mvn test
+mvn spring-boot:run
+# Agent : dépôt sur compte Ahmed
+# Login client : CD789012 / client123 → /portal/dashboard → notifications
+```
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(phase-14): add client portal with operation notifications"
+git push origin main
+```
+
+---
+
 ## Phase 12 — Finalisation & préparation soutenance
+
+> **Piste Clôture — à traiter en dernier**, après les phases 13–14. Le numéro **12** est historique ; l'ordre logique place cette phase à la fin du projet.
 
 **Objectif :** Projet propre, documenté, prêt à présenter.
 
@@ -735,7 +867,10 @@ git push origin main
 ### Étapes détaillées
 
 #### Étape 12.1 — Données de démonstration
-- [x] `DevDemoDataInitializer` (profil dev) : 5 clients, 8 comptes, 20 transactions, 2 paiements facture, 2 commandes chéquier
+- [x] Seed modulaire (profil dev) :
+  - `DevUserInitializer` — personnel (si `users` vide)
+  - `DevDemoDataInitializer` — clients, comptes, transactions… (si `clients` vide)
+  - `DemoPortalSync` — portail Ahmed / Youssef (à chaque démarrage si manquant)
 - [x] Script `documentation/demo-reset.sql` + guide [demo-data.md](demo-data.md)
 - [x] Identifiants de test documentés dans le README
 
@@ -760,38 +895,18 @@ git push origin main
 #### Étape 12.5 — Revue cahier des charges
 - [x] Checklist finale documentée dans [presentation-outline.md](presentation-outline.md)
 
-| Section cahier | Couvert par |
-|---|---|
-| §7.1 Clients | Phase 4 |
-| §7.2 Comptes | Phase 5 |
-| §7.3 Transactions | Phase 6 |
-| §7.4 Utilisateurs | Phase 7 |
-| §7.5 Reporting | Phase 8 |
-| §8 Règles de gestion | Phases 5–6 + audit |
-| §9 Sécurité NFR | Phase 3 |
-| §11 Modélisation | Phase 1 (+ extensions v1.1) |
-| §12 Scénarios | Phases 3–8 |
-| Extension — Paiement facture | Phase 10 |
-| Extension — Commande chéquier | Phase 11 |
-
 ### Comment tester (Phase 12)
 ```bash
 mvn clean test
 mvn spring-boot:run
 # Suivre documentation/demo-script.md du début à la fin
+# Vérifier CD789012 / client123 après redémarrage (DemoPortalSync)
 ```
-| Vérification | OK ? |
-|---|---|
-| Démo complète en < 10 minutes sans erreur | ☐ (à valider avant soutenance) |
-| `mvn clean test` OK | ✓ |
-| README à jour | ✓ |
-| Manuel utilisateur rédigé | ✓ |
-| GitHub à jour avec tout le code | ☐ (push après commit) |
 
 ### Commit & push
 ```bash
 git add .
-git commit -m "docs: add user manual, demo script and finalize project for presentation"
+git commit -m "docs: finalize demo, manual and presentation materials"
 git push origin main
 ```
 
@@ -813,7 +928,9 @@ git push origin main
 8. Login **admin** → gestion utilisateur + **journal d'audit**
 9. Montrer **relevé** et **reçu** imprimable
 10. **Paiement facture** LYDEC 200 MAD → reçu avec référence
-11. **Commander chéquier** sur compte courant → suivre statut jusqu'à LIVRÉE
+11. **Commander chéquier** sur compte courant → chef notifié → suivre statut jusqu'à LIVRÉE
+12. **Notifications** : cloche, marquer lu, alertes dashboard
+13. Login **client** `CD789012` / `client123` → **espace client** → notification après dépôt agent
 
 ---
 
@@ -824,7 +941,6 @@ git push origin main
 - React / Angular séparé
 - API REST publique / Swagger (sauf si utile en interne — pas nécessaire)
 - Microservices
-- Portail client en ligne
 - Octroi / gestion de **crédit** (hors périmètre retenu)
 - Cartes bancaires / GAB
 - CI/CD GitHub Actions (optionnel, pas requis)
@@ -834,11 +950,35 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 12 — documentation et seed livrés.** Actions restantes côté étudiant :
+**Phases 13–14 livrées — clôturer la Phase 12 (piste finale).**
 
-1. Rédiger le **rapport** et le **PowerPoint** (voir `presentation-outline.md`)
-2. Valider la **démo live** une fois (`demo-script.md`)
-3. **Commit + push** final sur GitHub
+1. **Redémarrer l'app** puis tester `CD789012` / `client123` (ou `demo-reset.sql`)
+2. **Commit + push** : `feat(phase-13)` puis `feat(phase-14)` (ou un commit groupé)
+3. Valider la **démo live** (`demo-script.md`)
+4. Rédiger **rapport** et **PowerPoint**
+
+### Mise à jour conception v2.1 (seed modulaire + auth dual)
+
+- [x] Séquence `01-authentification` — login personnel ou client, redirections `/dashboard` vs `/portal/dashboard`
+- [x] MCD — attributs portail sur CLIENT, relation CLIENT → NOTIFICATION
+- [x] Dictionnaire — annexe seed dev (`DemoPortalSync`)
+- [x] Régénérer les SVG PlantUML concernés
+
+### Mise à jour conception v2 (Phase 14)
+
+- [x] Acteur Client — `03-portail-client.puml`
+- [x] Auth client + champs `clients` (portail)
+- [x] `notifications.client_id` — MLD, schéma, dictionnaire
+- [x] Séquence `09-portail-client-notifications`
+- [x] Régénérer les SVG PlantUML
+
+### Mise à jour conception v1.2 (Phase 13)
+
+- [x] Table `notifications` (MCD, MLD, schéma, dictionnaire)
+- [x] Diagramme de classes : `Notification`
+- [x] Cas d'utilisation : notifications + alertes métier
+- [x] Séquence `08-notifications` + mise à jour `07-commande-chequier`
+- [x] Régénérer les SVG PlantUML
 
 ### Mise à jour conception v1.1 (documentation)
 
@@ -850,4 +990,4 @@ git push origin main
 
 ---
 
-*Dernière mise à jour : 2026-06-17 (conception v1.1 + SVG régénérés)*
+*Dernière mise à jour : 2026-06-14 (réorganisation pistes + seed modulaire)*

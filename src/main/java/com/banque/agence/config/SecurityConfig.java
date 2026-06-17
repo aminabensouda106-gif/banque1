@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,10 +26,11 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/error").permitAll()
+                        .requestMatchers("/portal/**").hasRole("CLIENT")
                         .requestMatchers("/admin/users/**").hasRole("ADMIN")
                         .requestMatchers("/admin/audit", "/admin/audit/**").hasAnyRole("ADMIN", "CHEF_AGENCE")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().hasAnyRole("ADMIN", "AGENT", "CHEF_AGENCE")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -51,6 +53,18 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return (request, response, authentication) -> response.sendRedirect("/dashboard");
+        return (request, response, authentication) -> {
+            if (hasRole(authentication, "CLIENT")) {
+                response.sendRedirect("/portal/dashboard");
+            } else {
+                response.sendRedirect("/dashboard");
+            }
+        };
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        String roleName = "ROLE_" + role;
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> roleName.equals(a.getAuthority()));
     }
 }

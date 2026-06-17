@@ -2,32 +2,48 @@
 skinparam shadowing false
 skinparam responseMessageBelowArrow true
 
-title Séquence — Authentification
+title Séquence — Authentification (personnel et client)
 
-actor Agent
+actor Utilisateur as U
 participant "LoginController" as C
-participant "UserDetailsService" as S
+participant "UserDetailsServiceImpl" as S
 database "PostgreSQL" as DB
 
-Agent -> C : POST /login (username, password)
+U -> C : POST /login (identifiant, mot de passe)
 activate C
-C -> S : loadUserByUsername(username)
+C -> S : loadUserByUsername(identifiant)
 activate S
+
 S -> DB : SELECT user WHERE username = ?
-DB --> S : User (passwordHash, role, enabled)
-S --> C : UserDetails
+alt Personnel trouvé
+  DB --> S : User (passwordHash, role, enabled)
+  S --> C : SecurityUser (ROLE_ADMIN / AGENT / CHEF_AGENCE)
+else Personnel introuvable
+  S -> DB : SELECT client WHERE portal_enabled\nAND (cin = ? OR client_number = ?)
+  alt Client portail actif
+    DB --> S : Client (passwordHash, ACTIVE)
+    S --> C : SecurityClient (ROLE_CLIENT)
+  else Identifiant inconnu
+    S --> C : UsernameNotFoundException
+  end
+end
 deactivate S
 
 alt Identifiants valides et compte actif
-  C --> Agent : Redirection /dashboard
+  alt ROLE_CLIENT
+    C --> U : Redirection /portal/dashboard
+  else Personnel
+    C --> U : Redirection /dashboard
+  end
 else Identifiants invalides ou compte désactivé
-  C --> Agent : Page login + message d'erreur
+  C --> U : Page login + « Identifiants incorrects »
 end
 deactivate C
 
 note over S, DB
   Mot de passe vérifié via BCrypt
-  Accès selon le rôle attribué
+  Même page /login pour personnel et client
+  Démo : DemoPortalSync active le portail (CD789012, BE123456)
 end note
 
 @enduml

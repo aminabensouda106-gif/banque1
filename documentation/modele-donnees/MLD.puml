@@ -31,6 +31,9 @@ entity "clients" as clients {
   * status : VARCHAR(20)
   created_at : TIMESTAMPTZ
   updated_at : TIMESTAMPTZ
+  password_hash : VARCHAR(255)
+  portal_enabled : BOOLEAN
+  last_login_at : TIMESTAMPTZ
 }
 
 entity "accounts" as accounts {
@@ -105,11 +108,26 @@ entity "audit_logs" as audit_logs {
   details : TEXT
 }
 
+entity "notifications" as notifications {
+  * **id** : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  client_id : BIGINT <<FK>>
+  * type : VARCHAR(50)
+  * title : VARCHAR(150)
+  * message : VARCHAR(500)
+  link : VARCHAR(255)
+  * read : BOOLEAN
+  * created_at : TIMESTAMPTZ
+}
+
 clients ||--o{ accounts : client_id
 clients ||--o{ checkbook_orders : client_id
 users ||--o{ transactions : executed_by
 users ||--o{ checkbook_orders : requested_by
 users ||--o{ audit_logs : performed_by
+users ||--o{ notifications : user_id
+clients ||--o{ notifications : client_id
 accounts ||--o{ transactions : source_account_id
 accounts ||--o{ transactions : destination_account_id
 accounts ||--o{ bill_payments : account_id

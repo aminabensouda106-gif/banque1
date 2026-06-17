@@ -7,6 +7,7 @@ import com.banque.agence.repository.TransactionRepository;
 import com.banque.agence.repository.BillPaymentRepository;
 import com.banque.agence.repository.CheckbookOrderRepository;
 import com.banque.agence.repository.ClientRepository;
+import com.banque.agence.repository.NotificationRepository;
 import com.banque.agence.repository.UserRepository;
 import com.banque.agence.service.ClientService;
 import com.banque.agence.service.DuplicateResourceException;
@@ -63,10 +64,14 @@ class ClientIntegrationTest {
     private CheckbookOrderRepository checkbookOrderRepository;
 
     @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @BeforeEach
     void cleanClients() {
+        notificationRepository.deleteAll();
         auditLogRepository.deleteAll();
         checkbookOrderRepository.deleteAll();
         billPaymentRepository.deleteAll();

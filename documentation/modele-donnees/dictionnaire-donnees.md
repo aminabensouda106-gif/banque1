@@ -30,6 +30,9 @@
 | status | ENUM | NOT NULL | ACTIVE, SUSPENDED ou INACTIVE |
 | created_at | TIMESTAMPTZ | NOT NULL | Date de création |
 | updated_at | TIMESTAMPTZ | NOT NULL | Dernière modification |
+| password_hash | VARCHAR(255) | | Mot de passe portail (BCrypt) |
+| portal_enabled | BOOLEAN | NOT NULL, défaut false | Accès espace client activé |
+| last_login_at | TIMESTAMPTZ | | Dernière connexion portail |
 
 ## Table `accounts`
 
@@ -108,3 +111,33 @@
 | delivered_at | TIMESTAMPTZ | | Date de livraison |
 | requested_by | BIGINT | FK → users, NOT NULL | Agent ayant saisi la demande |
 | notes | VARCHAR(255) | | Commentaire optionnel |
+
+## Table `notifications` (Phase 13 + 14)
+
+| Champ | Type | Contrainte | Description |
+|---|---|---|---|
+| id | BIGINT | PK, auto | Identifiant unique |
+| user_id | BIGINT | FK → users | Destinataire personnel (chef, agent) |
+| client_id | BIGINT | FK → clients | Destinataire client portail |
+| type | VARCHAR(50) | NOT NULL | Type métier (staff ou client) |
+| title | VARCHAR(150) | NOT NULL | Titre affiché dans le centre de notifications |
+| message | VARCHAR(500) | NOT NULL | Texte détaillé |
+| link | VARCHAR(255) | | URL relative |
+| read | BOOLEAN | NOT NULL, défaut false | Lu / non lu |
+| created_at | TIMESTAMPTZ | NOT NULL | Date de création |
+
+> Contrainte : exactement un des champs `user_id` ou `client_id` est renseigné.
+
+---
+
+## Annexe — Seed de démonstration (profil dev, hors schéma BDD)
+
+Composants Java documentés dans `ROADMAP.md` et `demo-data.md` :
+
+| Composant | Rôle |
+|---|---|
+| `DevUserInitializer` | Crée admin, agent, chef si table `users` vide |
+| `DevDemoDataInitializer` | Jeu métier complet si table `clients` vide |
+| `DemoPortalSync` | Active `portal_enabled` + `password_hash` pour Ahmed (`CD789012`) et Youssef (`BE123456`) |
+
+Configuration : `application-dev.yml` → `banque.demo.seed-enabled`, `banque.demo.portal-sync-enabled`.

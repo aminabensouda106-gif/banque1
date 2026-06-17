@@ -53,6 +53,7 @@ public class DevDemoDataInitializer implements ApplicationRunner {
     private final BillPaymentRepository billPaymentRepository;
     private final CheckbookOrderRepository checkbookOrderRepository;
     private final UserRepository userRepository;
+    private final DemoPortalSync demoPortalSync;
 
     public DevDemoDataInitializer(ClientRepository clientRepository,
                                   AccountRepository accountRepository,
@@ -60,7 +61,8 @@ public class DevDemoDataInitializer implements ApplicationRunner {
                                   BillProviderRepository billProviderRepository,
                                   BillPaymentRepository billPaymentRepository,
                                   CheckbookOrderRepository checkbookOrderRepository,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,
+                                  DemoPortalSync demoPortalSync) {
         this.clientRepository = clientRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
@@ -68,6 +70,7 @@ public class DevDemoDataInitializer implements ApplicationRunner {
         this.billPaymentRepository = billPaymentRepository;
         this.checkbookOrderRepository = checkbookOrderRepository;
         this.userRepository = userRepository;
+        this.demoPortalSync = demoPortalSync;
     }
 
     @Override
@@ -130,8 +133,11 @@ public class DevDemoDataInitializer implements ApplicationRunner {
                 CheckbookOrderStatus.PENDING, agent, base.plus(13, ChronoUnit.DAYS),
                 null, null, "Demande en cours");
 
+        demoPortalSync.enablePortal(ahmed, DemoPortalSync.DEMO_PASSWORD);
+        demoPortalSync.enablePortal(youssef, DemoPortalSync.DEMO_PASSWORD);
+
         log.info("Données de démonstration chargées : 5 clients, 8 comptes, 20 transactions, "
-                + "2 paiements facture, 2 commandes chéquier.");
+                + "2 paiements facture, 2 commandes chéquier, 2 accès portail client.");
     }
 
     private Client saveClient(String number, String cin, String firstName, String lastName,

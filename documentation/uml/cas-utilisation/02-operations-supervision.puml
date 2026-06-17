@@ -30,6 +30,8 @@ rectangle "Transactions" {
 rectangle "Supervision" {
   usecase "Consulter le tableau de bord" as UC_DASH
   usecase "Visualiser les opérations\nrécentes" as UC_RECENT
+  usecase "Consulter les alertes\nmétier" as UC_ALERTS
+  usecase "Consulter les\nnotifications" as UC_NOTIF
   usecase "Gérer les utilisateurs" as UC_USERS
   usecase "Consulter le journal d'audit" as UC_AUDIT_VIEW
   usecase "Valider une opération\nsensible" as UC_VALIDATE
@@ -45,17 +47,20 @@ personnel --> UC_HIST
 personnel --> UC_RELEVE
 personnel --> UC_DASH
 personnel --> UC_RECENT
+personnel --> UC_NOTIF
 
 admin --> UC_USERS
 admin --> UC_AUDIT_VIEW
 chef --> UC_AUDIT_VIEW
 chef --> UC_VALIDATE
+chef --> UC_ALERTS
 
 UC_DEPOT ..> UC_CHECK : <<include>>
 UC_RETRAIT ..> UC_CHECK : <<include>>
 UC_VIREMENT ..> UC_CHECK : <<include>>
 UC_BILL ..> UC_CHECK : <<include>>
 UC_DASH ..> UC_RECENT : <<include>>
+UC_DASH ..> UC_ALERTS : <<include>>
 
 legend bottom
   |= Détails |= |
@@ -66,6 +71,8 @@ legend bottom
   | Utilisateurs | Créer, modifier, rôles, activer/désactiver — admin seul |
   | Validation | Chef d'agence — opérations sensibles |
   | Audit | Opérations importantes journalisées |
+  | Notifications | Cloche + badge ; centre /notifications ; lu / tout marquer lu |
+  | Alertes métier | Dashboard : commandes chéquier en attente ou en cours |
 endlegend
 
 @enduml

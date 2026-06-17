@@ -1,0 +1,11 @@
+-- Référence : le portail client de démo est géré par DemoPortalSync (Java).
+-- Préférer redémarrer l'application en profil dev avec :
+--   banque.demo.portal-sync-enabled: true
+--
+-- Vérifier l'état actuel :
+-- SELECT cin, client_number, portal_enabled, password_hash IS NOT NULL AS has_password
+-- FROM clients WHERE cin IN ('CD789012', 'BE123456');
+--
+-- Réinitialisation complète (recommandé si problème persistant) :
+--   psql -U banque -h localhost -p 5433 -d banque_agence -f documentation/demo-reset.sql
+-- Puis redémarrer l'application.

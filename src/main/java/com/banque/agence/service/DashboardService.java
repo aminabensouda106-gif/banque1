@@ -2,8 +2,10 @@ package com.banque.agence.service;
 
 import com.banque.agence.domain.entity.Transaction;
 import com.banque.agence.domain.enums.AccountStatus;
+import com.banque.agence.domain.enums.CheckbookOrderStatus;
 import com.banque.agence.domain.enums.ClientStatus;
 import com.banque.agence.repository.AccountRepository;
+import com.banque.agence.repository.CheckbookOrderRepository;
 import com.banque.agence.repository.ClientRepository;
 import com.banque.agence.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
@@ -21,13 +23,16 @@ public class DashboardService {
     private final ClientRepository clientRepository;
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final CheckbookOrderRepository checkbookOrderRepository;
 
     public DashboardService(ClientRepository clientRepository,
                             AccountRepository accountRepository,
-                            TransactionRepository transactionRepository) {
+                            TransactionRepository transactionRepository,
+                            CheckbookOrderRepository checkbookOrderRepository) {
         this.clientRepository = clientRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
+        this.checkbookOrderRepository = checkbookOrderRepository;
     }
 
     @Transactional(readOnly = true)
@@ -41,11 +46,16 @@ public class DashboardService {
         long todayCount = transactionRepository.countByExecutedAtGreaterThanEqualAndExecutedAtLessThan(from, to);
         BigDecimal todayAmount = transactionRepository.sumAmountByExecutedAtGreaterThanEqualAndExecutedAtLessThan(from, to);
 
+        long pendingCheckbooks = checkbookOrderRepository.countByStatus(CheckbookOrderStatus.PENDING);
+        long processingCheckbooks = checkbookOrderRepository.countByStatus(CheckbookOrderStatus.PROCESSING);
+
         return new DashboardStats(
                 activeClients,
                 activeAccounts,
                 todayCount,
-                todayAmount != null ? todayAmount : BigDecimal.ZERO
+                todayAmount != null ? todayAmount : BigDecimal.ZERO,
+                pendingCheckbooks,
+                processingCheckbooks
         );
     }
 

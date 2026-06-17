@@ -7,6 +7,7 @@ title Séquence — Commande de chéquier
 actor "Agent bancaire" as agent
 participant "CheckbookOrderController" as ctrl
 participant "CheckbookOrderService" as svc
+participant "NotificationService" as notif
 participant "AccountService" as acc
 database "PostgreSQL" as db
 
@@ -24,6 +25,8 @@ else compte courant/pro actif
     ctrl --> agent : message d'erreur
   else OK
     svc -> db : INSERT checkbook_order\nstatut PENDING, sheet_count
+    svc -> notif : notifyChefsAboutNewCheckbookOrder
+    notif -> db : INSERT notifications (chefs)
     svc -> db : audit log CHECKBOOK_ORDER_CREATED
     svc --> ctrl : CheckbookOrder
     ctrl --> agent : confirmation + n° demande
@@ -33,6 +36,8 @@ end
 agent -> ctrl : Marquer EN_COURS / LIVRÉE
 ctrl -> svc : updateStatus(orderId, newStatus, user)
 svc -> db : UPDATE statut + dates
+svc -> notif : notifyRequesterAboutStatusChange
+notif -> db : INSERT notification (demandeur)
 svc -> db : audit log
 ctrl --> agent : fiche commande mise à jour
 

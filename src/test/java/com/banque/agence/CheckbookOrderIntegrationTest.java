@@ -18,6 +18,8 @@ import com.banque.agence.repository.CheckbookOrderRepository;
 
 import com.banque.agence.repository.ClientRepository;
 
+import com.banque.agence.repository.NotificationRepository;
+
 import com.banque.agence.repository.TransactionRepository;
 
 import com.banque.agence.repository.UserRepository;
@@ -136,6 +138,12 @@ class CheckbookOrderIntegrationTest {
 
     @Autowired
 
+    private NotificationRepository notificationRepository;
+
+
+
+    @Autowired
+
     private AuditLogRepository auditLogRepository;
 
 
@@ -155,6 +163,8 @@ class CheckbookOrderIntegrationTest {
     @BeforeEach
 
     void setUp() {
+
+        notificationRepository.deleteAll();
 
         auditLogRepository.deleteAll();
 

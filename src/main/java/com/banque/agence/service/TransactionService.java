@@ -28,13 +28,16 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     public TransactionService(TransactionRepository transactionRepository,
                               AccountRepository accountRepository,
-                              AuditService auditService) {
+                              AuditService auditService,
+                              NotificationService notificationService) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +84,7 @@ public class TransactionService {
         Transaction tx = persistTransaction(TransactionType.DEPOT, amount, null, account, user, description);
         auditService.log(user, "TRANSACTION_DEPOT", ENTITY_TYPE, tx.getId(),
                 amount + " MAD sur " + account.getAccountNumber());
+        notificationService.notifyClientAboutDeposit(tx, account);
         return new TransactionResult(tx.getId(), account.getBalance(), account.getAccountNumber());
     }
 
@@ -97,6 +101,7 @@ public class TransactionService {
         Transaction tx = persistTransaction(TransactionType.RETRAIT, amount, account, null, user, description);
         auditService.log(user, "TRANSACTION_RETRAIT", ENTITY_TYPE, tx.getId(),
                 amount + " MAD depuis " + account.getAccountNumber());
+        notificationService.notifyClientAboutWithdrawal(tx, account);
         return new TransactionResult(tx.getId(), account.getBalance(), account.getAccountNumber());
     }
 
@@ -123,6 +128,8 @@ public class TransactionService {
         Transaction tx = persistTransaction(TransactionType.VIREMENT, amount, source, destination, user, description);
         auditService.log(user, "TRANSACTION_VIREMENT", ENTITY_TYPE, tx.getId(),
                 amount + " MAD de " + source.getAccountNumber() + " vers " + destination.getAccountNumber());
+        notificationService.notifyClientAboutTransferSent(tx, source, destination);
+        notificationService.notifyClientAboutTransferReceived(tx, source, destination);
 
         return new TransferResult(
                 tx.getId(),
@@ -131,6 +138,30 @@ public class TransactionService {
                 source.getAccountNumber(),
                 destination.getAccountNumber()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Transaction> searchForClient(Long clientId,
+                                             TransactionType type,
+                                             LocalDate fromDate,
+                                             LocalDate toDate,
+                                             Pageable pageable) {
+        Instant from = fromDate == null ? null : fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant to = toDate == null ? null : toDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        return transactionRepository.findAll(
+                TransactionSpecifications.forClient(clientId, type, from, to),
+                pageable
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public boolean involvesClient(Transaction transaction, Long clientId) {
+        if (transaction.getSourceAccount() != null
+                && transaction.getSourceAccount().getClient().getId().equals(clientId)) {
+            return true;
+        }
+        return transaction.getDestinationAccount() != null
+                && transaction.getDestinationAccount().getClient().getId().equals(clientId);
     }
 
     private Transaction persistTransaction(TransactionType type,

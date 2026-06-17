@@ -6,6 +6,8 @@ public record DashboardStats(
         long activeClients,
         long activeAccounts,
         long todayTransactionCount,
-        BigDecimal todayTransactionAmount
+        BigDecimal todayTransactionAmount,
+        long pendingCheckbookOrders,
+        long processingCheckbookOrders
 ) {
 }

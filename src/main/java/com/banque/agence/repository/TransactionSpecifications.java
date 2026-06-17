@@ -55,4 +55,39 @@ public final class TransactionSpecifications {
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
+
+    public static Specification<Transaction> forClient(Long clientId,
+                                                         TransactionType type,
+                                                         Instant from,
+                                                         Instant to) {
+        return (root, query, cb) -> {
+            if (!Long.class.equals(query.getResultType()) && !long.class.equals(query.getResultType())) {
+                root.fetch("executedBy", JoinType.INNER);
+                root.fetch("sourceAccount", JoinType.LEFT);
+                root.fetch("destinationAccount", JoinType.LEFT);
+                query.distinct(true);
+            }
+
+            List<Predicate> predicates = new ArrayList<>();
+            var sourceJoin = root.join("sourceAccount", JoinType.LEFT);
+            var destinationJoin = root.join("destinationAccount", JoinType.LEFT);
+
+            predicates.add(cb.or(
+                    cb.equal(sourceJoin.get("client").get("id"), clientId),
+                    cb.equal(destinationJoin.get("client").get("id"), clientId)
+            ));
+
+            if (type != null) {
+                predicates.add(cb.equal(root.get("type"), type));
+            }
+            if (from != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("executedAt"), from));
+            }
+            if (to != null) {
+                predicates.add(cb.lessThan(root.get("executedAt"), to));
+            }
+
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
 }

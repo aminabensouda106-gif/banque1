@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{portal/layout :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div th:if="${accounts.isEmpty()}" class="welcome-card text-muted">Aucun compte associé.</div>
+    <div th:unless="${accounts.isEmpty()}" class="table-responsive welcome-card">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+            <tr>
+                <th>N° compte</th>
+                <th>Type</th>
+                <th>Statut</th>
+                <th class="text-end">Solde</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="account : ${accounts}">
+                <td th:text="${account.accountNumber}">ACC-00001</td>
+                <td th:text="${account.type.label}">Courant</td>
+                <td>
+                    <span class="badge" th:classappend="${account.status.name() == 'ACTIVE'} ? ' bg-success' : ' bg-secondary'"
+                          th:text="${account.status.label}">Actif</span>
+                </td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(account.balance, 1, 2)} + ' MAD'">0,00 MAD</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

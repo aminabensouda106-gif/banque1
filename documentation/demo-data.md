@@ -1,20 +1,36 @@
 # Données de démonstration
 
-Jeu de données chargé **automatiquement** au premier démarrage en profil `dev` si la table `clients` est vide.
+Seed **modulaire** en profil `dev` : chaque brique est indépendante pour pouvoir ajouter des phases sans tout réinitialiser.
 
-Désactiver : `banque.demo.seed-enabled=false` dans `application-dev.yml`.
+## Composants (ordre de démarrage)
+
+| Ordre | Classe | Condition | Contenu |
+|---|---|---|---|
+| 1 | `DevUserInitializer` | table `users` vide | admin, agent, chef |
+| 2 | `DevDemoDataInitializer` | table `clients` vide | 5 clients, 8 comptes, 20 transactions, 2 factures, 2 chéquiers |
+| 3 | `DemoPortalSync` | **à chaque démarrage** | active le portail pour Ahmed et Youssef si manquant |
+
+## Configuration (`application-dev.yml`)
+
+```yaml
+banque:
+  demo:
+    seed-enabled: true          # utilisateurs + jeu métier (si tables vides)
+    portal-sync-enabled: true   # resync portail client (recommandé)
+```
+
+Désactiver tout le seed : `seed-enabled: false`.  
+Désactiver uniquement la resync portail : `portal-sync-enabled: false`.
 
 ## Réinitialiser les données
 
-```sql
--- Connexion : psql -U banque -h localhost -p 5433 -d banque_agence
-TRUNCATE audit_logs, checkbook_orders, bill_payments, transactions,
-         accounts, clients RESTART IDENTITY CASCADE;
+```bash
+psql -U banque -h localhost -p 5433 -d banque_agence -f documentation/demo-reset.sql
 ```
 
-Puis redémarrer l'application (`mvn spring-boot:run` ou `run-dev.bat`).
+Puis redémarrer l'application. Le seed métier se relance si `clients` est vide ; le portail est resynchronisé par `DemoPortalSync`.
 
-> Les utilisateurs (`admin`, `agent`, `chef`) ne sont pas supprimés.
+> Les utilisateurs (`admin`, `agent`, `chef`) ne sont pas supprimés par `demo-reset.sql`.
 
 ## Comptes applicatifs (personnel)
 
@@ -35,6 +51,15 @@ Puis redémarrer l'application (`mvn spring-boot:run` ou `run-dev.bat`).
 | CL-00005 | BE654321 | Omar Berrada | Tanger |
 
 **Client vedette pour la soutenance :** Ahmed Benali — CIN `CD789012`.
+
+## Accès portail client (démo)
+
+| Identifiant | Mot de passe | Client |
+|---|---|---|
+| `CD789012` ou `CL-00001` | `client123` | Ahmed Benali |
+| `BE123456` ou `CL-00003` | `client123` | Youssef Idrissi |
+
+> Si la connexion échoue avec une base déjà existante : **redémarrez l'application** (`DemoPortalSync` corrige automatiquement). Sinon exécutez `demo-reset.sql` puis redémarrez.
 
 ## Comptes (8)
 

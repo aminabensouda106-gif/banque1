@@ -42,6 +42,10 @@ package "domain.enums" {
     FEUILLES_20
     FEUILLES_40
   }
+  enum NotificationType {
+    CHECKBOOK_ORDER_CREATED
+    CHECKBOOK_ORDER_STATUS_CHANGED
+  }
 }
 
 package "domain.entity" {
@@ -71,6 +75,9 @@ package "domain.entity" {
     - status : ClientStatus
     - createdAt : Instant
     - updatedAt : Instant
+    - passwordHash : String
+    - portalEnabled : boolean
+    - lastLoginAt : Instant
   }
 
   class Account {
@@ -127,13 +134,25 @@ package "domain.entity" {
     - performedAt : Instant
     - details : String
   }
+
+  class Notification {
+    - id : Long
+    - type : NotificationType
+    - title : String
+    - message : String
+    - link : String
+    - read : boolean
+    - createdAt : Instant
+  }
 }
 
 Client "1" o-- "0..*" Account : possède >
 Client "1" o-- "0..*" CheckbookOrder : demande >
+Client "1" -- "0..*" Notification : reçoit >
 User "1" -- "0..*" Transaction : exécute >
 User "1" -- "0..*" CheckbookOrder : traite >
 User "1" -- "0..*" AuditLog : effectue >
+User "1" -- "0..*" Notification : reçoit >
 Account "0..1" -- "0..*" Transaction : source >
 Account "0..1" -- "0..*" Transaction : destination >
 Account "1" o-- "0..*" BillPayment : paie via >
@@ -159,6 +178,13 @@ note bottom of CheckbookOrder
   Extension v1.1 — pas d'impact sur le solde
   Compte COURANT ou PROFESSIONNEL actif
   Format : 20 ou 40 feuillets (sheetCount)
+  Création / changement statut → Notification
+end note
+
+note bottom of Notification
+  Extension v1.2 / v2
+  Destinataire : User (staff) ou Client (portail)
+  Événements client : opérations + chéquier
 end note
 
 note bottom of Transaction

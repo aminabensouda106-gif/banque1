@@ -58,6 +58,15 @@ public class Client {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "portal_enabled", nullable = false)
+    private boolean portalEnabled = false;
+
+    @Column(name = "last_login_at")
+    private Instant lastLoginAt;
+
     public Client() {
     }
 
@@ -152,5 +161,29 @@ public class Client {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public boolean isPortalEnabled() {
+        return portalEnabled;
+    }
+
+    public void setPortalEnabled(boolean portalEnabled) {
+        this.portalEnabled = portalEnabled;
+    }
+
+    public Instant getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(Instant lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 }

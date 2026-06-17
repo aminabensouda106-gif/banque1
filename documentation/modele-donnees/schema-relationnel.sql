@@ -35,7 +35,10 @@ CREATE TABLE clients (
     professional_info TEXT,
     status            client_status NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-    updated_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    updated_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    password_hash     VARCHAR(255),
+    portal_enabled    BOOLEAN      NOT NULL DEFAULT FALSE,
+    last_login_at     TIMESTAMPTZ
 );
 
 -- Comptes bancaires
@@ -111,6 +114,23 @@ CREATE TABLE checkbook_orders (
     notes         VARCHAR(255)
 );
 
+-- Notifications in-app (Phase 13 personnel + Phase 14 client)
+CREATE TABLE notifications (
+    id           BIGSERIAL PRIMARY KEY,
+    user_id      BIGINT       REFERENCES users(id),
+    client_id    BIGINT       REFERENCES clients(id),
+    type         VARCHAR(50)  NOT NULL,
+    title        VARCHAR(150) NOT NULL,
+    message      VARCHAR(500) NOT NULL,
+    link         VARCHAR(255),
+    read         BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_notifications_recipient CHECK (
+        (user_id IS NOT NULL AND client_id IS NULL)
+        OR (user_id IS NULL AND client_id IS NOT NULL)
+    )
+);
+
 -- Index
 CREATE INDEX idx_clients_cin ON clients(cin);
 CREATE INDEX idx_clients_client_number ON clients(client_number);
@@ -125,6 +145,11 @@ CREATE INDEX idx_bill_payments_account_id ON bill_payments(account_id);
 CREATE INDEX idx_bill_payments_transaction_id ON bill_payments(transaction_id);
 CREATE INDEX idx_checkbook_orders_account_id ON checkbook_orders(account_id);
 CREATE INDEX idx_checkbook_orders_status ON checkbook_orders(status);
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_user_read ON notifications(user_id, read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX idx_notifications_client_id ON notifications(client_id);
+CREATE INDEX idx_notifications_client_read ON notifications(client_id, read);
 
 -- Données de référence facturiers (exemples)
 INSERT INTO bill_providers (code, name, category) VALUES

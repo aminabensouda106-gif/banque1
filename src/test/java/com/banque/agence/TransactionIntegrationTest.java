@@ -8,6 +8,7 @@ import com.banque.agence.repository.AuditLogRepository;
 import com.banque.agence.repository.CheckbookOrderRepository;
 import com.banque.agence.repository.BillPaymentRepository;
 import com.banque.agence.repository.ClientRepository;
+import com.banque.agence.repository.NotificationRepository;
 import com.banque.agence.repository.TransactionRepository;
 import com.banque.agence.repository.UserRepository;
 import com.banque.agence.service.AccountService;
@@ -69,6 +70,9 @@ class TransactionIntegrationTest {
     private ClientRepository clientRepository;
 
     @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
     private AuditLogRepository auditLogRepository;
 
     @Autowired
@@ -79,6 +83,7 @@ class TransactionIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        notificationRepository.deleteAll();
         auditLogRepository.deleteAll();
         checkbookOrderRepository.deleteAll();
         billPaymentRepository.deleteAll();

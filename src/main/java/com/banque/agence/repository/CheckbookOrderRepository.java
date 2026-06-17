@@ -16,6 +16,8 @@ public interface CheckbookOrderRepository extends JpaRepository<CheckbookOrder, 
 
     boolean existsByAccountIdAndStatus(Long accountId, CheckbookOrderStatus status);
 
+    long countByStatus(CheckbookOrderStatus status);
+
     @EntityGraph(attributePaths = {"account", "account.client", "client", "requestedBy"})
     @Query("SELECT o FROM CheckbookOrder o WHERE o.id = :id")
     Optional<CheckbookOrder> findByIdWithDetails(@Param("id") Long id);

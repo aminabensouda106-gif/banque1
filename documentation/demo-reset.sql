@@ -3,8 +3,11 @@
 --
 -- Usage :
 --   psql -U banque -h localhost -p 5433 -d banque_agence -f documentation/demo-reset.sql
--- Puis redémarrer l'application (profil dev, banque.demo.seed-enabled=true).
+-- Puis redémarrer l'application (profil dev) :
+--   - DevDemoDataInitializer recharge clients/comptes/transactions si clients vide
+--   - DemoPortalSync réactive le portail Ahmed/Youssef (banque.demo.portal-sync-enabled=true)
 
+TRUNCATE notifications RESTART IDENTITY CASCADE;
 TRUNCATE audit_logs RESTART IDENTITY CASCADE;
 TRUNCATE checkbook_orders RESTART IDENTITY CASCADE;
 TRUNCATE bill_payments RESTART IDENTITY CASCADE;

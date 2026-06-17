@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 11 terminée — prêt pour Phase 12 (finalisation) |
+| **Status** | Phase 14 terminée — portail client & notifications client (v2) |
 
 ### Problématique
 
@@ -40,7 +40,7 @@ Une agence bancaire traite quotidiennement des données clients, comptes et mouv
 | **Agent bancaire** | Clients, comptes, opérations courantes, historiques |
 | **Chef d'agence** | Supervision, tableau de bord, journal d'audit |
 
-> Acteur **Client** (portail en ligne) : hors périmètre v1.
+> Acteur **Client** (portail en ligne) : **implémenté en Phase 14** (`/portal/**`, rôle `CLIENT`).
 
 ### Scénarios principaux (cahier §12)
 
@@ -278,7 +278,7 @@ com.banque.agence
 | User management | ✓ | read | — |
 | Audit log | ✓ | ✓ | — |
 
-**Client** actor is **not implemented in v1** (optional future).
+**Client** actor implemented in **Phase 14** — portal at `/portal/**`, read-only + notifications.
 
 ### Password policy
 
@@ -376,6 +376,8 @@ AuditLog
 | V7 | `bill_providers`, `bill_payments`, extend `transaction_type` |
 | V8 | `checkbook_orders`, enum `checkbook_order_status` |
 | V9 | `checkbook_orders.sheet_count` (FEUILLES_20 \| FEUILLES_40) |
+| V10 | `notifications` — centre de notifications in-app (Phase 13) |
+| V11 | `clients` portail (`password_hash`, `portal_enabled`) + `notifications.client_id` (Phase 14) |
 
 ---
 
@@ -426,6 +428,10 @@ src/main/resources/db/migration/
 | 13 | Checkbook order workflow | P2 | Done (Phase 11) |
 | 14 | Demo seed data (dev) | P2 | Done (Phase 12) |
 | 15 | User manual + demo script | P2 | Done (Phase 12) |
+| 16 | Notification center (bell, list, read) | P2 | Done (Phase 13) |
+| 17 | Dashboard business alerts (checkbook) | P2 | Done (Phase 13) |
+| 18 | Client portal auth + dashboard | P2 | Done (Phase 14) |
+| 19 | Client notifications (operations) | P2 | Done (Phase 14) |
 
 ---
 
@@ -450,6 +456,9 @@ src/main/resources/db/migration/
 8. Audit — read-only log
 9. Bill payment — form (account, provider, reference, amount)
 10. Checkbook orders — list, request from account, status updates
+11. Notifications — bell badge, `/notifications`, mark read / read all
+12. Dashboard alerts — pending/processing checkbook order counts with filtered links
+13. Client portal — `/portal/dashboard`, accounts, history, checkbooks, notifications
 
 ---
 
@@ -459,8 +468,29 @@ src/main/resources/db/migration/
 
 | Profile | Purpose |
 |---|---|
-| `dev` | Local PostgreSQL, SQL logging optional, seed data |
+| `dev` | Local PostgreSQL, SQL logging optional, modular seed (`DevUserInitializer`, `DevDemoDataInitializer`, `DemoPortalSync`) |
 | `prod` | Hardened settings, no seed, secrets from env |
+
+### Dev demo seed (`banque.demo.*`)
+
+| Property | Default | Component | When it runs |
+|---|---|---|---|
+| `seed-enabled` | `true` | `DevUserInitializer` | If `users` table is empty |
+| `seed-enabled` | `true` | `DevDemoDataInitializer` | If `clients` table is empty |
+| `portal-sync-enabled` | `true` | `DemoPortalSync` via `DevPortalAccessInitializer` | Every startup — enables portal for demo CINs `CD789012`, `BE123456` if missing |
+
+Reset business data: `documentation/demo-reset.sql` then restart. See `documentation/demo-data.md`.
+
+### Project phases (documentation)
+
+Logical delivery tracks are documented in `documentation/ROADMAP.md` § « Organisation en pistes » :
+
+1. **Noyau** — Phases 1–8 (cahier des charges)
+2. **Extensions agence** — Phases 10–11 (factures, chéquier)
+3. **Canal client** — Phases 13–14 (notifications, portail)
+4. **Clôture** — Phase 12 (démo, doc, soutenance) — **last**
+
+Phase numbers are historical (Git); Phase 12 is intentionally closed **after** feature phases 13–14.
 
 ### Environment variables (prod)
 
@@ -596,8 +626,14 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-17 | Receipt extended with provider + reference | `BillPayment` loaded by transaction id on receipt page |
 | 2026-06-17 | Checkbook orders at `/checkbook-orders/**` | Phase 11 — workflow PENDING→PROCESSING→DELIVERED, no balance impact |
 | 2026-06-17 | `CheckbookSheetCount` 20/40 feuillets | Flyway V9 — choix à la demande, affiché dans listes et fiches |
-| 2026-06-17 | `DevDemoDataInitializer` | Phase 12 — seed dev idempotent (5 clients, 8 comptes, 20 tx, 2 bills, 2 chq) |
+| 2026-06-17 | `DevDemoDataInitializer` | Seed métier si `clients` vide (5 clients, 8 comptes, 20 tx, 2 bills, 2 chq) |
+| 2026-06-17 | `DemoPortalSync` + `portal-sync-enabled` | Resync portail Ahmed/Youssef à chaque démarrage dev — indépendant du seed métier |
 | 2026-06-17 | Docs soutenance | `manuel-utilisateur.md`, `demo-script.md`, `presentation-outline.md`, README |
+| 2026-06-14 | Notifications at `/notifications` | Phase 13 — `NotificationService`, Flyway V10, bell + badge in layout |
+| 2026-06-14 | Checkbook triggers notifications | Chefs on create; requester on status change (if actor ≠ requester) |
+| 2026-06-14 | Dashboard checkbook alerts | `pendingCheckbookOrders` / `processingCheckbookOrders` with filtered links |
+| 2026-06-14 | Client portal at `/portal/**` | Phase 14 — `SecurityClient`, V11, login CIN or client number |
+| 2026-06-14 | Client operation notifications | Deposit, withdraw, transfer, bill, checkbook → `notifications.client_id` |
 
 ---
 

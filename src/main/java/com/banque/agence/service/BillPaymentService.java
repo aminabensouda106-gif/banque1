@@ -29,17 +29,20 @@ public class BillPaymentService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     public BillPaymentService(BillProviderRepository billProviderRepository,
                               BillPaymentRepository billPaymentRepository,
                               AccountRepository accountRepository,
                               TransactionRepository transactionRepository,
-                              AuditService auditService) {
+                              AuditService auditService,
+                              NotificationService notificationService) {
         this.billProviderRepository = billProviderRepository;
         this.billPaymentRepository = billPaymentRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -91,6 +94,7 @@ public class BillPaymentService {
         auditService.log(user, "BILL_PAYMENT_CREATED", ENTITY_TYPE, payment.getId(),
                 amount + " MAD — " + provider.getName() + " — réf. " + reference
                         + " — compte " + account.getAccountNumber());
+        notificationService.notifyClientAboutBillPayment(tx, account, provider.getName(), reference);
 
         return new TransactionResult(tx.getId(), account.getBalance(), account.getAccountNumber());
     }

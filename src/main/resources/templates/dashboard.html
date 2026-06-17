@@ -43,6 +43,25 @@
         </div>
     </div>
 
+    <div th:if="${stats.pendingCheckbookOrders > 0 or stats.processingCheckbookOrders > 0}"
+         class="alert-alerts mt-3">
+        <h3 class="h6 mb-2">Alertes métier</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <a th:if="${stats.pendingCheckbookOrders > 0}"
+               th:href="@{/checkbook-orders(status='PENDING')}"
+               class="alert alert-warning mb-0 py-2 px-3 text-decoration-none">
+                <strong th:text="${stats.pendingCheckbookOrders}">0</strong>
+                commande(s) de chéquier en attente
+            </a>
+            <a th:if="${stats.processingCheckbookOrders > 0}"
+               th:href="@{/checkbook-orders(status='PROCESSING')}"
+               class="alert alert-info mb-0 py-2 px-3 text-decoration-none">
+                <strong th:text="${stats.processingCheckbookOrders}">0</strong>
+                commande(s) en cours de traitement
+            </a>
+        </div>
+    </div>
+
     <div class="welcome-card mt-3">
         <h3 class="h5">10 dernières opérations</h3>
         <div th:if="${recentTransactions.isEmpty()}" class="text-muted">Aucune opération enregistrée.</div>

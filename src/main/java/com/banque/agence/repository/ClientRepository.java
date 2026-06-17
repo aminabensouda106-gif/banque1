@@ -12,11 +12,26 @@ import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
+    @Query("""
+            SELECT c FROM Client c
+            WHERE c.portalEnabled = true
+              AND c.passwordHash IS NOT NULL
+              AND c.status = :status
+              AND (LOWER(c.clientNumber) = LOWER(:login) OR LOWER(c.cin) = LOWER(:login))
+            """)
+    Optional<Client> findActivePortalClientByLogin(@Param("login") String login, @Param("status") ClientStatus status);
+
+    default Optional<Client> findActivePortalClientByLogin(String login) {
+        return findActivePortalClientByLogin(login, ClientStatus.ACTIVE);
+    }
+
     long countByStatus(ClientStatus status);
 
     boolean existsByCin(String cin);
 
     boolean existsByCinAndIdNot(String cin, Long id);
+
+    Optional<Client> findByCin(String cin);
 
     Optional<Client> findTopByOrderByIdDesc();
 

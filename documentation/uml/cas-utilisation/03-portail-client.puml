@@ -1,0 +1,39 @@
+@startuml 03-portail-client
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Portail client — cas d'utilisation
+
+actor "Client bancaire" as client
+
+rectangle "Espace client en ligne" {
+  usecase "Se connecter" as UC_LOGIN
+  usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Consulter ses comptes" as UC_ACCOUNTS
+  usecase "Consulter l'historique" as UC_HISTORY
+  usecase "Consulter un reçu" as UC_RECEIPT
+  usecase "Suivre ses commandes chéquier" as UC_CHQ
+  usecase "Consulter ses notifications" as UC_NOTIF
+}
+
+client --> UC_LOGIN
+client --> UC_DASH
+client --> UC_ACCOUNTS
+client --> UC_HISTORY
+client --> UC_RECEIPT
+client --> UC_CHQ
+client --> UC_NOTIF
+
+UC_DASH ..> UC_ACCOUNTS : <<include>>
+UC_HISTORY ..> UC_RECEIPT : <<extend>>
+
+legend bottom
+  |= Détails |= |
+  | Authentification | N° client ou CIN + mot de passe |
+  | Périmètre | Consultation et notifications uniquement |
+  | Opérations | Saisies par l'agent en agence |
+  | Notifications | Virement, facture, chéquier, dépôt, retrait |
+endlegend
+
+@enduml

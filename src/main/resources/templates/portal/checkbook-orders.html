@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{portal/layout :: layout(${pageTitle}, ~{::section})}">
+<body>
+<section th:fragment="section">
+    <div th:if="${orders.isEmpty()}" class="welcome-card text-muted">Aucune commande de chéquier.</div>
+    <div th:unless="${orders.isEmpty()}" class="table-responsive welcome-card">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+            <tr>
+                <th>N° commande</th>
+                <th>Compte</th>
+                <th>Format</th>
+                <th>Statut</th>
+                <th>Demandée le</th>
+                <th>Livrée le</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderNumber}">CHQ-00001</td>
+                <td th:text="${order.account.accountNumber}">ACC-00001</td>
+                <td th:text="${order.sheetCount.label}">20 feuillets</td>
+                <td>
+                    <span class="badge bg-secondary" th:text="${order.status.label}">En attente</span>
+                </td>
+                <td th:text="${#temporals.format(order.requestedAt, 'dd/MM/yyyy')}">—</td>
+                <td th:text="${order.deliveredAt != null ? #temporals.format(order.deliveredAt, 'dd/MM/yyyy') : '—'}">—</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted mt-3 mb-0">
+        Les commandes sont traitées par votre agence. Vous serez notifié à chaque changement de statut.
+    </p>
+</section>
+</body>
+</html>

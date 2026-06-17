@@ -1,6 +1,6 @@
 # Manuel utilisateur — Banque Agence
 
-Application web de gestion d'agence bancaire (personnel interne). Interface en **français**.
+Application web de gestion d'agence bancaire : **personnel interne** (agence) et **espace client** (portail en ligne). Interface en **français**.
 
 ---
 
@@ -14,13 +14,14 @@ En cas d'échec : vérifier les identifiants ou contacter l'administrateur si le
 
 **Déconnexion :** bouton en bas du menu latéral gauche.
 
-### Rôles
+### Rôles (personnel)
 
 | Rôle | Accès principal |
 |---|---|
 | Agent bancaire | Clients, comptes, opérations, historique, chéquiers |
-| Chef d'agence | Idem + tableau de bord, journal d'audit |
+| Chef d'agence | Idem + tableau de bord, journal d'audit, notifications |
 | Administrateur | Idem + gestion des utilisateurs |
+| **Client bancaire** | Portail `/portal/**` — consultation et notifications uniquement |
 
 ---
 
@@ -31,7 +32,22 @@ Réservé au **chef d'agence** et à l'**administrateur**.
 Affiche :
 - nombre de clients et de comptes actifs ;
 - transactions du jour ;
+- **alertes métier** : commandes de chéquier en attente ou en cours (liens vers la liste filtrée) ;
 - liste des dernières opérations.
+
+---
+
+## 2 bis. Notifications
+
+Accessible à **tous les utilisateurs** via l'icône **cloche** en haut à droite.
+
+- Le **badge** indique le nombre de notifications non lues.
+- Page **Notifications** : liste chronologique, lien vers la fiche concernée.
+- Actions : **Marquer comme lu** (une notification) ou **Tout marquer comme lu**.
+
+Règles métier :
+- Nouvelle commande chéquier → notification pour chaque **chef d'agence** actif.
+- Changement de statut d'une commande → notification pour l'**agent demandeur** (si différent de celui qui modifie le statut).
 
 ---
 
@@ -136,9 +152,26 @@ Menu **Journal d'audit** (admin et chef d'agence) :
 
 ---
 
-## 10. Raccourcis démo (environnement de test)
+## 10. Espace client (portail en ligne)
 
-Voir [demo-data.md](demo-data.md) pour les identifiants et données préchargées.
+Connexion avec **n° client** ou **CIN** + mot de passe (même page `/login` que le personnel).
+
+Fonctionnalités (`/portal/**`) :
+
+- **Tableau de bord** : soldes et dernières opérations
+- **Mes comptes** : liste des comptes du client
+- **Historique** : opérations sur ses comptes uniquement, filtres par type et date
+- **Reçus** : impression depuis l'historique
+- **Chéquiers** : suivi des commandes (statut, dates)
+- **Notifications** : alertes sur dépôts, retraits, virements, factures et chéquiers
+
+> Le client **ne saisit pas** d'opérations financières : elles sont effectuées par l'agent en agence.
+
+---
+
+## 11. Raccourcis démo (environnement de test)
+
+Voir [demo-data.md](demo-data.md) pour le détail du **seed modulaire** (`DevUserInitializer`, `DevDemoDataInitializer`, `DemoPortalSync`).
 
 | Utilisateur | Mot de passe |
 |---|---|
@@ -146,6 +179,15 @@ Voir [demo-data.md](demo-data.md) pour les identifiants et données préchargée
 | chef | chef123 |
 | admin | admin123 |
 
+**Portail client :**
+
+| Identifiant | Mot de passe | Client |
+|---|---|---|
+| `CD789012` ou `CL-00001` | `client123` | Ahmed Benali |
+| `BE123456` ou `CL-00003` | `client123` | Youssef Idrissi |
+
+> Si la connexion client échoue sur une base déjà existante : **redémarrer l'application** (`DemoPortalSync` réactive le portail) ou exécuter `demo-reset.sql` puis redémarrer.
+
 ---
 
-*Banque Agence — PFA EMSI. Dernière mise à jour : juin 2026.*
+*Banque Agence — PFA EMSI. Dernière mise à jour : juin 2026 (portail client + seed modulaire).*

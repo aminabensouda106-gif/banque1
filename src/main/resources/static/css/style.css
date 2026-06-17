@@ -167,6 +167,48 @@ body {
     color: #0d47a1;
 }
 
+.notification-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d47a1;
+    text-decoration: none;
+    padding: 0.35rem;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+
+.notification-bell:hover {
+    background: #e3f2fd;
+    color: #0d47a1;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: #d32f2f;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.1rem;
+    text-align: center;
+}
+
+.notification-list .notification-unread {
+    border-left: 4px solid #0d47a1;
+    background: #f5f9ff;
+}
+
+.alert-alerts .alert {
+    font-size: 0.95rem;
+}
+
 .app-content {
     padding: 1.5rem;
     flex: 1;
@@ -252,4 +294,12 @@ body {
     .sidebar {
         width: 100%;
     }
+}
+
+.portal-sidebar {
+    background: linear-gradient(180deg, #0d4f4f 0%, #0a3d3d 100%);
+}
+
+.portal-body .welcome-card {
+    border-left: 4px solid #0d9488;
 }

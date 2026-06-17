@@ -27,6 +27,9 @@ entity "CLIENT" as client {
   adresse
   infos professionnelles
   statut
+  mot de passe portail (chiffré)
+  portail activé
+  dernière connexion portail
 }
 
 entity "COMPTE" as account {
@@ -88,11 +91,24 @@ entity "JOURNAL_AUDIT" as audit {
   détails
 }
 
+entity "NOTIFICATION" as notif {
+  * identifiant
+  --
+  type
+  titre
+  message
+  lien
+  lue
+  date création
+}
+
 client ||--o{ account : possède
 client ||--o{ chq : demande
+client ||--o{ notif : reçoit
 user ||--o{ transaction : exécute
 user ||--o{ chq : traite
 user ||--o{ audit : effectue
+user ||--o{ notif : reçoit
 account ||--o{ transaction : source
 account ||--o{ transaction : destination
 account ||--o{ bill : débite via
