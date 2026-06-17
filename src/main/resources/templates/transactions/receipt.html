@@ -30,9 +30,17 @@
             <strong th:text="${#numbers.formatDecimal(transaction.amount, 1, 2)} + ' MAD'">0,00 MAD</strong>
         </dd>
 
-        <dt class="col-sm-4" th:if="${transaction.sourceAccount != null}">Compte source</dt>
+        <dt class="col-sm-4" th:if="${transaction.sourceAccount != null}">Compte débité</dt>
         <dd class="col-sm-8" th:if="${transaction.sourceAccount != null}"
             th:text="${transaction.sourceAccount.accountNumber}">—</dd>
+
+        <dt class="col-sm-4" th:if="${billPayment != null}">Facturier</dt>
+        <dd class="col-sm-8" th:if="${billPayment != null}"
+            th:text="${billPayment.billProvider.name}">—</dd>
+
+        <dt class="col-sm-4" th:if="${billPayment != null}">Référence</dt>
+        <dd class="col-sm-8" th:if="${billPayment != null}"
+            th:text="${billPayment.clientReference}">—</dd>
 
         <dt class="col-sm-4" th:if="${transaction.destinationAccount != null}">Compte destination</dt>
         <dd class="col-sm-8" th:if="${transaction.destinationAccount != null}"
@@ -49,6 +57,8 @@
     <p class="text-muted small text-center mt-4 mb-0">
         Document généré le <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}">—</span>
     </p>
+
+    <div th:if="${successMessage}" class="alert alert-success text-center no-print mt-3 mb-0" th:text="${successMessage}"></div>
 
     <div class="receipt-actions no-print mt-4 d-flex gap-2 justify-content-center">
         <button type="button" class="btn btn-primary" onclick="window.print()">Imprimer</button>

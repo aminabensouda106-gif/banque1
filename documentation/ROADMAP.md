@@ -21,13 +21,19 @@
 ## Vue d'ensemble
 
 ```
-Phase 1          Phase 2         Phase 3        Phase 4       Phase 5       Phase 6        Phase 7        Phase 8         Phase 9
-Conception   →   Bootstrap   →   Auth      →   Clients   →   Comptes   →   Transactions → Utilisateurs → Reporting   →   Finalisation
-(UML + BDD)      (Spring)        (login)        (§7.1)        (§7.2)        (§7.3)         (§7.4)         (§7.5)          (soutenance)
-3–5 jours        1 jour          2 jours        2–3 jours     2 jours       3 jours        2 jours        2 jours         2 jours
+Phase 1–8   : cahier des charges (§7.1–§7.5) — implémenté
+Phase 10    : Paiement facture + reçu (extension v1.1)
+Phase 11    : Commande de chéquier (extension v1.1)
+Phase 12    : Finalisation & soutenance
 ```
 
-**Durée estimée :** 3–4 semaines à rythme régulier.
+```
+Phase 1 … Phase 8          Phase 10              Phase 11              Phase 12
+Conception → … → Reporting → Paiement facture → Commande chéquier → Finalisation
+(UML+BDD)    (§7.1–§7.5)     (+ reçu)             (workflow statuts)    (soutenance)
+```
+
+**Durée estimée :** 3–4 semaines (cahier) + **4–5 jours** pour les extensions v1.1.
 
 ---
 
@@ -567,7 +573,157 @@ git push origin main
 
 ---
 
-## Phase 9 — Finalisation & préparation soutenance
+## Phase 10 — Paiement de facture + reçu
+
+**Objectif :** Permettre à l'agent de régler une facture (eau, électricité, télécom…) depuis un compte client, avec débit du solde et **reçu imprimable** (réutilisation du mécanisme Phase 8).
+
+**Référence :** Extension **v1.1** — hors périmètre strict du cahier §7, mais cohérent avec §7.3 (opérations financières) et §7.5 (reçus). Réalisé **côté agence** (l'agent saisit pour le client), pas de portail client.
+
+**Conception :** `documentation/uml/sequence/06-paiement-facture.puml`, MCD/MLD `bill_providers` + `bill_payments`, `TransactionType.PAIEMENT_FACTURE`.
+
+### Étapes détaillées
+
+#### Étape 10.1 — Base de données
+- [x] Migration `V7__create_bill_payments.sql` :
+  - Table `bill_providers` : id, code (unique), name, category, active
+  - Données seed : LYDEC, ONEE, IAM, Orange, Inwi (exemples)
+  - Enum PostgreSQL `transaction_type` étendu : `PAIEMENT_FACTURE`
+  - Table `bill_payments` : id, account_id FK, bill_provider_id FK, client_reference, amount, transaction_id FK (unique), created_at
+- [x] Index : `bill_payments(account_id)`, `bill_payments(transaction_id)`
+
+#### Étape 10.2 — Backend
+- [x] Entité `BillProvider` + `BillPayment`
+- [x] Étendre `TransactionType` avec `PAIEMENT_FACTURE`
+- [x] `BillPaymentService` avec `@Transactional` :
+  - **payBill(accountId, providerId, clientReference, amount, user)**
+  - Vérifier compte **ACTIVE**, montant > 0, référence non vide
+  - Vérifier solde ≥ montant (règle R3 étendue)
+  - Créer `Transaction` (source = compte client) + ligne `bill_payment`
+  - Entrée `AuditLog` : `BILL_PAYMENT_CREATED`
+- [x] `BillProviderRepository` (liste facturiers actifs)
+
+#### Étape 10.3 — Interface
+- [x] Menu « Opérations » → **Paiement de facture**
+- [x] Formulaire : sélection compte, facturier (liste), référence client, montant
+- [x] Message succès avec lien **Voir le reçu** → `/transactions/{id}/receipt`
+- [x] Adapter le reçu HTML : libellé « Paiement facture », nom du facturier, référence
+- [x] Historique transactions : filtre type `PAIEMENT_FACTURE`
+
+#### Étape 10.4 — Tests
+- [x] Test : paiement avec solde insuffisant → exception
+- [x] Test : compte bloqué → refus
+- [x] Test : paiement OK → solde débité + transaction + bill_payment créés
+
+### Règles métier (extension)
+
+| # | Règle |
+|---|---|
+| R9 | Paiement facture : compte ACTIVE, solde suffisant, montant > 0 |
+| R10 | Référence facture (contrat / facture) obligatoire |
+| R11 | Chaque paiement génère une transaction tracée + audit |
+
+### Comment tester (Phase 10)
+```bash
+mvn test
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Dépôt 500 MAD sur compte courant actif | ✓ |
+| Paiement LYDEC 150 MAD avec référence → solde = 350 | ✓ |
+| Paiement 400 MAD → refusé (solde insuffisant) | ✓ |
+| Reçu affiche facturier + référence + montant | ✓ |
+| Historique filtre `PAIEMENT_FACTURE` | ✓ |
+| Journal d'audit contient l'opération | ✓ |
+| `mvn test` passe | ✓ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(bills): add bill payment with receipt and provider catalog"
+git push origin main
+```
+
+### Critères de sortie
+- Paiement facture démontrable de bout en bout
+- Reçu réutilisé sans duplication de logique PDF
+
+---
+
+## Phase 11 — Commande de chéquier
+
+**Objectif :** Permettre à l'agent d'enregistrer une **demande de chéquier** pour un compte éligible, avec suivi du workflow **PENDING → PROCESSING → DELIVERED** (ou annulation).
+
+**Référence :** Extension **v1.1** — service bancaire courant, **sans mouvement financier** sur le solde.
+
+**Conception :** `documentation/uml/sequence/07-commande-chequier.puml`, entité `checkbook_orders`, enum `CheckbookOrderStatus`.
+
+### Étapes détaillées
+
+#### Étape 11.1 — Base de données
+- [ ] Migration `V8__create_checkbook_orders.sql` :
+  - Enum `checkbook_order_status` : PENDING, PROCESSING, DELIVERED, CANCELLED
+  - Table `checkbook_orders` : id, order_number (unique), account_id FK, client_id FK, quantity (défaut 1), status, requested_at, processed_at, delivered_at, requested_by FK users, notes
+- [ ] Index : `checkbook_orders(account_id)`, `checkbook_orders(status)`
+
+#### Étape 11.2 — Backend
+- [ ] Entité `CheckbookOrder` + enum `CheckbookOrderStatus`
+- [ ] `CheckbookOrderService` :
+  - **requestCheckbook(accountId, quantity, user)** — génère n° (ex. CHQ-00001)
+  - Compte **COURANT** ou **PROFESSIONNEL** et **ACTIVE** uniquement (pas épargne)
+  - Une seule commande **PENDING** par compte à la fois
+  - **updateStatus(orderId, newStatus, user)** — transitions valides + dates
+  - Audit : `CHECKBOOK_ORDER_CREATED`, `CHECKBOOK_ORDER_STATUS_CHANGED`
+- [ ] Pas de modification du solde
+
+#### Étape 11.3 — Interface
+- [ ] Depuis fiche compte : bouton **Commander un chéquier** (si éligible)
+- [ ] `GET /checkbook-orders` — liste paginée avec filtre statut
+- [ ] Fiche commande : détail + actions changer statut (agent / chef)
+- [ ] Sur fiche client : liste des commandes liées
+
+#### Étape 11.4 — Tests
+- [ ] Test : commande sur compte épargne → refus
+- [ ] Test : deuxième commande PENDING sur même compte → refus
+- [ ] Test : workflow PENDING → PROCESSING → DELIVERED
+
+### Règles métier (extension)
+
+| # | Règle |
+|---|---|
+| R12 | Chéquier : compte COURANT ou PROFESSIONNEL, statut ACTIVE |
+| R13 | Maximum une commande PENDING par compte |
+| R14 | Pas d'impact sur le solde — traçabilité audit uniquement |
+
+### Comment tester (Phase 11)
+```bash
+mvn test
+mvn spring-boot:run
+```
+| Vérification | OK ? |
+|---|---|
+| Commander chéquier sur compte courant actif → statut PENDING | ☐ |
+| Commander sur compte épargne → refus | ☐ |
+| Deuxième demande PENDING → refus | ☐ |
+| Passer en PROCESSING puis DELIVERED | ☐ |
+| Liste des commandes filtrable par statut | ☐ |
+| Audit journalisé | ☐ |
+| `mvn test` passe | ☐ |
+
+### Commit & push
+```bash
+git add .
+git commit -m "feat(checkbook): add checkbook order workflow from account"
+git push origin main
+```
+
+### Critères de sortie
+- Workflow commande chéquier démontrable
+- Distinction claire avec les opérations financières (pas de transaction)
+
+---
+
+## Phase 12 — Finalisation & préparation soutenance
 
 **Objectif :** Projet propre, documenté, prêt à présenter.
 
@@ -575,28 +731,28 @@ git push origin main
 
 ### Étapes détaillées
 
-#### Étape 9.1 — Données de démonstration
-- [ ] Script seed ou SQL manuel : 5 clients, 8 comptes, 20 transactions variées
+#### Étape 12.1 — Données de démonstration
+- [ ] Script seed ou SQL manuel : 5 clients, 8 comptes, 20 transactions variées, **2 paiements facture**, **2 commandes chéquier**
 - [ ] Documenter les identifiants de test dans le README
 
-#### Étape 9.2 — Qualité
+#### Étape 12.2 — Qualité
 - [ ] Relire tous les libellés UI en français
 - [ ] Messages d'erreur explicites partout
 - [ ] `mvn test` — tous les tests passent
 - [ ] Parcours complet sans bug bloquant
 
-#### Étape 9.3 — Documentation
+#### Étape 12.3 — Documentation
 - [ ] `documentation/manuel-utilisateur.md` — guide court avec captures
 - [ ] `documentation/demo-script.md` — scénario 5–7 min pour la soutenance
 - [ ] Mettre à jour `TECHNICAL.md` §7 checklist (tout en Done)
 - [ ] README final : installation PostgreSQL, lancement, comptes de test
 
-#### Étape 9.4 — Rapport & présentation
+#### Étape 12.4 — Rapport & présentation
 - [ ] Intégrer les diagrammes Phase 1 dans le rapport
 - [ ] PowerPoint : contexte → conception → démo → conclusion
 - [ ] Vérifier que le rapport cite le cahier des charges et les règles de gestion
 
-#### Étape 9.5 — Revue cahier des charges
+#### Étape 12.5 — Revue cahier des charges
 - [ ] Checklist finale — chaque section du cahier est couverte :
 
 | Section cahier | Couvert par |
@@ -608,10 +764,12 @@ git push origin main
 | §7.5 Reporting | Phase 8 |
 | §8 Règles de gestion | Phases 5–6 + audit |
 | §9 Sécurité NFR | Phase 3 |
-| §11 Modélisation | Phase 1 |
+| §11 Modélisation | Phase 1 (+ extensions v1.1) |
 | §12 Scénarios | Phases 3–8 |
+| Extension — Paiement facture | Phase 10 |
+| Extension — Commande chéquier | Phase 11 |
 
-### Comment tester (Phase 9)
+### Comment tester (Phase 12)
 ```bash
 mvn clean test
 mvn spring-boot:run
@@ -649,6 +807,8 @@ git push origin main
 7. Login **chef d'agence** → **dashboard**
 8. Login **admin** → gestion utilisateur + **journal d'audit**
 9. Montrer **relevé** et **reçu** imprimable
+10. **Paiement facture** LYDEC 200 MAD → reçu avec référence
+11. **Commander chéquier** sur compte courant → suivre statut jusqu'à LIVRÉE
 
 ---
 
@@ -660,6 +820,7 @@ git push origin main
 - API REST publique / Swagger (sauf si utile en interne — pas nécessaire)
 - Microservices
 - Portail client en ligne
+- Octroi / gestion de **crédit** (hors périmètre retenu)
 - Cartes bancaires / GAB
 - CI/CD GitHub Actions (optionnel, pas requis)
 - Tests à 100 % de couverture
@@ -668,8 +829,16 @@ git push origin main
 
 ## Prochaine action
 
-**Phase 7 terminée.** Commencer **Phase 8 — Tableau de bord & reporting**.
+**Phase 10 terminée.** Commencer **Phase 11 — Commande de chéquier**.
+
+### Mise à jour conception v1.1 (documentation)
+
+- [x] Cas d'utilisation : paiement facture, commande chéquier (`02-operations-supervision`, `01-clients-comptes`)
+- [x] Diagramme de classes : `BillProvider`, `BillPayment`, `CheckbookOrder`
+- [x] Séquences : `06-paiement-facture`, `07-commande-chequier`
+- [x] MCD / MLD / schéma relationnel / dictionnaire étendus
+- [ ] Régénérer les SVG PlantUML après modification des `.puml`
 
 ---
 
-*Dernière mise à jour : 2026-06-15*
+*Dernière mise à jour : 2026-06-17*

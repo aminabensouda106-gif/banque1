@@ -30,6 +30,13 @@ package "domain.enums" {
     DEPOT
     RETRAIT
     VIREMENT
+    PAIEMENT_FACTURE
+  }
+  enum CheckbookOrderStatus {
+    PENDING
+    PROCESSING
+    DELIVERED
+    CANCELLED
   }
 }
 
@@ -81,6 +88,32 @@ package "domain.entity" {
     - description : String
   }
 
+  class BillProvider {
+    - id : Long
+    - code : String
+    - name : String
+    - category : String
+    - active : boolean
+  }
+
+  class BillPayment {
+    - id : Long
+    - clientReference : String
+    - amount : BigDecimal
+    - createdAt : Instant
+  }
+
+  class CheckbookOrder {
+    - id : Long
+    - orderNumber : String
+    - quantity : int
+    - status : CheckbookOrderStatus
+    - requestedAt : Instant
+    - processedAt : Instant
+    - deliveredAt : Instant
+    - notes : String
+  }
+
   class AuditLog {
     - id : Long
     - action : String
@@ -92,11 +125,16 @@ package "domain.entity" {
 }
 
 Client "1" o-- "0..*" Account : possède >
+Client "1" o-- "0..*" CheckbookOrder : demande >
 User "1" -- "0..*" Transaction : exécute >
+User "1" -- "0..*" CheckbookOrder : traite >
 User "1" -- "0..*" AuditLog : effectue >
 Account "0..1" -- "0..*" Transaction : source >
 Account "0..1" -- "0..*" Transaction : destination >
-
+Account "1" o-- "0..*" BillPayment : paie via >
+Account "1" o-- "0..*" CheckbookOrder : commande >
+BillProvider "1" -- "0..*" BillPayment : facturier >
+BillPayment "1" -- "1" Transaction : génère >
 Transaction --> User : executedBy
 AuditLog --> User : performedBy
 
@@ -104,6 +142,17 @@ note bottom of Account
   Un client possède plusieurs comptes
   Chaque compte appartient à un seul client
   Compte bloqué ou clôturé : pas d'opérations
+end note
+
+note bottom of BillPayment
+  Extension v1.1 — paiement facture
+  Débite le compte via Transaction PAIEMENT_FACTURE
+  Reçu réutilise la transaction liée
+end note
+
+note bottom of CheckbookOrder
+  Extension v1.1 — pas d'impact sur le solde
+  Compte COURANT ou PROFESSIONNEL actif
 end note
 
 note bottom of Transaction

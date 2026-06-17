@@ -6,7 +6,8 @@ CREATE TYPE user_role AS ENUM ('ADMIN', 'AGENT', 'CHEF_AGENCE');
 CREATE TYPE client_status AS ENUM ('ACTIVE', 'SUSPENDED', 'INACTIVE');
 CREATE TYPE account_type AS ENUM ('COURANT', 'EPARGNE', 'PROFESSIONNEL');
 CREATE TYPE account_status AS ENUM ('ACTIVE', 'BLOCKED', 'CLOSED');
-CREATE TYPE transaction_type AS ENUM ('DEPOT', 'RETRAIT', 'VIREMENT');
+CREATE TYPE transaction_type AS ENUM ('DEPOT', 'RETRAIT', 'VIREMENT', 'PAIEMENT_FACTURE');
+CREATE TYPE checkbook_order_status AS ENUM ('PENDING', 'PROCESSING', 'DELIVERED', 'CANCELLED');
 
 -- Utilisateurs internes
 CREATE TABLE users (
@@ -73,6 +74,41 @@ CREATE TABLE audit_logs (
     details       TEXT
 );
 
+-- Facturiers (catalogue — extension v1.1)
+CREATE TABLE bill_providers (
+    id        BIGSERIAL PRIMARY KEY,
+    code      VARCHAR(20)  NOT NULL UNIQUE,
+    name      VARCHAR(100) NOT NULL,
+    category  VARCHAR(50),
+    active    BOOLEAN      NOT NULL DEFAULT TRUE
+);
+
+-- Paiements de facture (extension v1.1)
+CREATE TABLE bill_payments (
+    id                BIGSERIAL PRIMARY KEY,
+    account_id        BIGINT         NOT NULL REFERENCES accounts(id),
+    bill_provider_id  BIGINT         NOT NULL REFERENCES bill_providers(id),
+    client_reference  VARCHAR(50)    NOT NULL,
+    amount            NUMERIC(19, 4) NOT NULL CHECK (amount > 0),
+    transaction_id    BIGINT         NOT NULL UNIQUE REFERENCES transactions(id),
+    created_at        TIMESTAMPTZ    NOT NULL DEFAULT NOW()
+);
+
+-- Commandes de chéquier (extension v1.1)
+CREATE TABLE checkbook_orders (
+    id            BIGSERIAL PRIMARY KEY,
+    order_number  VARCHAR(20)            NOT NULL UNIQUE,
+    account_id    BIGINT                 NOT NULL REFERENCES accounts(id),
+    client_id     BIGINT                 NOT NULL REFERENCES clients(id),
+    quantity      INTEGER                NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    status        checkbook_order_status NOT NULL DEFAULT 'PENDING',
+    requested_at  TIMESTAMPTZ            NOT NULL DEFAULT NOW(),
+    processed_at  TIMESTAMPTZ,
+    delivered_at  TIMESTAMPTZ,
+    requested_by  BIGINT                 NOT NULL REFERENCES users(id),
+    notes         VARCHAR(255)
+);
+
 -- Index
 CREATE INDEX idx_clients_cin ON clients(cin);
 CREATE INDEX idx_clients_client_number ON clients(client_number);
@@ -83,3 +119,15 @@ CREATE INDEX idx_transactions_executed_at ON transactions(executed_at);
 CREATE INDEX idx_transactions_source ON transactions(source_account_id);
 CREATE INDEX idx_transactions_destination ON transactions(destination_account_id);
 CREATE INDEX idx_audit_logs_performed_at ON audit_logs(performed_at);
+CREATE INDEX idx_bill_payments_account_id ON bill_payments(account_id);
+CREATE INDEX idx_bill_payments_transaction_id ON bill_payments(transaction_id);
+CREATE INDEX idx_checkbook_orders_account_id ON checkbook_orders(account_id);
+CREATE INDEX idx_checkbook_orders_status ON checkbook_orders(status);
+
+-- Données de référence facturiers (exemples)
+INSERT INTO bill_providers (code, name, category) VALUES
+    ('LYDEC', 'LYDEC', 'Eau & électricité'),
+    ('ONEE', 'ONEE', 'Électricité'),
+    ('IAM', 'IAM', 'Télécom'),
+    ('ORANGE', 'Orange Maroc', 'Télécom'),
+    ('INWI', 'Inwi', 'Télécom');

@@ -36,6 +36,8 @@ rectangle "Comptes bancaires" {
   usecase "Consulter un compte" as UC_A_VIEW
   usecase "Lister les comptes\nd'un client" as UC_A_LIST
   usecase "Gérer le statut compte" as UC_A_STATUS
+  usecase "Commander un chéquier" as UC_CHQ_ORDER
+  usecase "Suivre une commande\nde chéquier" as UC_CHQ_TRACK
 }
 
 personnel --> UC_LOGIN
@@ -49,6 +51,8 @@ personnel --> UC_A_OPEN
 personnel --> UC_A_VIEW
 personnel --> UC_A_LIST
 personnel --> UC_A_STATUS
+personnel --> UC_CHQ_ORDER
+personnel --> UC_CHQ_TRACK
 
 legend bottom
   |= Détails |= |
@@ -59,6 +63,7 @@ legend bottom
   | Types compte | Courant, épargne, professionnel |
   | Consulter compte | Solde et statut |
   | Statut compte | Bloquer, débloquer, clôturer |
+  | Chéquier | Compte courant/pro actif ; workflow PENDING → LIVRÉE |
   | Audit | Toute modification est journalisée |
 endlegend
 

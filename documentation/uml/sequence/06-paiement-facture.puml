@@ -1,0 +1,46 @@
+@startuml 06-paiement-facture
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Paiement de facture avec reçu
+
+actor "Agent bancaire" as agent
+participant "BillPaymentController" as ctrl
+participant "BillPaymentService" as svc
+participant "AccountService" as acc
+participant "TransactionService" as tx
+database "PostgreSQL" as db
+
+agent -> ctrl : Saisir compte, facturier,\nréférence client, montant
+ctrl -> svc : payBill(form, user)
+
+svc -> acc : findAccount + vérifier ACTIVE
+alt compte bloqué ou clôturé
+  svc --> ctrl : erreur métier
+  ctrl --> agent : message d'erreur
+else compte éligible
+  svc -> acc : vérifier solde ≥ montant
+  alt solde insuffisant
+    svc --> ctrl : erreur solde
+    ctrl --> agent : message d'erreur
+  else solde OK
+    svc -> tx : créer transaction PAIEMENT_FACTURE
+    tx -> db : débiter compte + enregistrer transaction
+    svc -> db : enregistrer bill_payment\n(facturier, référence)
+    svc -> db : audit log BILL_PAYMENT_CREATED
+    svc --> ctrl : BillPaymentResult + transactionId
+    ctrl --> agent : succès + lien reçu
+    agent -> ctrl : GET /transactions/{id}/receipt
+    ctrl --> agent : reçu imprimable (HTML)
+  end
+end
+
+note right of svc
+  Règles :
+  - Compte ACTIVE uniquement
+  - Montant > 0
+  - Référence facture obligatoire
+  - Même reçu que les autres opérations
+end note
+
+@enduml

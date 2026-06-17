@@ -22,6 +22,7 @@ rectangle "Transactions" {
   usecase "Effectuer un dépôt" as UC_DEPOT
   usecase "Effectuer un retrait" as UC_RETRAIT
   usecase "Effectuer un virement" as UC_VIREMENT
+  usecase "Payer une facture" as UC_BILL
   usecase "Consulter l'historique" as UC_HIST
   usecase "Éditer un relevé\nou reçu" as UC_RELEVE
 }
@@ -39,6 +40,7 @@ usecase "Contrôler l'éligibilité\nde l'opération" as UC_CHECK
 personnel --> UC_DEPOT
 personnel --> UC_RETRAIT
 personnel --> UC_VIREMENT
+personnel --> UC_BILL
 personnel --> UC_HIST
 personnel --> UC_RELEVE
 personnel --> UC_DASH
@@ -52,11 +54,13 @@ chef --> UC_VALIDATE
 UC_DEPOT ..> UC_CHECK : <<include>>
 UC_RETRAIT ..> UC_CHECK : <<include>>
 UC_VIREMENT ..> UC_CHECK : <<include>>
+UC_BILL ..> UC_CHECK : <<include>>
 UC_DASH ..> UC_RECENT : <<include>>
 
 legend bottom
   |= Détails |= |
   | Contrôle | Solde suffisant, compte actif |
+  | Paiement facture | Facturier, référence, débit compte, reçu |
   | Historique | Date, heure, montant, utilisateur responsable |
   | Filtres | Date, type, compte, utilisateur |
   | Utilisateurs | Créer, modifier, rôles, activer/désactiver — admin seul |

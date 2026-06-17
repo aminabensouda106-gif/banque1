@@ -3,6 +3,7 @@ package com.banque.agence.web.controller;
 import com.banque.agence.domain.entity.Transaction;
 import com.banque.agence.domain.enums.TransactionType;
 import com.banque.agence.repository.UserRepository;
+import com.banque.agence.service.BillPaymentService;
 import com.banque.agence.service.TransactionService;
 import com.banque.agence.web.dto.TransactionFilterForm;
 import org.springframework.data.domain.Page;
@@ -24,10 +25,14 @@ public class TransactionController {
 
     private final TransactionService transactionService;
     private final UserRepository userRepository;
+    private final BillPaymentService billPaymentService;
 
-    public TransactionController(TransactionService transactionService, UserRepository userRepository) {
+    public TransactionController(TransactionService transactionService,
+                                 UserRepository userRepository,
+                                 BillPaymentService billPaymentService) {
         this.transactionService = transactionService;
         this.userRepository = userRepository;
+        this.billPaymentService = billPaymentService;
     }
 
     @GetMapping
@@ -57,6 +62,7 @@ public class TransactionController {
     public String receipt(@PathVariable Long id, Model model) {
         var transaction = transactionService.findById(id);
         model.addAttribute("transaction", transaction);
+        billPaymentService.findByTransactionId(id).ifPresent(bp -> model.addAttribute("billPayment", bp));
         return "transactions/receipt";
     }
 }

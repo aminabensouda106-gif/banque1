@@ -50,7 +50,7 @@
 | Champ | Type | Contrainte | Description |
 |---|---|---|---|
 | id | BIGINT | PK, auto | Identifiant unique |
-| type | ENUM | NOT NULL | DEPOT, RETRAIT ou VIREMENT |
+| type | ENUM | NOT NULL | DEPOT, RETRAIT, VIREMENT ou **PAIEMENT_FACTURE** |
 | amount | NUMERIC(19,4) | NOT NULL, > 0 | Montant de l'opération |
 | source_account_id | BIGINT | FK → accounts | Compte débité (retrait, virement) |
 | destination_account_id | BIGINT | FK → accounts | Compte crédité (dépôt, virement) |
@@ -69,3 +69,41 @@
 | performed_by | BIGINT | FK → users, NOT NULL | Utilisateur ayant effectué l'action |
 | performed_at | TIMESTAMPTZ | NOT NULL | Date et heure |
 | details | TEXT | | Détail textuel ou snapshot JSON |
+
+## Table `bill_providers` (extension v1.1)
+
+| Champ | Type | Contrainte | Description |
+|---|---|---|---|
+| id | BIGINT | PK, auto | Identifiant unique |
+| code | VARCHAR(20) | NOT NULL, UNIQUE | Code court (ex. LYDEC) |
+| name | VARCHAR(100) | NOT NULL | Libellé affiché |
+| category | VARCHAR(50) | | Catégorie (eau, électricité, télécom…) |
+| active | BOOLEAN | NOT NULL, défaut TRUE | FALSE = masqué dans les formulaires |
+
+## Table `bill_payments` (extension v1.1)
+
+| Champ | Type | Contrainte | Description |
+|---|---|---|---|
+| id | BIGINT | PK, auto | Identifiant unique |
+| account_id | BIGINT | FK → accounts, NOT NULL | Compte débité |
+| bill_provider_id | BIGINT | FK → bill_providers, NOT NULL | Facturier payé |
+| client_reference | VARCHAR(50) | NOT NULL | Référence contrat / facture |
+| amount | NUMERIC(19,4) | NOT NULL, > 0 | Montant payé |
+| transaction_id | BIGINT | FK → transactions, NOT NULL, UNIQUE | Transaction liée (PAIEMENT_FACTURE) |
+| created_at | TIMESTAMPTZ | NOT NULL | Date d'enregistrement |
+
+## Table `checkbook_orders` (extension v1.1)
+
+| Champ | Type | Contrainte | Description |
+|---|---|---|---|
+| id | BIGINT | PK, auto | Identifiant unique |
+| order_number | VARCHAR(20) | NOT NULL, UNIQUE | Numéro commande (ex. CHQ-00001) |
+| account_id | BIGINT | FK → accounts, NOT NULL | Compte concerné |
+| client_id | BIGINT | FK → clients, NOT NULL | Client demandeur |
+| quantity | INTEGER | NOT NULL, > 0, défaut 1 | Nombre de chéquiers |
+| status | ENUM | NOT NULL | PENDING, PROCESSING, DELIVERED ou CANCELLED |
+| requested_at | TIMESTAMPTZ | NOT NULL | Date de la demande |
+| processed_at | TIMESTAMPTZ | | Date passage en traitement |
+| delivered_at | TIMESTAMPTZ | | Date de livraison |
+| requested_by | BIGINT | FK → users, NOT NULL | Agent ayant saisi la demande |
+| notes | VARCHAR(255) | | Commentaire optionnel |

@@ -49,6 +49,34 @@ entity "TRANSACTION" as transaction {
   description
 }
 
+entity "FACTURIER" as provider {
+  * identifiant
+  --
+  code
+  libellé
+  catégorie
+  actif
+}
+
+entity "PAIEMENT_FACTURE" as bill {
+  * identifiant
+  --
+  référence client
+  montant
+  date création
+}
+
+entity "COMMANDE_CHEQUIER" as chq {
+  * identifiant
+  --
+  numéro commande
+  quantité
+  statut
+  date demande
+  date traitement
+  date livraison
+}
+
 entity "JOURNAL_AUDIT" as audit {
   * identifiant
   --
@@ -60,9 +88,15 @@ entity "JOURNAL_AUDIT" as audit {
 }
 
 client ||--o{ account : possède
+client ||--o{ chq : demande
 user ||--o{ transaction : exécute
+user ||--o{ chq : traite
 user ||--o{ audit : effectue
 account ||--o{ transaction : source
 account ||--o{ transaction : destination
+account ||--o{ bill : débite via
+account ||--o{ chq : commande
+provider ||--o{ bill : concerne
+bill ||--|| transaction : génère
 
 @enduml

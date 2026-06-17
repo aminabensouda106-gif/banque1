@@ -14,7 +14,7 @@
 | **Scope** | Gestion interne d'une agence (clients, comptes, transactions, utilisateurs, audit) |
 | **Source of requirements** | `documentation/cahier-charge-PFA.pdf` |
 | **Team** | Solo developer |
-| **Status** | Phase 8 terminée — prêt pour Phase 9 (finalisation) |
+| **Status** | Phase 10 terminée — prêt pour Phase 11 (commande chéquier) |
 
 ### Problématique
 
@@ -29,6 +29,8 @@ Une agence bancaire traite quotidiennement des données clients, comptes et mouv
 - Administrer les utilisateurs internes et leurs rôles
 - Journaliser les opérations sensibles
 - Produire relevés et reçus d'opération
+- **(v1.1)** Payer des factures courantes (eau, électricité, télécom) avec reçu
+- **(v1.1)** Gérer les commandes de chéquier (workflow statuts)
 
 ### Acteurs internes (cahier §6)
 
@@ -51,6 +53,11 @@ Une agence bancaire traite quotidiennement des données clients, comptes et mouv
 7. Consultation historique
 8. Gestion utilisateurs
 
+**Extensions v1.1 (hors cahier strict, côté agence) :**
+
+9. Paiement de facture + reçu
+10. Commande de chéquier
+
 ### Règles de gestion (cahier §8)
 
 | # | Règle |
@@ -64,14 +71,24 @@ Une agence bancaire traite quotidiennement des données clients, comptes et mouv
 | R7 | Mots de passe stockés chiffrés (BCrypt) |
 | R8 | Opérations importantes → journal d'audit |
 
+**Extensions v1.1 :**
+
+| # | Règle |
+|---|---|
+| R9 | Paiement facture : compte ACTIVE, solde suffisant |
+| R10 | Référence facture obligatoire |
+| R11 | Chéquier : compte COURANT ou PROFESSIONNEL actif uniquement |
+| R12 | Une seule commande PENDING par compte |
+| R13 | Commande chéquier : pas d'impact sur le solde |
+
 ### Diagrammes de cas d'utilisation (étape 1.2)
 
 2 diagrammes PlantUML dans `documentation/uml/cas-utilisation/` (SVG uniquement) :
 
 | Fichier | Contenu |
 |---|---|
-| `01-clients-comptes.puml` | Accès (auth), clients (§7.1), comptes (§7.2) |
-| `02-operations-supervision.puml` | Transactions (§7.3), utilisateurs (§7.4), reporting (§7.5) |
+| `01-clients-comptes.puml` | Accès (auth), clients (§7.1), comptes (§7.2), **commande chéquier (v1.1)** |
+| `02-operations-supervision.puml` | Transactions (§7.3), **paiement facture (v1.1)**, utilisateurs (§7.4), reporting (§7.5) |
 
 Acteur générique **Personnel de l'agence** (Admin, Agent, Chef en spécialisation) pour éviter les liens redondants.
 
@@ -80,7 +97,7 @@ Exports : `.svg` à côté de chaque `.puml`.
 ### Diagramme de classes (étape 1.3)
 
 - `documentation/uml/diagramme-classes.puml` (+ SVG)
-- 5 entités + 5 énumérations, relations et notes R1/R2/R5
+- 7 entités + 6 énumérations, relations et notes R1–R2, R5, extensions v1.1
 
 ### Diagrammes de séquence (étape 1.4)
 
@@ -91,6 +108,8 @@ Exports : `.svg` à côté de chaque `.puml`.
 | `03-operations-financieres` | Dépôt, Retrait, Virement |
 | `04-consultation-historique` | Consultation historique, relevé, reçu |
 | `05-gestion-utilisateurs` | Gestion utilisateurs |
+| `06-paiement-facture` | Paiement facture + reçu (v1.1) |
+| `07-commande-chequier` | Commande chéquier (v1.1) |
 
 ### Couverture cahier des charges (diagrammes UML)
 
@@ -103,7 +122,9 @@ Exports : `.svg` à côté de chaque `.puml`.
 | Utilisateurs (création, rôles, activation) | UC 02 + séquence 05 |
 | Reporting (dashboard, opérations récentes, relevés) | UC 02 + séquence 04 |
 | Supervision chef (validation, audit) | UC 02 |
-| 8 règles de gestion | UC légendes, séquences alt, classe |
+| Paiement facture (v1.1) | UC 02 + séquence 06 |
+| Commande chéquier (v1.1) | UC 01 + séquence 07 |
+| 8 règles de gestion + extensions R9–R13 | UC légendes, séquences alt, classe |
 | Auth BCrypt, traçabilité | Séquences 01, 03, 05 |
 
 ### Modèle de données (étape 1.5)
@@ -127,10 +148,17 @@ java -jar plantuml.jar -tsvg documentation/modele-donnees/*.puml documentation/u
 ### Out of scope (per cahier des charges)
 
 - Interconnexion interbancaire nationale
-- Gestion avancée des crédits
+- Gestion avancée des **crédits** (explicitement exclu du projet)
 - Cartes bancaires et GAB réels
 - Signature électronique qualifiée
 - Portail client (optional future evolution only)
+
+### Extensions v1.1 (in scope, agency-side)
+
+| Feature | Phase | Notes |
+|---|---|---|
+| Paiement facture + reçu | 10 | Débit compte, catalogue facturiers, réutilise reçu transaction |
+| Commande chéquier | 11 | Workflow statuts, pas de mouvement financier |
 
 ---
 
@@ -240,6 +268,8 @@ com.banque.agence
 | Clients CRUD | ✓ | ✓ | ✓ |
 | Accounts CRUD | ✓ | ✓ | ✓ |
 | Transactions | ✓ | ✓ | ✓ |
+| Bill payment | ✓ | ✓ | ✓ |
+| Checkbook orders | ✓ | ✓ | ✓ |
 | Sensitive validation | ✓ | ✓ | — |
 | User management | ✓ | read | — |
 | Audit log | ✓ | ✓ | — |
@@ -262,6 +292,9 @@ User (internal staff)
 Client
 Account
 Transaction
+BillProvider
+BillPayment
+CheckbookOrder
 AuditLog
 ```
 
@@ -283,7 +316,7 @@ AuditLog
 - `version` (for optimistic locking)
 
 #### `Transaction`
-- `id`, `type`: DEPOT | RETRAIT | VIREMENT
+- `id`, `type`: DEPOT | RETRAIT | VIREMENT | **PAIEMENT_FACTURE**
 - `amount` (`BigDecimal`, positive)
 - `sourceAccount` (nullable for DEPOT)
 - `destinationAccount` (nullable for RETRAIT)
@@ -291,6 +324,21 @@ AuditLog
 - `executedAt` (timestamp)
 - `reference` / `description` (optional)
 - For VIREMENT: link both accounts; single transaction record or paired entries — **decision: single record with source + destination** (simpler history)
+- For **PAIEMENT_FACTURE**: `sourceAccount` = compte client débité ; détails facturier dans `BillPayment`
+
+#### `BillProvider` (v1.1)
+- `id`, `code` (unique), `name`, `category`, `active`
+
+#### `BillPayment` (v1.1)
+- `id`, `account`, `billProvider`, `clientReference`, `amount`
+- `transaction` (OneToOne, type PAIEMENT_FACTURE)
+- `createdAt`
+
+#### `CheckbookOrder` (v1.1)
+- `id`, `orderNumber` (unique), `account`, `client`, `quantity`
+- `status`: PENDING | PROCESSING | DELIVERED | CANCELLED
+- `requestedAt`, `processedAt`, `deliveredAt`
+- `requestedBy` (User), `notes` (optional)
 
 #### `User` (staff)
 - `id`, `username` (unique), `passwordHash`, `fullName`, `email`
@@ -313,6 +361,15 @@ AuditLog
 4. Withdrawal blocked if `balance < amount`
 5. Transfer requires both accounts **ACTIVE**
 6. BLOCKED or CLOSED account → no ordinary operations
+7. Bill payment debits account like withdraw; receipt via linked `Transaction`
+8. Checkbook order does not modify balance
+
+### Planned migrations (v1.1)
+
+| Version | Content |
+|---|---|
+| V7 | `bill_providers`, `bill_payments`, extend `transaction_type` |
+| V8 | `checkbook_orders`, enum `checkbook_order_status` |
 
 ---
 
@@ -359,6 +416,8 @@ src/main/resources/db/migration/
 | 9 | User management (admin) | P1 | Done (Phase 7) |
 | 10 | Audit log | P1 | Done (Phase 8) |
 | 11 | Statement / receipt PDF | P2 | Done (Phase 8 — HTML imprimable) |
+| 12 | Bill payment + receipt | P1 | Done (Phase 10) |
+| 13 | Checkbook order workflow | P2 | Planned (Phase 11) |
 
 ---
 
@@ -381,6 +440,8 @@ src/main/resources/db/migration/
 6. History — filterable transaction list
 7. Users — admin CRUD
 8. Audit — read-only log
+9. Bill payment — form (account, provider, reference, amount)
+10. Checkbook orders — list, request from account, status updates
 
 ---
 
@@ -519,6 +580,12 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | Account statement at `/accounts/{id}/statement` | Phase 8 — date filter + current balance header |
 | 2026-06-15 | Printable receipt at `/transactions/{id}/receipt` | Phase 8 — HTML print, no OpenPDF dependency |
 | 2026-06-15 | Audit log view at `/admin/audit` for ADMIN + CHEF | Phase 8 — paginated consultation |
+| 2026-06-14 | Extensions v1.1 : paiement facture + commande chéquier | Enrichissement PFA côté agence ; crédit et portail client exclus |
+| 2026-06-14 | `BillPayment` lié 1–1 à `Transaction` PAIEMENT_FACTURE | Réutilise historique et reçu existants |
+| 2026-06-14 | `CheckbookOrder` sans impact solde | Service administratif distinct des opérations financières |
+| 2026-06-14 | Catalogue `bill_providers` seed (LYDEC, ONEE, IAM…) | Liste fermée pour formulaire agent |
+| 2026-06-17 | Bill payment at `/operations/bill-payment` | Phase 10 — `BillPaymentService`, Flyway V7, redirect to receipt |
+| 2026-06-17 | Receipt extended with provider + reference | `BillPayment` loaded by transaction id on receipt page |
 
 ---
 

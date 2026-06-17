@@ -1,0 +1,45 @@
+@startuml 07-commande-chequier
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Commande de chéquier
+
+actor "Agent bancaire" as agent
+participant "CheckbookOrderController" as ctrl
+participant "CheckbookOrderService" as svc
+participant "AccountService" as acc
+database "PostgreSQL" as db
+
+agent -> ctrl : Depuis fiche compte :\ndemander chéquier (quantité)
+ctrl -> svc : requestCheckbook(accountId, quantity, user)
+
+svc -> acc : findAccount + vérifier type/statut
+alt compte épargne ou non éligible
+  svc --> ctrl : erreur métier
+  ctrl --> agent : message d'erreur
+else compte courant/pro actif
+  svc -> db : vérifier pas de commande PENDING
+  alt commande en cours existante
+    svc --> ctrl : erreur doublon
+    ctrl --> agent : message d'erreur
+  else OK
+    svc -> db : INSERT checkbook_order\nstatut PENDING
+    svc -> db : audit log CHECKBOOK_ORDER_CREATED
+    svc --> ctrl : CheckbookOrder
+    ctrl --> agent : confirmation + n° demande
+  end
+end
+
+agent -> ctrl : Marquer EN_COURS / LIVRÉE
+ctrl -> svc : updateStatus(orderId, newStatus, user)
+svc -> db : UPDATE statut + dates
+svc -> db : audit log
+ctrl --> agent : fiche commande mise à jour
+
+note right of svc
+  Pas de mouvement financier
+  Workflow : PENDING → PROCESSING → DELIVERED
+  (ou CANCELLED)
+end note
+
+@enduml
