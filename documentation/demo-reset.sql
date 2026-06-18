@@ -5,7 +5,7 @@
 --   psql -U banque -h localhost -p 5433 -d banque_agence -f documentation/demo-reset.sql
 -- Puis redémarrer l'application (profil dev) :
 --   - DevDemoDataInitializer recharge clients/comptes/transactions si clients vide
---   - DemoPortalSync réactive le portail Moncef/Abdellah (banque.demo.portal-sync-enabled=true)
+--   - DemoPortalSync réactive le portail Moncef/Abdellah Idrissi (banque.demo.portal-sync-enabled=true)
 
 TRUNCATE notifications RESTART IDENTITY CASCADE;
 TRUNCATE audit_logs RESTART IDENTITY CASCADE;

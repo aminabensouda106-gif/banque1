@@ -85,8 +85,8 @@ public class DevDemoDataInitializer implements ApplicationRunner {
 
         Client moncef = saveClient("CL-00001", "MB654321", "Moncef", "Bensouda",
                 "moncef.bensouda@email.ma", "0611223344", "18 Bd Anfa, Casablanca", "Directeur commercial");
-        Client abdellah = saveClient("CL-00002", "AR234567", "Abdellah", "Raisouni",
-                "abdellah.raisouni@email.ma", "0622334455", "9 Rue Baghdad, Rabat", null);
+        Client abdellah = saveClient("CL-00002", "AI876543", "Abdellah", "Idrissi",
+                "abdellah.idrissi@email.ma", "0622334455", "9 Rue Baghdad, Rabat", "Ingénieur informatique");
         Client karim = saveClient("CL-00003", "KA234567", "Karim", "El Amrani",
                 "karim.elamrani@email.ma", "0633445566", "22 Av Mohammed VI, Marrakech", "Gérant restaurant");
         Client nadia = saveClient("CL-00004", "NB987654", "Nadia", "Bennani",
@@ -94,15 +94,15 @@ public class DevDemoDataInitializer implements ApplicationRunner {
         Client mehdi = saveClient("CL-00005", "MC123789", "Mehdi", "Chraibi",
                 "mehdi.chraibi@email.ma", "0655667788", "14 Bd Pasteur, Tanger", null);
 
-        Account moncefCourant = saveAccount("ACC-00001", moncef, AccountType.COURANT);
-        Account moncefEpargne = saveAccount("ACC-00002", moncef, AccountType.EPARGNE);
-        Account moncefPro = saveAccount("ACC-00003", moncef, AccountType.PROFESSIONNEL);
-        Account abdellahCourant = saveAccount("ACC-00004", abdellah, AccountType.COURANT);
-        Account abdellahEpargne = saveAccount("ACC-00005", abdellah, AccountType.EPARGNE);
-        Account karimCourant = saveAccount("ACC-00006", karim, AccountType.COURANT);
-        Account nadiaCourant = saveAccount("ACC-00007", nadia, AccountType.COURANT);
-        Account nadiaEpargne = saveAccount("ACC-00008", nadia, AccountType.EPARGNE);
-        Account mehdiCourant = saveAccount("ACC-00009", mehdi, AccountType.COURANT);
+        Instant opened = Instant.now().minus(21, ChronoUnit.DAYS);
+
+        Account moncefCourant = saveAccount("ACC-00001", moncef, AccountType.COURANT, opened.plus(1, ChronoUnit.DAYS));
+        Account moncefEpargne = saveAccount("ACC-00002", moncef, AccountType.EPARGNE, opened.plus(2, ChronoUnit.DAYS));
+        Account moncefPro = saveAccount("ACC-00003", moncef, AccountType.PROFESSIONNEL, opened.plus(3, ChronoUnit.DAYS));
+        Account karimCourant = saveAccount("ACC-00004", karim, AccountType.COURANT, opened.plus(18, ChronoUnit.DAYS));
+        Account nadiaCourant = saveAccount("ACC-00005", nadia, AccountType.COURANT, opened.plus(19, ChronoUnit.DAYS));
+        Account mehdiCourant = saveAccount("ACC-00006", mehdi, AccountType.COURANT, opened.plus(20, ChronoUnit.DAYS));
+        Account abdellahCourant = saveAccount("ACC-00007", abdellah, AccountType.COURANT, opened.plus(21, ChronoUnit.DAYS));
 
         Instant base = Instant.now().minus(21, ChronoUnit.DAYS);
 
@@ -117,18 +117,16 @@ public class DevDemoDataInitializer implements ApplicationRunner {
         deposit(moncefPro, bd("45000"), agent, base.plus(13, ChronoUnit.DAYS), "Encaissement honoraires");
         transfer(moncefPro, moncefCourant, bd("12000"), agent, base.plus(15, ChronoUnit.DAYS), "Virement vers compte courant");
 
-        // Abdellah Raisouni — second profil, soldes confortables
+        // Abdellah Idrissi — second profil portail, soldes confortables
         deposit(abdellahCourant, bd("22000"), agent, base.plus(4, ChronoUnit.DAYS), "Salaire et primes");
-        deposit(abdellahEpargne, bd("14500"), agent, base.plus(6, ChronoUnit.DAYS), "Épargne logement");
+        deposit(abdellahCourant, bd("14500"), agent, base.plus(6, ChronoUnit.DAYS), "Épargne logement");
         withdraw(abdellahCourant, bd("800"), agent, base.plus(10, ChronoUnit.DAYS), "Retrait DAB");
-        transfer(abdellahCourant, abdellahEpargne, bd("3500"), agent, base.plus(14, ChronoUnit.DAYS), "Transfert épargne");
 
         deposit(karimCourant, bd("15000"), agent, base.plus(4, ChronoUnit.DAYS), "Recettes activité");
         withdraw(karimCourant, bd("1200"), agent, base.plus(8, ChronoUnit.DAYS), "Paiement fournisseur");
         payBill(karimCourant, "ONEE", "REF-ONEE-88341", bd("420"), agent, base.plus(12, ChronoUnit.DAYS));
 
-        deposit(nadiaCourant, bd("8500"), agent, base.plus(5, ChronoUnit.DAYS), "Versement guichet");
-        deposit(nadiaEpargne, bd("6000"), agent, base.plus(7, ChronoUnit.DAYS), "Placement épargne");
+        deposit(nadiaCourant, bd("14500"), agent, base.plus(5, ChronoUnit.DAYS), "Versement guichet et épargne");
         withdraw(nadiaCourant, bd("300"), agent, base.plus(16, ChronoUnit.DAYS), "Retrait espèces");
 
         deposit(mehdiCourant, bd("4200"), agent, base.plus(6, ChronoUnit.DAYS), "Dépôt initial");
@@ -144,7 +142,7 @@ public class DevDemoDataInitializer implements ApplicationRunner {
         demoPortalSync.enablePortal(moncef, DemoPortalSync.DEMO_PASSWORD);
         demoPortalSync.enablePortal(abdellah, DemoPortalSync.DEMO_PASSWORD);
 
-        log.info("Données de démonstration chargées : 5 clients marocains, 9 comptes, "
+        log.info("Données de démonstration chargées : 5 clients marocains, 7 comptes, "
                 + "Moncef Bensouda (client principal), 2 accès portail client.");
     }
 
@@ -163,13 +161,14 @@ public class DevDemoDataInitializer implements ApplicationRunner {
         return clientRepository.save(client);
     }
 
-    private Account saveAccount(String number, Client client, AccountType type) {
+    private Account saveAccount(String number, Client client, AccountType type, Instant openedAt) {
         Account account = new Account();
         account.setAccountNumber(number);
         account.setClient(client);
         account.setType(type);
         account.setStatus(AccountStatus.ACTIVE);
         account.setBalance(BigDecimal.ZERO);
+        account.setOpenedAt(openedAt);
         return accountRepository.save(account);
     }
 

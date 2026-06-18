@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Package Overleaf : zip main.tex + images/ (+ logo, captures, UML)."""
+"""Validate image refs in main.tex and build Overleaf zip (PDF/PNG only)."""
 from __future__ import annotations
 
+import re
 import shutil
+import subprocess
 import zipfile
 from pathlib import Path
 
@@ -11,15 +13,6 @@ REPO = ROOT.parent.parent
 OUT_IMAGES = ROOT / "images"
 OUT_TEX = ROOT / "main.tex"
 OUT_ZIP = ROOT / "amana-report-overleaf.zip"
-
-UML_SRC_DIRS = [
-    REPO / "documentation" / "uml",
-    REPO / "documentation" / "uml" / "sequence",
-    REPO / "documentation" / "uml" / "use-case",
-    REPO / "documentation" / "uml" / "class",
-    REPO / "documentation" / "uml" / "activity",
-    REPO / "documentation" / "uml" / "database",
-]
 LOGO_SRC = REPO / "src" / "main" / "resources" / "static" / "images" / "amana-logo.png"
 
 UML_SVGS = [
@@ -36,18 +29,69 @@ UML_SVGS = [
     "diagramme-activite-virement.svg",
 ]
 
+UML_SRC_DIRS = [
+    REPO / "documentation" / "uml" / "cas-utilisation",
+    REPO / "documentation" / "uml",
+    REPO / "documentation" / "uml" / "sequence",
+    REPO / "documentation" / "uml" / "database",
+    REPO / "documentation" / "uml" / "class",
+]
 
-def sync_uml_svgs() -> None:
-    OUT_IMAGES.mkdir(parents=True, exist_ok=True)
-    for name in UML_SVGS:
-        dst = OUT_IMAGES / name
-        if dst.exists():
+PNG_CAPTURES = [
+    "landing.png",
+    "landing-services.png",
+    "login.png",
+    "dashboard-agent.png",
+    "clients-liste.png",
+    "compte-detail.png",
+    "operations-depot.png",
+    "paiement-facture.png",
+    "recu-pdf.png",
+    "chequier-liste.png",
+    "notifications.png",
+    "admin-users.png",
+    "portal-dashboard.png",
+    "portal-notifications.png",
+]
+
+
+def find_svg(name: str) -> Path | None:
+    for base in UML_SRC_DIRS:
+        p = base / name
+        if p.exists():
+            return p
+    return None
+
+
+def svg_to_pdf(svg: Path, pdf: Path) -> bool:
+    for cmd in (
+        ["inkscape", str(svg), "--export-type=pdf", f"--export-filename={pdf}"],
+        ["rsvg-convert", "-f", "pdf", "-o", str(pdf), str(svg)],
+    ):
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+            return pdf.exists()
+        except (FileNotFoundError, subprocess.CalledProcessError):
             continue
-        for base in UML_SRC_DIRS:
-            src = base / name
-            if src.exists():
-                shutil.copy2(src, dst)
-                break
+    return False
+
+
+def ensure_uml_pdfs() -> None:
+    OUT_IMAGES.mkdir(parents=True, exist_ok=True)
+    for svg_name in UML_SVGS:
+        pdf_name = svg_name.replace(".svg", ".pdf")
+        pdf_path = OUT_IMAGES / pdf_name
+        if pdf_path.exists():
+            continue
+        src = find_svg(svg_name)
+        if src and svg_to_pdf(src, pdf_path):
+            print(f"  PDF: {pdf_name}")
+            continue
+        if src:
+            shutil.copy2(src, OUT_IMAGES / svg_name)
+            print(f"  WARN: could not convert {svg_name} — copy SVG only")
+        else:
+            print(f"  WARN: missing {svg_name}")
 
 
 def sync_logo() -> None:
@@ -56,9 +100,26 @@ def sync_logo() -> None:
         shutil.copy2(LOGO_SRC, OUT_IMAGES / "amana-logo.png")
 
 
+def extract_image_refs(tex: str) -> set[str]:
+    refs = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}#]+)\}", tex))
+    refs.update(
+        re.findall(
+            r"\\includefigure\{[^}#]+\}\{([^}#]+)\}\{[^}]+\}\{[^}]+\}",
+            tex,
+        )
+    )
+    return {r.strip() for r in refs if r.strip() and not r.startswith("#")}
+
+
+def validate(tex: str) -> list[str]:
+    missing = []
+    for ref in sorted(extract_image_refs(tex)):
+        if not (OUT_IMAGES / ref).exists():
+            missing.append(ref)
+    return missing
+
+
 def build_zip() -> None:
-    if not OUT_TEX.exists():
-        raise SystemExit(f"Missing {OUT_TEX}")
     if OUT_ZIP.exists():
         OUT_ZIP.unlink()
     with zipfile.ZipFile(OUT_ZIP, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -67,17 +128,28 @@ def build_zip() -> None:
         if readme.exists():
             zf.write(readme, "README.md")
         for path in sorted(OUT_IMAGES.iterdir()):
-            if path.is_file():
+            if path.suffix.lower() in {".pdf", ".png", ".jpg", ".jpeg"}:
                 zf.write(path, f"images/{path.name}")
 
 
 def main() -> None:
+    if not OUT_TEX.exists():
+        raise SystemExit("main.tex missing")
+    tex = OUT_TEX.read_text(encoding="utf-8")
     sync_logo()
-    sync_uml_svgs()
+    print("UML diagrams:")
+    ensure_uml_pdfs()
+    missing = validate(tex)
+    if missing:
+        print("MISSING images:")
+        for m in missing:
+            print(f"  - {m}")
+        raise SystemExit(1)
     build_zip()
-    n_img = len(list(OUT_IMAGES.iterdir()))
-    print(f"OK: {OUT_TEX.name} ({OUT_TEX.stat().st_size // 1024} KB)")
-    print(f"OK: images/ ({n_img} fichiers)")
+    n_pdf = len(list(OUT_IMAGES.glob("*.pdf")))
+    n_png = len(list(OUT_IMAGES.glob("*.png")))
+    print(f"OK: all {len(extract_image_refs(tex))} image refs found")
+    print(f"OK: images/ — {n_pdf} PDF + {n_png} PNG")
     print(f"OK: {OUT_ZIP.name} ({OUT_ZIP.stat().st_size // 1024} KB)")
 
 

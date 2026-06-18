@@ -109,6 +109,10 @@ public class Account {
         return openedAt;
     }
 
+    public void setOpenedAt(Instant openedAt) {
+        this.openedAt = openedAt;
+    }
+
     public Instant getClosedAt() {
         return closedAt;
     }

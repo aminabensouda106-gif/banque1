@@ -1,6 +1,7 @@
 % Rapport AmanaBank — Overleaf (fichier unique)
+% !TEX program = pdflatex
 % Compiler avec pdfLaTeX — images dans images/
-\documentclass[11pt,a4paper,twoside,openright]{report}
+\documentclass[11pt,a4paper,oneside]{report}
 
 % ── Encodage & langue ──────────────────────────────────────────────
 \usepackage[T1]{fontenc}
@@ -16,7 +17,7 @@
 
 % ── Mise en page ───────────────────────────────────────────────────
 \usepackage{geometry}
-\geometry{left=2.8cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt}
+\geometry{left=2.8cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=22pt}
 \usepackage{setspace}
 \onehalfspacing
 
@@ -32,12 +33,12 @@
 
 % ── Graphiques & tableaux ──────────────────────────────────────────
 \usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.jpeg}
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
-\usepackage{tabularx}
 \usepackage{colortbl}
 \usepackage{etoolbox}
 \usepackage{caption}
@@ -50,22 +51,9 @@
 }
 
 \AtBeginEnvironment{tabular}{\renewcommand{\arraystretch}{1.28}}
-\AtBeginEnvironment{tabularx}{\renewcommand{\arraystretch}{1.28}}
 \BeforeBeginEnvironment{table}{\rowcolors{2}{AmanaBeige!40}{white}}
 
-\newcommand{\tabhead}[1]{\textcolor{white}{\textbf{#1}}}
-\newcolumntype{L}{>{\raggedright\arraybackslash}X}
-\newcolumntype{C}{>{\centering\arraybackslash}X}
-
 % ── Liens & code ───────────────────────────────────────────────────
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=AmanaBrown,
-    citecolor=AmanaBrownMid,
-    urlcolor=AmanaGold,
-    pdfborder={0 0 0}
-}
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{enumitem}
@@ -98,7 +86,7 @@
   {\chaptertitlename\ \thechapter}
   {14pt}
   {\Huge}
-  [\vspace{0.4em}{\color{AmanaGold}\titlerule[1.2pt]}\vspace{0.6em}]
+  [\vspace{0.5em}{\color{AmanaGold}\rule{0.45\textwidth}{1.2pt}}\vspace{0.8em}]
 
 \titlespacing*{\chapter}{0pt}{-8pt}{28pt}
 
@@ -120,20 +108,24 @@
   \renewcommand{\headrulewidth}{0pt}
 }
 
+% hyperref en dernier
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=AmanaBrown,
+    citecolor=AmanaBrownMid,
+    urlcolor=AmanaGold,
+    pdfborder={0 0 0}
+}
+
 \graphicspath{{images/}}
 
-\newcommand{\includefigure}[5]{%
-  \begin{figure}[H]
+\newcommand{\includefigure}[4]{%
+  \begin{figure}[htbp]
     \centering
-    \IfFileExists{#1}{%
-      \includegraphics[#2]{#3}%
-    }{%
-      \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
-      \textit{\color{AmanaBrownMid}[#4 — fichier attendu : \texttt{#1}]}
-      \vspace{1.5cm}}}%
-    }
-    \caption{#4}
-    \label{#5}
+    \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{#2}%
+    \caption{#3}%
+    \label{#4}%
   \end{figure}%
 }
 
@@ -171,11 +163,7 @@
 
 \vspace{1.6cm}
 
-\IfFileExists{images/amana-logo.png}{%
-  \includegraphics[width=0.34\textwidth]{amana-logo.png}%
-}{%
-  {\color{AmanaBrown}\Huge\bfseries \nomapplication}%
-}\\[1.4cm]
+\includegraphics[width=0.34\textwidth]{amana-logo.png}\\[1.4cm]
 
 {\color{AmanaBrown}\LARGE\bfseries Rapport de Projet de Fin d'Année}\\[0.45cm]
 {\color{AmanaText}\large \niveau\ --- \filiere}\\[1.6cm]
@@ -186,21 +174,13 @@
 
 \vfill
 
-\begin{minipage}{0.82\textwidth}
-\centering
-\arrayrulecolor{AmanaGold}
-\begin{tabular}{@{}>{\columncolor{AmanaBeige}}p{0.82\textwidth}@{}}
-\\[-0.5em]
-\centering
 \textbf{\large\color{AmanaBrown} Réalisé par}\\[0.55em]
 {\large\color{AmanaText} \etudianteun}\\[0.15em]
-{\large\color{AmanaText} \etudiantedeux}\\[1.1em]
-\textbf{\large\color{AmanaBrown} Encadrée par}\\[0.4em]
-{\large\color{AmanaText} \encadrante}\\[1.1em]
+{\large\color{AmanaText} \etudiantedeux}\\[1.2em]
+\textbf{\large\color{AmanaBrown} Encadrée par}\\[0.45em]
+{\large\color{AmanaText} \encadrante}\\[1.2em]
 {\large\color{AmanaText} \ecole}\\[0.1em]
 {\large\color{AmanaText} \villeecole}
-\end{tabular}
-\end{minipage}
 
 \vspace{1.4cm}
 \end{center}
@@ -261,21 +241,21 @@ This report presents the project context, requirements analysis, UML design, tec
 \vspace{0.5cm}
 \textbf{Keywords:} Bank branch — Spring Boot — Account management — Transactions — Client portal — UML
 
+\clearpage
 \tableofcontents
 \clearpage
 \listoffigures
 \clearpage
 \listoftables
-\clearpage
+
 \chapter*{Liste des abréviations}
 \addcontentsline{toc}{chapter}{Liste des abréviations}
 
 \begin{tabular}{@{}ll@{}}
     \rowcolors{2}{AmanaBeige!40}{white}
-    \toprule
-    \rowcolor{AmanaBrown}\color{white}
-    \textbf{Abréviation} & \textbf{Signification} \\
-    \midrule\color{AmanaText}
+    \rowcolor{AmanaBrown}
+    \color{white}\textbf{Abréviation} & \textbf{Signification} \\
+    \midrule
     API     & Application Programming Interface \\
     BCrypt  & Algorithme de hachage de mots de passe \\
     CRUD    & Create, Read, Update, Delete \\
@@ -296,11 +276,8 @@ This report presents the project context, requirements analysis, UML design, tec
     \bottomrule
 \end{tabular}
 
-\clearpage
-
 \pagenumbering{arabic}
-\setcounter{page}{1}
-
+\setcounter{page}{0}
 \chapter*{Introduction générale}
 \addcontentsline{toc}{chapter}{Introduction générale}
 \label{ch:intro}
@@ -432,10 +409,9 @@ Le projet a été découpé en \textbf{quatre pistes logiques} (voir tableau~\re
     \label{tab:phases}
     \small
     \begin{tabular}{@{}clp{7cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Phase} & \textbf{Intitulé} & \textbf{Livrable} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Phase} & \textbf{Intitulé} & \textbf{Livrable} \\
+        \midrule
         1 & Conception UML & Cas d'utilisation, classes, séquences, MCD/MLD \\
         2--3 & Bootstrap + Auth & Projet Spring Boot, login, rôles \\
         4--6 & Métier cœur & Clients, comptes, transactions \\
@@ -469,10 +445,9 @@ Le système distingue \textbf{quatre acteurs principaux} :
     \caption{Acteurs du système \nomapplication}
     \label{tab:acteurs}
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Acteur} & \textbf{Rôle et responsabilités} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Acteur} & \textbf{Rôle et responsabilités} \\
+        \midrule
         Agent bancaire & Clients, comptes, opérations courantes, historique, chéquiers \\
         Chef d'agence & Supervision, dashboard, notifications, journal d'audit \\
         Administrateur & Gestion du personnel (création, rôles, activation) \\
@@ -500,10 +475,9 @@ L'authentification est unifiée sur \texttt{/login} ; la redirection post-connex
     \label{tab:fonctionnalites}
     \small
     \begin{tabular}{@{}p{3cm}p{9.5cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Module} & \textbf{Description} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Module} & \textbf{Description} \\
+        \midrule
         Authentification & Login, BCrypt, rôles ADMIN / AGENT / CHEF\_AGENCE / CLIENT \\
         Clients & CRUD, recherche multicritère, statuts \\
         Comptes & Ouverture, blocage, clôture (solde nul requis) \\
@@ -531,37 +505,37 @@ L'authentification est unifiée sur \texttt{/login} ; la redirection post-connex
 
 \subsection{Diagrammes de cas d'utilisation}
 
-\includefigure{images/01-clients-comptes.svg}{width=\textwidth}{01-clients-comptes.svg}{Cas d'utilisation — clients et comptes}{fig:uc-clients}
+\includefigure{width=\textwidth}{01-clients-comptes.pdf}{Cas d'utilisation — clients et comptes}{fig:uc-clients}
 
-\includefigure{images/02-operations-supervision.svg}{width=\textwidth}{02-operations-supervision.svg}{Cas d'utilisation — opérations et supervision}{fig:uc-ops}
+\includefigure{width=\textwidth}{02-operations-supervision.pdf}{Cas d'utilisation — opérations et supervision}{fig:uc-ops}
 
-\includefigure{images/03-portail-client.svg}{width=\textwidth}{03-portail-client.svg}{Cas d'utilisation — portail client}{fig:uc-portal}
+\includefigure{width=\textwidth}{03-portail-client.pdf}{Cas d'utilisation — portail client}{fig:uc-portal}
 
 \subsection{Diagramme de classes}
 
-\includefigure{images/diagramme-classes.svg}{width=0.95\textwidth}{diagramme-classes.svg}{Diagramme de classes}{fig:classes}
+\includefigure{width=0.95\textwidth}{diagramme-classes.pdf}{Diagramme de classes}{fig:classes}
 
 Les entités principales sont : \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog}.
 
 \subsection{Modèle de données (MCD et MLD)}
 
-\includefigure{images/MCD.svg}{width=\textwidth}{MCD.svg}{Modèle conceptuel de données (MCD)}{fig:mcd}
+\includefigure{width=\textwidth}{MCD.pdf}{Modèle conceptuel de données (MCD)}{fig:mcd}
 
-\includefigure{images/MLD.svg}{width=\textwidth}{MLD.svg}{Modèle logique de données (MLD)}{fig:mld}
+\includefigure{width=\textwidth}{MLD.pdf}{Modèle logique de données (MLD)}{fig:mld}
 
 \subsection{Diagrammes de séquence}
 
-\includefigure{images/01-authentification.svg}{width=\textwidth}{01-authentification.svg}{Séquence — authentification dual (personnel / client)}{fig:seq-auth}
+\includefigure{width=\textwidth}{01-authentification.pdf}{Séquence — authentification dual (personnel / client)}{fig:seq-auth}
 
-\includefigure{images/03-operations-financieres.svg}{width=\textwidth}{03-operations-financieres.svg}{Séquence — opérations financières}{fig:seq-ops}
+\includefigure{width=\textwidth}{03-operations-financieres.pdf}{Séquence — opérations financières}{fig:seq-ops}
 
-\includefigure{images/06-paiement-facture.svg}{width=\textwidth}{06-paiement-facture.svg}{Séquence — paiement de facture}{fig:seq-facture}
+\includefigure{width=\textwidth}{06-paiement-facture.pdf}{Séquence — paiement de facture}{fig:seq-facture}
 
-\includefigure{images/07-commande-chequier.svg}{width=\textwidth}{07-commande-chequier.svg}{Séquence — commande de chéquier}{fig:seq-chequier}
+\includefigure{width=\textwidth}{07-commande-chequier.pdf}{Séquence — commande de chéquier}{fig:seq-chequier}
 
 \subsection{Diagramme d'activité}
 
-\includefigure{images/diagramme-activite-virement.svg}{width=0.85\textwidth}{diagramme-activite-virement.svg}{Activité — virement bancaire}{fig:activite-virement}
+\includefigure{width=0.85\textwidth}{diagramme-activite-virement.pdf}{Activité — virement bancaire}{fig:activite-virement}
 
 \section{Conclusion}
 
@@ -608,10 +582,9 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
     \caption{Stack back-end}
     \label{tab:stack-backend}
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Technologie} & \textbf{Rôle} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Technologie} & \textbf{Rôle} \\
+        \midrule
         Java 21 & Langage principal \\
         Spring Boot 3.4 & Framework applicatif (web, sécurité, JPA) \\
         Spring Security & Authentification, autorisation par rôles \\
@@ -631,10 +604,9 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
     \caption{Stack front-end}
     \label{tab:stack-frontend}
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Technologie} & \textbf{Rôle} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Technologie} & \textbf{Rôle} \\
+        \midrule
         Thymeleaf & Moteur de templates serveur (MVC) \\
         Bootstrap 5.3 & Grille responsive, composants formulaires et tableaux \\
         Bootstrap Icons 1.11 & Icônes de navigation, KPI et actions \\
@@ -708,10 +680,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \label{tab:config}
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Fichier / classe} & \textbf{Rôle} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Fichier / classe} & \textbf{Rôle} \\
+        \midrule
         \texttt{BanqueAgenceApplication.java} & Point d'entrée Spring Boot \\
         \texttt{config/SecurityConfig.java} & Chaîne de sécurité, rôles, redirection login \\
         \texttt{config/DevUserInitializer.java} & Seed utilisateurs (admin, agent, chef) \\
@@ -731,10 +702,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \label{tab:domain}
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Package} & \textbf{Contenu} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Package} & \textbf{Contenu} \\
+        \midrule
         \texttt{domain/entity/} & \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog} \\
         \texttt{domain/enums/} & \texttt{UserRole}, \texttt{AccountType}, \texttt{AccountStatus}, \texttt{TransactionType}, \texttt{ClientStatus}, \texttt{CheckbookOrderStatus}, \texttt{NotificationType}… \\
         \bottomrule
@@ -757,10 +727,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \label{tab:services}
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Service} & \textbf{Responsabilité} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Service} & \textbf{Responsabilité} \\
+        \midrule
         \texttt{ClientService} & CRUD clients, recherche, changement statut \\
         \texttt{AccountService} & Ouverture, blocage, clôture comptes \\
         \texttt{TransactionService} & Dépôt, retrait, virement (\texttt{@Transactional}) \\
@@ -836,10 +805,9 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
     \label{tab:templates}
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Dossier / fichier} & \textbf{Rôle} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Dossier / fichier} & \textbf{Rôle} \\
+        \midrule
         \texttt{landing.html} & Page vitrine publique AmanaBank \\
         \texttt{login.html} & Connexion unique personnel + client \\
         \texttt{layout/main.html} & Layout agence (sidebar, cloche, menu) \\
@@ -953,26 +921,14 @@ La page d'accueil (\texttt{/}) constitue la \textbf{vitrine institutionnelle} d'
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/landing.png}{%
-        \includegraphics[width=\textwidth]{landing.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{images/landing.png} — vue hero et navigation]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{landing.png}
     \caption{Page d'accueil publique — section hero et navigation principale}
     \label{fig:landing}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/landing-services.png}{%
-        \includegraphics[width=\textwidth]{landing-services.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture optionnelle : \texttt{landing-services.png} — grille des services]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{landing-services.png}
     \caption{Page d'accueil — présentation des services et de l'espace client digital}
     \label{fig:landing-services}
 \end{figure}
@@ -989,13 +945,7 @@ L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstra
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/login.png}{%
-        \includegraphics[width=0.75\textwidth]{login.png}%
-    }{%
-        \fbox{\parbox{0.75\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{login.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=0.75\textwidth]{login.png}
     \caption{Connexion unifiée — personnel et espace client}
     \label{fig:login}
 \end{figure}
@@ -1023,10 +973,9 @@ Le tableau de bord (\texttt{/dashboard}) est la \textbf{page d'atterrissage} apr
     \label{tab:kpi-agence}
     \small
     \begin{tabular}{@{}lp{8cm}@{}}
-        \toprule
-        \rowcolor{AmanaBrown}\color{white}
-        \textbf{Indicateur} & \textbf{Description et action associée} \\
-        \midrule\color{AmanaText}
+        \rowcolor{AmanaBrown}
+        \color{white}\textbf{Indicateur} & \textbf{Description et action associée} \\
+        \midrule
         Clients actifs & Nombre de clients au statut actif — lien vers la gestion clients \\
         Comptes actifs & Comptes ouverts et non clôturés — lien vers la liste des comptes \\
         Opérations aujourd'hui & Nombre de transactions du jour — lien vers les opérations \\
@@ -1041,13 +990,7 @@ En dessous, un tableau récapitule les \textbf{10 dernières opérations} avec a
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/dashboard-agent.png}{%
-        \includegraphics[width=\textwidth]{dashboard-agent.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture chef : \texttt{dashboard-agent.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{dashboard-agent.png}
     \caption{Tableau de bord agence — cartes KPI, alertes chéquier et opérations récentes}
     \label{fig:dashboard}
 \end{figure}
@@ -1058,13 +1001,7 @@ L'écran de liste clients permet la \textbf{recherche}, la création et la consu
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/clients-liste.png}{%
-        \includegraphics[width=\textwidth]{clients-liste.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{clients-liste.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{clients-liste.png}
     \caption{Liste et recherche des clients}
     \label{fig:clients}
 \end{figure}
@@ -1075,13 +1012,7 @@ La fiche compte affiche le numéro, le type (courant, épargne, professionnel), 
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/compte-detail.png}{%
-        \includegraphics[width=\textwidth]{compte-detail.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{compte-detail.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{compte-detail.png}
     \caption{Fiche détail — compte courant Moncef Bensouda (\texttt{ACC-00001})}
     \label{fig:compte}
 \end{figure}
@@ -1099,26 +1030,14 @@ Le module opérations regroupe quatre types d'actions, chacune sur un formulaire
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/operations-depot.png}{%
-        \includegraphics[width=0.85\textwidth]{operations-depot.png}%
-    }{%
-        \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{operations-depot.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=0.85\textwidth]{operations-depot.png}
     \caption{Formulaire de dépôt sur compte client}
     \label{fig:depot}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/paiement-facture.png}{%
-        \includegraphics[width=0.85\textwidth]{paiement-facture.png}%
-    }{%
-        \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{paiement-facture.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=0.85\textwidth]{paiement-facture.png}
     \caption{Paiement de facture — sélection du fournisseur et du compte}
     \label{fig:facture}
 \end{figure}
@@ -1129,13 +1048,7 @@ Chaque opération génère une entrée dans l'historique. La page de reçu prés
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/recu-pdf.png}{%
-        \includegraphics[width=\textwidth]{recu-pdf.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{recu-pdf.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{recu-pdf.png}
     \caption{Reçu d'opération avec bouton de téléchargement PDF}
     \label{fig:recu}
 \end{figure}
@@ -1146,26 +1059,14 @@ Les commandes de chéquier suivent un \textbf{workflow} sans impact sur le solde
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/chequier-liste.png}{%
-        \includegraphics[width=\textwidth]{chequier-liste.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{chequier-liste.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{chequier-liste.png}
     \caption{Suivi des commandes de chéquier par statut}
     \label{fig:chequier}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/notifications.png}{%
-        \includegraphics[width=\textwidth]{notifications.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{notifications.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{notifications.png}
     \caption{Centre de notifications — chef d'agence}
     \label{fig:notifications}
 \end{figure}
@@ -1176,13 +1077,7 @@ L'administrateur gère les comptes du personnel (création, modification, réini
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/admin-users.png}{%
-        \includegraphics[width=\textwidth]{admin-users.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{admin-users.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{admin-users.png}
     \caption{Gestion des utilisateurs internes}
     \label{fig:admin}
 \end{figure}
@@ -1208,26 +1103,14 @@ Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/portal-dashboard.png}{%
-        \includegraphics[width=\textwidth]{portal-dashboard.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{portal-dashboard.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{portal-dashboard.png}
     \caption{Tableau de bord espace client — KPI, comptes et historique récent}
     \label{fig:portal}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \IfFileExists{images/portal-notifications.png}{%
-        \includegraphics[width=\textwidth]{portal-notifications.png}%
-    }{%
-        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture : \texttt{portal-notifications.png}]}
-        \vspace{2cm}}}%
-    }
+    \includegraphics[width=\textwidth]{portal-notifications.png}
     \caption{Notifications client — opérations et mises à jour chéquier}
     \label{fig:portal-notif}
 \end{figure}
