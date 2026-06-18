@@ -950,12 +950,20 @@ git push origin main
 
 ## Prochaine action
 
-**Phases 13–14 livrées — clôturer la Phase 12 (piste finale).**
+**Phases 13–14 commitées** (`92b2d22` — `feat(phase-13-14): …`) — clôturer la **Phase 12** (piste finale).
 
-1. **Redémarrer l'app** puis tester `CD789012` / `client123` (ou `demo-reset.sql`)
-2. **Commit + push** : `feat(phase-13)` puis `feat(phase-14)` (ou un commit groupé)
-3. Valider la **démo live** (`demo-script.md`)
-4. Rédiger **rapport** et **PowerPoint**
+1. Tester `CD789012` / `client123` (démo live — `demo-script.md`)
+2. Rédiger **rapport** et **PowerPoint** (`presentation-outline.md`)
+3. Valider checklist cahier des charges avant soutenance
+
+### Commit & push (Phases 13–14)
+
+```bash
+git commit -m "feat(phase-13-14): add staff notifications, client portal and modular demo seed"
+git push origin main
+```
+
+> **Référence :** commit `92b2d22` sur `main` (regroupe Phase 13 + Phase 14 en un seul livrable).
 
 ### Mise à jour conception v2.1 (seed modulaire + auth dual)
 
