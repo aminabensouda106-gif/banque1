@@ -64,12 +64,17 @@
     labelfont={bf,color=AmanaBrown},
     textfont=color=AmanaText,
     skip=8pt,
-    format=plain,
-    singlelinecheck=false,
-    justification=justified
+    singlelinecheck=false
 }
 
-\captionsetup[figure]{labelsep=endash}
+\captionsetup[figure]{labelsep=endash, justification=justified}
+\captionsetup[table]{position=above, skip=6pt, justification=centering}
+
+% Légende figure : titre centré, description alignée à gauche (justifiée)
+\newcommand{\SplitFigureCaption}[2]{%
+  {\centering\textbf{#1}\par\vspace{0.35em}}%
+  #2%
+}
 
 \AtBeginEnvironment{tabular}{\renewcommand{\arraystretch}{1.28}}
 \BeforeBeginEnvironment{table}{\rowcolors{2}{AmanaBeige!40}{white}}
@@ -93,7 +98,7 @@
 }
 
 % ── Titres & en-têtes ──────────────────────────────────────────────
-\usepackage{titlesec}
+\usepackage[compact]{titlesec}
 \usepackage{tikz}
 \usetikzlibrary{calc, shapes.geometric, positioning}
 \usepackage{fancyhdr}
@@ -102,10 +107,10 @@
 \renewcommand{\thechapter}{\arabic{chapter}}
 \renewcommand{\chaptername}{Chapitre}
 
-\titlespacing*{\chapter}{0pt}{0pt}{10pt}
-\titlespacing*{name=\chapter,numberless}{0pt}{0pt}{10pt}
-\titlespacing*{\section}{0pt}{1.4ex plus .2ex minus .2ex}{0.6ex plus .1ex}
-\titlespacing*{\subsection}{0pt}{1.1ex plus .1ex minus .1ex}{0.45ex plus .1ex}
+\titlespacing*{\chapter}{0pt}{-1.2ex}{6pt}
+\titlespacing*{name=\chapter,numberless}{0pt}{-1.2ex}{6pt}
+\titlespacing*{\section}{0pt}{1.0ex plus .1ex minus .1ex}{0.45ex plus .1ex}
+\titlespacing*{\subsection}{0pt}{0.85ex plus .1ex minus .1ex}{0.35ex plus .1ex}
 
 % Pas de césure dans les titres (rapport académique)
 \newcommand{\HeadingHyphensOff}{%
@@ -113,33 +118,60 @@
 }
 
 \newcommand{\ChapterRule}{%
-  \vspace{0.25em}{\color{AmanaGold}\rule{0.45\textwidth}{1.2pt}}\vspace{0.35em}%
+  \vspace{0.15em}{\color{AmanaGold}\rule{0.4\textwidth}{1pt}}\vspace{0.2em}%
 }
 
 \titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries\color{AmanaBrown}\HeadingHyphensOff}
+  {\normalfont\LARGE\bfseries\color{AmanaBrown}\HeadingHyphensOff}
   {\chaptertitlename\ \thechapter}
-  {6pt}
-  {\Huge\HeadingHyphensOff}
+  {4pt}
+  {\Large\HeadingHyphensOff}
   [\ChapterRule]
 
-% Chapitres non numérotés (Introduction, Dédicaces, etc.) — sans ligne « Chapitre » vide
+% Chapitres non numérotés (Dédicaces, Introduction, etc.)
 \titleformat{name=\chapter,numberless}[block]
-  {\normalfont\huge\bfseries\color{AmanaBrown}\HeadingHyphensOff}
+  {\normalfont\LARGE\bfseries\color{AmanaBrown}\HeadingHyphensOff}
   {}
   {0pt}
-  {\HeadingHyphensOff}
+  {}
   [\ChapterRule]
 
 \titleformat{\section}
-  {\normalfont\Large\bfseries\color{AmanaBrown}\HeadingHyphensOff}{\thesection}{0.6em}{}
+  {\normalfont\large\bfseries\color{AmanaBrown}\HeadingHyphensOff}{\thesection}{0.5em}{}
 \titleformat{\subsection}
-  {\normalfont\large\bfseries\color{AmanaBrownMid}\HeadingHyphensOff}{\thesubsection}{0.5em}{}
+  {\normalfont\normalsize\bfseries\color{AmanaBrownMid}\HeadingHyphensOff}{\thesubsection}{0.45em}{}
 
-% Table des matières : pas de césure dans les entrées
+% Table des matières / listes — titres compacts (sans règle décorative)
+\makeatletter
+\newcommand{\CompactListTitle}[1]{%
+  \vspace*{-0.55cm}%
+  {\noindent\Large\bfseries\color{AmanaBrown}\HeadingHyphensOff #1\par}%
+  \vspace{0.45em}%
+}
+\renewcommand{\tableofcontents}{%
+  \CompactListTitle{\contentsname}%
+  \@starttoc{toc}%
+}
+\renewcommand{\listoffigures}{%
+  \CompactListTitle{\listfigurename}%
+  \@starttoc{lof}%
+}
+\renewcommand{\listoftables}{%
+  \CompactListTitle{\listtablename}%
+  \@starttoc{lot}%
+}
+\makeatother
+
+% Table des matières : pas de césure + espacement réduit entre entrées
 \renewcommand{\cftchapfont}{\bfseries\HeadingHyphensOff}
 \renewcommand{\cftsecfont}{\HeadingHyphensOff}
 \renewcommand{\cftsubsecfont}{\HeadingHyphensOff}
+\setlength{\cftbeforechapskip}{0.35em}
+\setlength{\cftbeforesecskip}{0.15em}
+\setlength{\cftbeforesubsecskip}{0.1em}
+\setlength{\cftaftertoctitleskip}{0.4em}
+\setlength{\cftafterloftitleskip}{0.4em}
+\setlength{\cftafterlottitleskip}{0.4em}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -239,7 +271,7 @@
   \begin{figure}[htbp]
     \centering
     \includegraphics[#1,height=0.82\textheight,keepaspectratio]{#2}%
-    \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+    \caption[#3]{\SplitFigureCaption{#3}{#4}}%
     \label{#5}%
   \end{figure}%
 }
@@ -254,7 +286,7 @@
       \vspace*{\fill}
       \includegraphics[#1]{#2}%
       \vspace*{\fill}
-      \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+      \caption[#3]{\SplitFigureCaption{#3}{#4}}%
       \label{#5}%
     \end{figure}
   \end{landscape}
@@ -265,7 +297,7 @@
   \begin{figure}[H]
     \centering
     \includegraphics[#1,height=0.82\textheight,keepaspectratio]{#2}%
-    \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+    \caption[#3]{\SplitFigureCaption{#3}{#4}}%
     \label{#5}%
   \end{figure}%
 }
@@ -370,8 +402,9 @@ This report presents the project context, requirements analysis, UML design, tec
     \bottomrule
 \end{tabular}
 
+\clearpage
 \pagenumbering{arabic}
-\setcounter{page}{0}
+\setcounter{page}{1}
 \chapter*{Introduction générale}
 \addcontentsline{toc}{chapter}{Introduction générale}
 \label{ch:intro}
@@ -466,7 +499,11 @@ Chaque phase a été validée par des tests (\texttt{mvn test}) avant de passer 
 
 \section{Conclusion}
 
-Ce chapitre a situé le projet dans son contexte académique et métier, mis en évidence les limites des approches manuelles et présenté notre méthodologie itérative. Le chapitre suivant détaille l'analyse des besoins et la conception du système.
+Ce chapitre a permis de situer le projet \nomapplication\ dans son double contexte --- académique (PFA de \niveau\ à l'\ecole, encadré par \encadrante) et métier (simulation d'une agence bancaire marocaine). L'étude de l'existant a mis en évidence les insuffisances des approches manuelles : saisies répétitives, risques d'incohérence de solde, absence de traçabilité et faible supervision pour le chef d'agence. La solution proposée --- une application web intégrée couvrant l'ensemble du cycle client-agence --- répond directement à ces limites.
+
+Sur le plan méthodologique, nous avons retenu une approche \textbf{itérative et incrémentale}, inspirée du processus 2TUP : une piste de conception (UML, modèle de données) et une piste de réalisation (développement par phases verticales testables). Le découpage en quatorze phases --- du noyau métier aux extensions (factures, chéquier, portail client) --- a structuré le travail du binôme et garanti un livrable fonctionnel à chaque étape, validé par les tests Maven.
+
+Le chapitre suivant (chapitre~\ref{ch:conception}) approfondit l'\textbf{analyse des besoins} : identification des acteurs, formalisation des règles de gestion et modélisation UML complète, qui constitue le socle de l'implémentation décrite dans les chapitres ultérieurs.
 
 \chapter{Analyse des besoins et~conception}
 \label{ch:conception}
@@ -603,7 +640,11 @@ Le flux débute par la saisie du formulaire de virement (compte source, compte d
 
 \section{Conclusion}
 
-Ce chapitre a identifié les acteurs, formalisé les besoins fonctionnels et présenté la modélisation UML complète. Le chapitre suivant détaille l'environnement technique et les outils de développement.
+Ce chapitre a formalisé l'ensemble des besoins fonctionnels et la modélisation du système \nomapplication. L'identification des acteurs --- personnel de l'agence (administrateur, agent, chef d'agence) et client bancaire --- a permis de définir des périmètres d'accès distincts et cohérents. Les dix modules fonctionnels et les 14 règles de gestion (R1 à R14) traduisent les contraintes métier en comportements vérifiables, directement implémentés dans les services Spring.
+
+La modélisation UML constitue l'apport central de ce chapitre : onze diagrammes couvrant les cas d'utilisation, la structure statique (classes, MCD, MLD) et le comportement dynamique (séquences, activité). Chaque diagramme a été commenté et relié aux modules correspondants ; ils ont servi de référence commune au binôme et de base aux migrations Flyway et aux tests d'intégration. Le diagramme de classes, présenté en page paysage, illustre la richesse du modèle : neuf entités JPA, sept énumérations métier et des extensions (factures, chéquier, notifications) intégrées au noyau transactionnel.
+
+Le chapitre suivant (chapitre~\ref{ch:techno}) présente l'\textbf{environnement de travail} et la \textbf{stack technique} retenue pour concrétiser cette conception : Java~21, Spring Boot~3, PostgreSQL, Thymeleaf et Bootstrap.
 
 \chapter{Environnement de travail et~technologies}
 \label{ch:techno}
@@ -680,7 +721,11 @@ Nous avons retenu un \textbf{monolithe Spring Boot}, adapté à un projet PFA me
 
 \section{Conclusion}
 
-Ce chapitre a présenté l'environnement de développement et la stack technique de \nomapplication. Le chapitre suivant détaille l'architecture logicielle et l'organisation du code source.
+Ce chapitre a présenté l'environnement matériel et logiciel dans lequel \nomapplication\ a été développée, ainsi que les technologies retenues pour chaque couche de l'application. Le poste de développement (Windows, VS Code/Cursor, Maven) et la base PostgreSQL (port 5433, script d'initialisation) constituent l'infrastructure locale reproductible par tout évaluateur du projet.
+
+Le choix de la stack technique repose sur des critères de \textbf{maturité}, de \textbf{productivité} et d'\textbf{adéquation au domaine bancaire}. Spring Boot~3 centralise le web, la sécurité et la persistance ; Spring Security garantit l'authentification par rôles ; Flyway assure l'évolution versionnée du schéma ; Thymeleaf et Bootstrap~5.3 offrent un front-end responsive sans la complexité d'un SPA séparé ; OpenPDF permet la génération de reçus professionnels. Le monolithe Spring Boot, adapté à un PFA mené en binôme, facilite le déploiement (un seul JAR) et la maintenance du code source versionné sous Git.
+
+Le chapitre suivant (chapitre~\ref{ch:archi}) détaille l'\textbf{architecture logicielle} : organisation en couches, packages Java, contrôleurs, services transactionnels, templates Thymeleaf et mécanismes transversaux (sécurité, audit, notifications).
 
 \chapter{Architecture technique de~l'application}
 \label{ch:archi}
@@ -858,7 +903,11 @@ Le composant \texttt{NotificationModelAdvice} injecte le compteur \texttt{unread
 
 \section{Conclusion}
 
-Ce chapitre a présenté l'architecture en couches de \nomapplication, l'organisation du back-end Java et la structure du front-end Thymeleaf. La refonte de l'interface — charte AmanaBank, landing autonome, layouts à sidebar et composants KPI réutilisables — assure une cohérence visuelle entre l'espace agence et le portail client. Le chapitre suivant illustre ces interfaces par des captures d'écran commentées.
+Ce chapitre a exposé l'architecture technique de \nomapplication\ sous l'angle du back-end Java et du front-end Thymeleaf. L'organisation en \textbf{cinq couches} --- navigateur, contrôleurs, services métier, repositories JPA, PostgreSQL --- assure une séparation claire des responsabilités et facilite les tests unitaires et d'intégration. Les services annotés \texttt{@Transactional} garantissent la cohérence des soldes lors des opérations financières ; Spring Security filtre les accès selon le rôle ; \texttt{AuditService} et \texttt{NotificationModelAdvice} apportent traçabilité et alertes de façon transversale.
+
+Le front-end repose sur deux layouts Thymeleaf distincts : \texttt{layout/main.html} pour l'espace agence et \texttt{portal/layout.html} pour le portail client, tous deux enrichis par la charte graphique AmanaBank. La refonte graphique --- landing page autonome, sidebar par rôle, cartes KPI, formulaires Bootstrap validés côté serveur --- assure une cohérence visuelle entre les espaces connectés et renforce l'image professionnelle de l'application.
+
+Le chapitre suivant (chapitre~\ref{ch:realisation}) illustre concrètement cette architecture à travers \textbf{quatorze captures d'écran commentées}, de la vitrine publique aux tableaux de bord agence et client, complétant ainsi le cycle conception--implémentation--présentation du rapport.
 
 \chapter{Réalisation et interfaces~utilisateur}
 \label{ch:realisation}
@@ -984,9 +1033,11 @@ Le dashboard client synthétise la situation du titulaire : le solde total corre
 
 \section{Conclusion}
 
-Ce chapitre a présenté les interfaces réalisées pour \nomapplication, de la vitrine publique aux espaces connectés. Les choix de conception — charte AmanaBank unifiée, cartes KPI informatives, navigation par rôle et formulaire de connexion unique — visent une expérience \textbf{claire, professionnelle et cohérente} pour chaque type d'utilisateur.
+Ce chapitre a présenté la réalisation graphique de \nomapplication, de la vitrine publique aux espaces connectés agence et client. Quatorze captures d'écran commentées illustrent chaque module fonctionnel : landing page institutionnelle, connexion unifiée, gestion des clients et comptes, opérations financières (dépôt, paiement de facture), reçus PDF, workflow chéquier, notifications, administration et portail client en lecture seule.
 
-L'ensemble des écrans métier (clients, comptes, opérations, reporting) s'appuie sur les mêmes composants visuels, ce qui facilite la prise en main par le personnel et renforce l'image de marque auprès des clients.
+Les choix de conception répondent à une double exigence : \textbf{clarté fonctionnelle} pour le personnel (navigation par rôle, cartes KPI, alertes chéquier cliquables) et \textbf{image de marque} pour le visiteur et le client (charte marron--beige--or, typographie DM Sans, mise en page Bootstrap responsive). Le formulaire de connexion unique, les layouts à sidebar partagés et les composants visuels réutilisables facilitent la prise en main et témoignent d'une attention portée à l'expérience utilisateur, au-delà du seul respect du cahier des charges.
+
+Ce chapitre clôt la partie « réalisation » du rapport. La \textbf{conclusion générale} qui suit synthétise le bilan global du PFA, les compétences acquises, les difficultés surmontées et les perspectives d'évolution de \nomapplication\ vers une solution industrialisable.
 
 \chapter*{Conclusion générale}
 \addcontentsline{toc}{chapter}{Conclusion générale}
