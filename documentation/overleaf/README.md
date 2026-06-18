@@ -1,44 +1,37 @@
-# Rapport AmanaBank — Overleaf (prêt à compiler)
+# Rapport AmanaBank — Overleaf
 
-## Upload en 3 clics
+**Un seul fichier** `main.tex` + dossier `images/`. Plus de sources séparées.
 
-1. Ouvrir [overleaf.com](https://www.overleaf.com) → **New Project** → **Upload Project**
-2. Choisir **`amana-report-overleaf.zip`** (dans ce dossier)
-3. Laisser le compilateur sur **pdfLaTeX** → **Recompile**
+## Compiler sur Overleaf
 
-C'est tout. Un seul fichier `main.tex` + un dossier `images/`.
+1. [overleaf.com](https://www.overleaf.com) → **New Project** → **Upload Project**
+2. Uploader **`amana-report-overleaf.zip`**
+3. Compilateur : **pdfLaTeX** → **Recompile**
 
-## Contenu du zip
+## Design
 
-| Élément | Description |
-|---|---|
-| `main.tex` | Rapport complet (tout le texte en un fichier) |
-| `images/*.png` | 14 captures d'écran de l'application |
-| `images/*.svg` | 11 diagrammes UML |
+- Police **Palatino** (`newpxtext`) + micro-typographie
+- Charte **AmanaBank** : marron, or, beige
+- Page de garde avec logo, bandeaux et encadré auteurs
+- Tableaux à en-têtes marron et lignes alternées beige
 
-Tous les chemins dans `main.tex` pointent vers `images/nom-fichier` — rien à modifier.
-
-## Si les diagrammes SVG ne s'affichent pas
-
-Dans Overleaf : **Menu** (en haut à gauche) → **Settings** → **Compiler** → choisir **LaTeX** au lieu de pdfLaTeX, puis Recompile.
-
-Alternative : les captures PNG fonctionnent toujours avec pdfLaTeX.
-
-## Régénérer chez toi (optionnel)
+## Régénérer le zip
 
 ```powershell
 cd documentation\overleaf
-python capture-screenshots.py   # app sur http://localhost:8081
-python prepare.py               # reconstruit main.tex + zip
+python capture-screenshots.py   # optionnel — app sur :8081
+python prepare.py               # met à jour le zip
 ```
 
-Puis re-uploader le nouveau `amana-report-overleaf.zip` sur Overleaf.
-
-## Comptes utilisés pour les captures
+## Captures (comptes démo)
 
 | Rôle | Identifiant | Mot de passe |
 |---|---|---|
 | Agent | `agent` | `agent123` |
 | Chef | `chef` | `chef123` |
 | Admin | `admin` | `admin123` |
-| Client (Moncef Bensouda) | `MB654321` | `client123` |
+| Client | `MB654321` (Moncef Bensouda) | `client123` |
+
+## SVG sur Overleaf
+
+Si les diagrammes UML ne s'affichent pas : **Menu → Settings → Compiler → LaTeX**.

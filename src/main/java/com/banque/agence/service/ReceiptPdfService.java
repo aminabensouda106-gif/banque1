@@ -81,13 +81,14 @@ public class ReceiptPdfService {
         header.setSpacingAfter(0f);
 
         header.addCell(accentBar(GOLD_500, 3f));
-        header.addCell(spacerCell(12f));
+        header.addCell(spacerCell(8f));
 
         Image logo = loadLogo();
-        PdfPCell logoCell = new PdfPCell(logo, true);
+        PdfPCell logoCell = new PdfPCell(logo, false);
         logoCell.setBorder(Rectangle.NO_BORDER);
         logoCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        logoCell.setPaddingBottom(6f);
+        logoCell.setPaddingTop(2f);
+        logoCell.setPaddingBottom(4f);
         header.addCell(logoCell);
 
         PdfPCell titleCell = cell(new Phrase("Reçu d'opération", receiptTitleFont), Element.ALIGN_CENTER);
@@ -253,7 +254,9 @@ public class ReceiptPdfService {
         ClassPathResource resource = new ClassPathResource("static/images/amana-logo.png");
         try (InputStream in = resource.getInputStream()) {
             Image logo = Image.getInstance(in.readAllBytes());
-            logo.scaleToFit(170, 38);
+            float targetWidth = 92f;
+            float targetHeight = targetWidth * logo.getHeight() / logo.getWidth();
+            logo.scaleAbsolute(targetWidth, targetHeight);
             logo.setAlignment(Element.ALIGN_CENTER);
             return logo;
         }

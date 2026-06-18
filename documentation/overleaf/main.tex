@@ -1,65 +1,123 @@
-% Rapport AmanaBank — fichier unique pour Overleaf
-% Compiler avec pdfLaTeX. Toutes les images sont dans images/
-\documentclass[12pt,a4paper,twoside,openright]{report}
-% Préambule — Rapport PFA AmanaBank
+% Rapport AmanaBank — Overleaf (fichier unique)
+% Compiler avec pdfLaTeX — images dans images/
+\documentclass[11pt,a4paper,twoside,openright]{report}
+
+% ── Encodage & langue ──────────────────────────────────────────────
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
+
+% ── Typographie (Palatino moderne) ─────────────────────────────────
+\usepackage{newpxtext,newpxmath}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{courier}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage{microtype}
+
+% ── Mise en page ───────────────────────────────────────────────────
 \usepackage{geometry}
-\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\geometry{left=2.8cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Couleurs AmanaBank ─────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{AmanaBrown}{HTML}{4B3621}
+\definecolor{AmanaBrownMid}{HTML}{6B5344}
+\definecolor{AmanaGold}{HTML}{A6893A}
+\definecolor{AmanaGoldLight}{HTML}{C9A84C}
+\definecolor{AmanaBeige}{HTML}{F9F6F1}
+\definecolor{AmanaBeigeDark}{HTML}{EDE6DA}
+\definecolor{AmanaText}{HTML}{3A2E22}
+
+% ── Graphiques & tableaux ──────────────────────────────────────────
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
-\usepackage{hyperref}
-\usepackage{setspace}
-\usepackage{titlesec}
-\usepackage{fancyhdr}
-\usepackage{tocloft}
-\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{etoolbox}
 \usepackage{caption}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{amsmath}
 
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    citecolor=black,
-    urlcolor=blue!60!black
+\captionsetup{
+    font=small,
+    labelfont={bf,color=AmanaBrown},
+    textfont=color=AmanaText,
+    skip=8pt
 }
 
-\onehalfspacing
+\AtBeginEnvironment{tabular}{\renewcommand{\arraystretch}{1.28}}
+\AtBeginEnvironment{tabularx}{\renewcommand{\arraystretch}{1.28}}
+\BeforeBeginEnvironment{table}{\rowcolors{2}{AmanaBeige!40}{white}}
 
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\leftmark}
-\fancyhead[R]{\thepage}
-\fancyfoot[C]{}
-\renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\tabhead}[1]{\textcolor{white}{\textbf{#1}}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
 
-\renewcommand{\thechapter}{\arabic{chapter}}
-\renewcommand{\chaptername}{Chapitre}
-
-\titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries}
-  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
-\titlespacing*{\chapter}{0pt}{-10pt}{30pt}
-
-\titleformat{\section}
-  {\normalfont\Large\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}
-  {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+% ── Liens & code ───────────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=AmanaBrown,
+    citecolor=AmanaBrownMid,
+    urlcolor=AmanaGold,
+    pdfborder={0 0 0}
+}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*, itemsep=0.25em}
+\setlist[enumerate]{leftmargin=*, itemsep=0.25em}
 
 \lstset{
     basicstyle=\ttfamily\small,
     breaklines=true,
     frame=single,
-    backgroundcolor=\color{gray!8},
-    keywordstyle=\color{blue!70!black},
-    commentstyle=\color{green!40!black}
+    rulecolor=\color{AmanaBeigeDark},
+    backgroundcolor=\color{AmanaBeige},
+    keywordstyle=\color{AmanaBrown}\bfseries,
+    commentstyle=\color{AmanaBrownMid},
+    stringstyle=\color{AmanaGold}
+}
+
+% ── Titres & en-têtes ──────────────────────────────────────────────
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+\renewcommand{\thechapter}{\arabic{chapter}}
+\renewcommand{\chaptername}{Chapitre}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{AmanaBrown}}
+  {\chaptertitlename\ \thechapter}
+  {14pt}
+  {\Huge}
+  [\vspace{0.4em}{\color{AmanaGold}\titlerule[1.2pt]}\vspace{0.6em}]
+
+\titlespacing*{\chapter}{0pt}{-8pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{AmanaBrown}}{\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{AmanaBrownMid}}{\thesubsection}{0.8em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{AmanaBrownMid}\leftmark}
+\fancyhead[R]{\small\color{AmanaBrownMid}\thepage}
+\renewcommand{\headrule}{\color{AmanaGold}\hrule width\headwidth height 0.6pt}
+\fancyfoot[C]{}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\color{AmanaBrownMid}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
 }
 
 \graphicspath{{images/}}
@@ -71,7 +129,7 @@
       \includegraphics[#2]{#3}%
     }{%
       \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
-      \textit{[#4 — fichier attendu : \texttt{#1}]}
+      \textit{\color{AmanaBrownMid}[#4 — fichier attendu : \texttt{#1}]}
       \vspace{1.5cm}}}%
     }
     \caption{#4}
@@ -79,7 +137,7 @@
   \end{figure}%
 }
 
-% --- Informations du projet (binôme PFA) ---
+% ── Informations du projet ───────────────────────────────────────────
 \newcommand{\anneeuniv}{2025/2026}
 \newcommand{\etudianteun}{BENSOUDA Amina}
 \newcommand{\etudiantedeux}{AFILAL Soraya}
@@ -95,33 +153,57 @@
 \begin{document}
 
 \pagenumbering{roman}
+\thispagestyle{empty}
 \begin{titlepage}
-    \centering
-    \vspace*{1cm}
-    {\large Année universitaire \anneeuniv\par}
-    \vspace{1.5cm}
-    {\LARGE\bfseries Rapport de projet de fin d'année\par}
-    \vspace{0.5cm}
-    {\large \niveau\par}
-    \vspace{0.3cm}
-    {\large \filiere\par}
-    \vspace{2cm}
-    {\large Sous le thème\par}
-    \vspace{0.8cm}
-    {\Huge\bfseries \titreprojet\par}
-    \vspace{0.5cm}
-    {\Large Application web \nomapplication\par}
-    \vfill
-    \begin{minipage}{0.8\textwidth}
-        \centering
-        \textbf{Réalisé par :}\\[0.4cm]
-        \etudianteun\\
-        \etudiantedeux\\[1.2cm]
-        \textbf{Encadrée par :}\\
-        \encadrante\\[1.2cm]
-        \ecole\ \villeecole
-    \end{minipage}
-    \vfill
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[AmanaBrown] (current page.north west) rectangle ([yshift=-3.2cm]current page.north east);
+  \fill[AmanaBeige] (current page.south west) rectangle ([yshift=6.2cm]current page.south east);
+  \draw[AmanaGold, line width=1.4pt]
+    ([yshift=-3.2cm]current page.north west) -- ([yshift=-3.2cm]current page.north east);
+  \draw[AmanaGold, line width=1.4pt]
+    ([yshift=6.2cm]current page.south west) -- ([yshift=6.2cm]current page.south east);
+\end{tikzpicture}
+
+\begin{center}
+\vspace*{0.35cm}
+{\color{white}\large\bfseries Année universitaire \anneeuniv}\\[0.25cm]
+{\color{AmanaGoldLight}\normalsize \ecole{} --- Rabat}
+
+\vspace{1.6cm}
+
+\IfFileExists{images/amana-logo.png}{%
+  \includegraphics[width=0.34\textwidth]{amana-logo.png}%
+}{%
+  {\color{AmanaBrown}\Huge\bfseries \nomapplication}%
+}\\[1.4cm]
+
+{\color{AmanaBrown}\LARGE\bfseries Rapport de Projet de Fin d'Année}\\[0.45cm]
+{\color{AmanaText}\large \niveau\ --- \filiere}\\[1.6cm]
+
+{\color{AmanaGold}\large\textsc{Sous le thème de}}\\[0.45cm]
+{\color{AmanaBrown}\huge\bfseries \titreprojet}\\[0.35cm]
+{\color{AmanaBrown}\Large Application web \textbf{\nomapplication}}
+
+\vfill
+
+\begin{minipage}{0.82\textwidth}
+\centering
+\arrayrulecolor{AmanaGold}
+\begin{tabular}{@{}>{\columncolor{AmanaBeige}}p{0.82\textwidth}@{}}
+\\[-0.5em]
+\centering
+\textbf{\large\color{AmanaBrown} Réalisé par}\\[0.55em]
+{\large\color{AmanaText} \etudianteun}\\[0.15em]
+{\large\color{AmanaText} \etudiantedeux}\\[1.1em]
+\textbf{\large\color{AmanaBrown} Encadrée par}\\[0.4em]
+{\large\color{AmanaText} \encadrante}\\[1.1em]
+{\large\color{AmanaText} \ecole}\\[0.1em]
+{\large\color{AmanaText} \villeecole}
+\end{tabular}
+\end{minipage}
+
+\vspace{1.4cm}
+\end{center}
 \end{titlepage}
 
 \chapter*{Dédicaces}
@@ -189,9 +271,11 @@ This report presents the project context, requirements analysis, UML design, tec
 \addcontentsline{toc}{chapter}{Liste des abréviations}
 
 \begin{tabular}{@{}ll@{}}
+    \rowcolors{2}{AmanaBeige!40}{white}
     \toprule
+    \rowcolor{AmanaBrown}\color{white}
     \textbf{Abréviation} & \textbf{Signification} \\
-    \midrule
+    \midrule\color{AmanaText}
     API     & Application Programming Interface \\
     BCrypt  & Algorithme de hachage de mots de passe \\
     CRUD    & Create, Read, Update, Delete \\
@@ -349,8 +433,9 @@ Le projet a été découpé en \textbf{quatre pistes logiques} (voir tableau~\re
     \small
     \begin{tabular}{@{}clp{7cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Phase} & \textbf{Intitulé} & \textbf{Livrable} \\
-        \midrule
+        \midrule\color{AmanaText}
         1 & Conception UML & Cas d'utilisation, classes, séquences, MCD/MLD \\
         2--3 & Bootstrap + Auth & Projet Spring Boot, login, rôles \\
         4--6 & Métier cœur & Clients, comptes, transactions \\
@@ -385,8 +470,9 @@ Le système distingue \textbf{quatre acteurs principaux} :
     \label{tab:acteurs}
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Acteur} & \textbf{Rôle et responsabilités} \\
-        \midrule
+        \midrule\color{AmanaText}
         Agent bancaire & Clients, comptes, opérations courantes, historique, chéquiers \\
         Chef d'agence & Supervision, dashboard, notifications, journal d'audit \\
         Administrateur & Gestion du personnel (création, rôles, activation) \\
@@ -415,8 +501,9 @@ L'authentification est unifiée sur \texttt{/login} ; la redirection post-connex
     \small
     \begin{tabular}{@{}p{3cm}p{9.5cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Module} & \textbf{Description} \\
-        \midrule
+        \midrule\color{AmanaText}
         Authentification & Login, BCrypt, rôles ADMIN / AGENT / CHEF\_AGENCE / CLIENT \\
         Clients & CRUD, recherche multicritère, statuts \\
         Comptes & Ouverture, blocage, clôture (solde nul requis) \\
@@ -522,8 +609,9 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
     \label{tab:stack-backend}
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Technologie} & \textbf{Rôle} \\
-        \midrule
+        \midrule\color{AmanaText}
         Java 21 & Langage principal \\
         Spring Boot 3.4 & Framework applicatif (web, sécurité, JPA) \\
         Spring Security & Authentification, autorisation par rôles \\
@@ -544,8 +632,9 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
     \label{tab:stack-frontend}
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Technologie} & \textbf{Rôle} \\
-        \midrule
+        \midrule\color{AmanaText}
         Thymeleaf & Moteur de templates serveur (MVC) \\
         Bootstrap 5.3 & Grille responsive, composants formulaires et tableaux \\
         Bootstrap Icons 1.11 & Icônes de navigation, KPI et actions \\
@@ -620,8 +709,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Fichier / classe} & \textbf{Rôle} \\
-        \midrule
+        \midrule\color{AmanaText}
         \texttt{BanqueAgenceApplication.java} & Point d'entrée Spring Boot \\
         \texttt{config/SecurityConfig.java} & Chaîne de sécurité, rôles, redirection login \\
         \texttt{config/DevUserInitializer.java} & Seed utilisateurs (admin, agent, chef) \\
@@ -642,8 +732,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Package} & \textbf{Contenu} \\
-        \midrule
+        \midrule\color{AmanaText}
         \texttt{domain/entity/} & \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog} \\
         \texttt{domain/enums/} & \texttt{UserRole}, \texttt{AccountType}, \texttt{AccountStatus}, \texttt{TransactionType}, \texttt{ClientStatus}, \texttt{CheckbookOrderStatus}, \texttt{NotificationType}… \\
         \bottomrule
@@ -667,8 +758,9 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Service} & \textbf{Responsabilité} \\
-        \midrule
+        \midrule\color{AmanaText}
         \texttt{ClientService} & CRUD clients, recherche, changement statut \\
         \texttt{AccountService} & Ouverture, blocage, clôture comptes \\
         \texttt{TransactionService} & Dépôt, retrait, virement (\texttt{@Transactional}) \\
@@ -745,8 +837,9 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Dossier / fichier} & \textbf{Rôle} \\
-        \midrule
+        \midrule\color{AmanaText}
         \texttt{landing.html} & Page vitrine publique AmanaBank \\
         \texttt{login.html} & Connexion unique personnel + client \\
         \texttt{layout/main.html} & Layout agence (sidebar, cloche, menu) \\
@@ -931,8 +1024,9 @@ Le tableau de bord (\texttt{/dashboard}) est la \textbf{page d'atterrissage} apr
     \small
     \begin{tabular}{@{}lp{8cm}@{}}
         \toprule
+        \rowcolor{AmanaBrown}\color{white}
         \textbf{Indicateur} & \textbf{Description et action associée} \\
-        \midrule
+        \midrule\color{AmanaText}
         Clients actifs & Nombre de clients au statut actif — lien vers la gestion clients \\
         Comptes actifs & Comptes ouverts et non clôturés — lien vers la liste des comptes \\
         Opérations aujourd'hui & Nombre de transactions du jour — lien vers les opérations \\

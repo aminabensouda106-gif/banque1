@@ -663,7 +663,7 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | Interfaces | `src/main/resources/templates/` |
 | UML / MCD / MLD | `documentation/uml/`, `documentation/modele-donnees/` |
 | Manuel utilisateur | `documentation/manuel-utilisateur.md` (later) |
-| Rapport | External to repo or `documentation/rapport/` |
+| Rapport | `documentation/overleaf/` (main.tex + images/, zip Overleaf) |
 | Tests | `src/test/` |
 
 ---
