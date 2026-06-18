@@ -4,7 +4,9 @@
 <body>
 <section th:fragment="section">
     <div class="toolbar-card mb-3 d-flex justify-content-end">
-        <a th:href="@{/admin/users/new}" class="btn btn-success">Nouvel utilisateur</a>
+        <a th:href="@{/admin/users/new}" class="btn btn-success btn-with-icon">
+            <i class="bi bi-person-plus" aria-hidden="true"></i> Nouvel utilisateur
+        </a>
     </div>
 
     <div class="welcome-card">
@@ -35,16 +37,26 @@
                     <td class="text-end">
                         <div class="d-flex flex-wrap gap-1 justify-content-end">
                             <a th:href="@{/admin/users/{id}/edit(id=${user.id})}"
-                               class="btn btn-sm btn-outline-primary">Modifier</a>
+                               class="btn btn-sm btn-outline-primary btn-with-icon">
+                                <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
+                            </a>
                             <a th:href="@{/admin/users/{id}/password(id=${user.id})}"
-                               class="btn btn-sm btn-outline-secondary">Mot de passe</a>
+                               class="btn btn-sm btn-outline-secondary btn-with-icon">
+                                <i class="bi bi-key" aria-hidden="true"></i> Mot de passe
+                            </a>
                             <form th:if="${!user.enabled}" th:action="@{/admin/users/{id}/enable(id=${user.id})}"
-                                  method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-success">Activer</button>
+                                  method="post" class="d-inline"
+                                  data-confirm="Activer cet utilisateur ?">
+                                <button type="submit" class="btn btn-sm btn-success btn-with-icon">
+                                    <i class="bi bi-check-circle" aria-hidden="true"></i> Activer
+                                </button>
                             </form>
                             <form th:if="${user.enabled}" th:action="@{/admin/users/{id}/disable(id=${user.id})}"
-                                  method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-warning">Désactiver</button>
+                                  method="post" class="d-inline"
+                                  data-confirm="Désactiver cet utilisateur ? Il ne pourra plus se connecter.">
+                                <button type="submit" class="btn btn-sm btn-danger btn-with-icon">
+                                    <i class="bi bi-person-x" aria-hidden="true"></i> Désactiver
+                                </button>
                             </form>
                         </div>
                     </td>

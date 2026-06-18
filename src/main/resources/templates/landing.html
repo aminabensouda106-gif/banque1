@@ -18,7 +18,7 @@
     <div class="landing-container landing-header-inner">
         <a th:href="@{/}" class="landing-logo" aria-label="AmanaBank — accueil">
             <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
-                 alt="AmanaBank" class="landing-logo-img" width="168" height="40">
+                 alt="AmanaBank" class="landing-logo-img">
         </a>
         <nav aria-label="Navigation principale">
             <ul class="landing-nav">
@@ -30,7 +30,7 @@
         </nav>
         <div class="landing-header-actions">
             <a th:href="@{/login}" class="landing-btn landing-btn-outline">Connexion</a>
-            <a th:href="@{/login}" class="landing-btn landing-btn-primary">Ouvrir un compte</a>
+            <a href="#contact" class="landing-btn landing-btn-primary">Ouvrir un compte</a>
         </div>
     </div>
 </header>
@@ -193,7 +193,7 @@
             <div>
                 <div class="landing-footer-brand">
                     <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
-                         alt="AmanaBank" class="landing-footer-logo" width="140" height="34">
+                         alt="AmanaBank" class="landing-footer-logo">
                 </div>
                 <p>Établissement de crédit agréé. Siège social : Casablanca, Maroc.<br>
                     Banque de proximité au service des particuliers et des professionnels.</p>

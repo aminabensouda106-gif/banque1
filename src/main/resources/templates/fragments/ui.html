@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="back(href, label)" class="page-back-nav" aria-label="Retour">
+    <a th:href="${href}" class="page-back">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        <span th:text="${label}">Retour</span>
+    </a>
+</nav>
+</body>
+</html>

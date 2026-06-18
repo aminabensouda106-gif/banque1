@@ -3,6 +3,10 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:if="${clientId != null}"
+         th:replace="~{fragments/ui :: back(@{/clients/{id}(id=${clientId})}, 'Fiche client')}"></nav>
+    <nav th:unless="${clientId != null}"
+         th:replace="~{fragments/ui :: back(@{/clients}, 'Clients')}"></nav>
     <div class="welcome-card">
         <form th:action="${formAction}" th:object="${clientForm}" method="post" novalidate>
             <div class="row g-3">

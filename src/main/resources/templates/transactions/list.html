@@ -66,7 +66,9 @@
                     <td th:text="${tx.executedBy.fullName}">Agent</td>
                     <td th:text="${tx.description != null ? tx.description : '—'}">—</td>
                     <td>
-                        <a th:href="@{/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary">Reçu</a>
+                        <a th:href="@{/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary btn-with-icon">
+                            <i class="bi bi-receipt" aria-hidden="true"></i> Reçu
+                        </a>
                     </td>
                 </tr>
                 </tbody>

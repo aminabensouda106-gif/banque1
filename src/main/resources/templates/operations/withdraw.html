@@ -3,8 +3,10 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:replace="~{fragments/ui :: back(@{/operations}, 'Opérations')}"></nav>
     <div class="welcome-card">
-        <form th:action="@{/operations/withdraw}" th:object="${operationForm}" method="post">
+        <form th:action="@{/operations/withdraw}" th:object="${operationForm}" method="post"
+              data-confirm="Confirmer le retrait sur le compte sélectionné ?">
             <div class="mb-3">
                 <label for="accountId" class="form-label">Compte *</label>
                 <select id="accountId" class="form-select" th:field="*{accountId}"
@@ -28,8 +30,13 @@
                 <input type="text" id="description" class="form-control" th:field="*{description}">
             </div>
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-warning" th:text="${submitLabel}">Valider</button>
-                <a th:href="@{/operations}" class="btn btn-outline-secondary">Annuler</a>
+                <button type="submit" class="btn btn-warning btn-with-icon">
+                    <i class="bi bi-check-lg" aria-hidden="true"></i>
+                    <span th:text="${submitLabel}">Valider</span>
+                </button>
+                <a th:href="@{/operations}" class="btn btn-outline-secondary btn-with-icon">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i> Annuler
+                </a>
             </div>
         </form>
     </div>

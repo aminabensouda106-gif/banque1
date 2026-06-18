@@ -3,6 +3,7 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:replace="~{fragments/ui :: back(@{/admin/users}, 'Utilisateurs')}"></nav>
     <div class="welcome-card">
         <form th:action="@{/admin/users}" th:object="${userCreateForm}" method="post" novalidate>
             <div class="row g-3">

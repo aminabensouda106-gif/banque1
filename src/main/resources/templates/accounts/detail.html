@@ -3,6 +3,7 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:replace="~{fragments/ui :: back(@{/accounts}, 'Comptes')}"></nav>
     <div class="welcome-card mb-3">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
             <div>
@@ -34,25 +35,49 @@
         </dl>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-        <a th:href="@{/clients/{id}(id=${account.client.id})}" class="btn btn-outline-secondary">Fiche client</a>
-        <a th:href="@{/accounts}" class="btn btn-outline-secondary">Tous les comptes</a>
-        <a th:href="@{/accounts/{id}/statement(id=${account.id})}" class="btn btn-outline-primary">Relevé de compte</a>
-        <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/deposit(accountId=${account.id})}" class="btn btn-primary btn-sm">Dépôt</a>
-        <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/withdraw(accountId=${account.id})}" class="btn btn-warning btn-sm">Retrait</a>
-        <a th:if="${canRequestCheckbook}" th:href="@{/checkbook-orders/new(accountId=${account.id})}" class="btn btn-outline-info btn-sm">Commander un chéquier</a>
+    <div class="d-flex flex-wrap gap-2 action-toolbar">
+        <a th:href="@{/clients/{id}(id=${account.client.id})}" class="btn btn-outline-secondary btn-with-icon">
+            <i class="bi bi-person" aria-hidden="true"></i> Fiche client
+        </a>
+        <a th:href="@{/accounts}" class="btn btn-outline-secondary btn-with-icon">
+            <i class="bi bi-list-ul" aria-hidden="true"></i> Tous les comptes
+        </a>
+        <a th:href="@{/accounts/{id}/statement(id=${account.id})}" class="btn btn-outline-primary btn-with-icon">
+            <i class="bi bi-file-text" aria-hidden="true"></i> Relevé de compte
+        </a>
+        <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/deposit(accountId=${account.id})}"
+           class="btn btn-primary btn-sm btn-with-icon">
+            <i class="bi bi-plus-circle" aria-hidden="true"></i> Dépôt
+        </a>
+        <a th:if="${account.status.name() == 'ACTIVE'}" th:href="@{/operations/withdraw(accountId=${account.id})}"
+           class="btn btn-warning btn-sm btn-with-icon">
+            <i class="bi bi-dash-circle" aria-hidden="true"></i> Retrait
+        </a>
+        <a th:if="${canRequestCheckbook}" th:href="@{/checkbook-orders/new(accountId=${account.id})}"
+           class="btn btn-outline-info btn-sm btn-with-icon">
+            <i class="bi bi-journal-check" aria-hidden="true"></i> Commander un chéquier
+        </a>
 
         <form th:if="${account.status.name() == 'ACTIVE'}"
-              th:action="@{/accounts/{id}/block(id=${account.id})}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-warning">Bloquer</button>
+              th:action="@{/accounts/{id}/block(id=${account.id})}" method="post" class="d-inline"
+              data-confirm="Bloquer ce compte ? Les opérations seront suspendues.">
+            <button type="submit" class="btn btn-danger btn-with-icon">
+                <i class="bi bi-lock" aria-hidden="true"></i> Bloquer
+            </button>
         </form>
         <form th:if="${account.status.name() == 'BLOCKED'}"
-              th:action="@{/accounts/{id}/unblock(id=${account.id})}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-success">Débloquer</button>
+              th:action="@{/accounts/{id}/unblock(id=${account.id})}" method="post" class="d-inline"
+              data-confirm="Débloquer ce compte et autoriser à nouveau les opérations ?">
+            <button type="submit" class="btn btn-success btn-with-icon">
+                <i class="bi bi-unlock" aria-hidden="true"></i> Débloquer
+            </button>
         </form>
         <form th:if="${account.status.name() != 'CLOSED'}"
-              th:action="@{/accounts/{id}/close(id=${account.id})}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-secondary">Clôturer</button>
+              th:action="@{/accounts/{id}/close(id=${account.id})}" method="post" class="d-inline"
+              data-confirm="Clôturer définitivement ce compte ? Cette action est irréversible.">
+            <button type="submit" class="btn btn-danger btn-with-icon">
+                <i class="bi bi-x-circle" aria-hidden="true"></i> Clôturer
+            </button>
         </form>
     </div>
 
@@ -82,7 +107,9 @@
                               th:text="${order.status.label}">En attente</span>
                     </td>
                     <td class="text-end">
-                        <a th:href="@{/checkbook-orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">Voir</a>
+                        <a th:href="@{/checkbook-orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary btn-with-icon">
+                            <i class="bi bi-eye" aria-hidden="true"></i> Voir
+                        </a>
                     </td>
                 </tr>
                 </tbody>

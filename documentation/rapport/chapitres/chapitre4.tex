@@ -134,6 +134,24 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
 
 \section{Front-end (Thymeleaf)}
 
+\subsection{Identité visuelle et charte graphique}
+
+L'interface a été entièrement repensée autour de l'identité \textbf{AmanaBank}. La palette repose sur trois familles de couleurs définies en variables CSS (\texttt{:root}) :
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Marron} (\texttt{\#4B3621} à \texttt{\#7A6352}) : barre latérale, textes principaux ;
+    \item \textbf{Beige} (\texttt{\#FDFBF8} à \texttt{\#EDE6DA}) : arrière-plans, cartes et en-têtes ;
+    \item \textbf{Or} (\texttt{\#A6893A}) : boutons d'action, liens actifs et accents.
+\end{itemize}
+
+La police \textbf{DM Sans} (Google Fonts) assure une lecture confortable sur tous les écrans. Le logo officiel (\texttt{amana-logo.png} pour la vitrine, \texttt{AmanaBank.png} dans les espaces connectés) et le favicon renforcent la cohérence de marque.
+
+Deux feuilles de style complémentaires structurent le rendu :
+\begin{itemize}[leftmargin=*]
+    \item \texttt{landing.css} — page publique autonome (header fixe, hero plein écran, grilles de services) ;
+    \item \texttt{style.css} — espaces connectés agence et portail (sidebar, cartes KPI, formulaires, tableaux).
+\end{itemize}
+
 \subsection{Structure des templates}
 
 Les vues se trouvent dans \texttt{src/main/resources/templates/}.
@@ -169,11 +187,40 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
 \subsection{Ressources statiques}
 
 \begin{itemize}[leftmargin=*]
-    \item \texttt{static/css/style.css} — thème agence et portail (palette marron/beige/or).
-    \item \texttt{static/css/landing.css} — styles page vitrine.
-    \item \texttt{static/js/landing-header.js} — navigation landing.
-    \item \texttt{static/images/} — logo AmanaBank, favicon, images hero.
+    \item \texttt{static/css/style.css} — thème unifié agence et portail (sidebar, cartes KPI, login).
+    \item \texttt{static/css/landing.css} — vitrine marketing (hero, statistiques, services, footer).
+    \item \texttt{static/js/landing-header.js} — en-tête fixe avec masquage au défilement.
+    \item \texttt{static/images/} — logos, favicon, visuels (\texttt{hero.jpg}, \texttt{branch.jpg}, \texttt{digital.jpg}…).
 \end{itemize}
+
+\subsection{Page d'accueil publique (\texttt{landing.html})}
+
+La landing est une page \textbf{autonome} (sans layout Thymeleaf partagé) structurée en sections ancrées :
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{En-tête fixe} — logo, navigation (Services, Espace digital, Engagements, Contact), boutons Connexion et Ouvrir un compte.
+    \item \textbf{Hero} — image de fond (\texttt{hero.jpg}), accroche institutionnelle et appels à l'action.
+    \item \textbf{Chiffres clés} — bandeau de statistiques (expérience, clients, agences, satisfaction).
+    \item \textbf{Services} — trois cartes illustrées (comptes, financement, services digitaux).
+    \item \textbf{Espace client} — présentation du portail avec liste à puces et visuel mobile.
+    \item \textbf{Engagements} — valeurs de la banque (sécurité, proximité, transparence).
+    \item \textbf{Contact} — appel à l'action et coordonnées.
+    \item \textbf{Pied de page} — liens, adresse et mentions légales.
+\end{enumerate}
+
+Le contrôleur \texttt{HomeController} sert cette page sur la route \texttt{/} sans authentification.
+
+\subsection{Connexion unifiée (\texttt{login.html})}
+
+Un seul écran de connexion accueille le \textbf{personnel} (username) et les \textbf{clients} (CIN ou numéro client). Le formulaire POST vers \texttt{/login} est géré par Spring Security ; \texttt{UserDetailsServiceImpl} détermine le type de compte chargé. L'interface affiche des encadrés d'aide distincts pour chaque profil et un lien de retour vers la landing.
+
+\subsection{Layouts connectés}
+
+\textbf{Agence} (\texttt{layout/main.html}) : sidebar marron avec navigation par rôle (\texttt{sec:authorize}), en-tête de page, cloche de notifications pour le chef d'agence, zone de contenu sur fond beige.
+
+\textbf{Portail client} (\texttt{portal/layout.html}) : même structure visuelle avec badge «\,Espace client\,», menu réduit (comptes, historique, chéquiers) et cloche de notifications personnelles.
+
+Les tableaux de bord (\texttt{dashboard.html}, \texttt{portal/dashboard.html}) réutilisent le composant \texttt{stat-card--kpi} : indicateur chiffré, icône colorée, lien d'action rapide vers le module concerné.
 
 \subsection{Composants transverses}
 
@@ -185,4 +232,4 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
 
 \section{Conclusion}
 
-Ce chapitre a présenté l'architecture en couches de \nomapplication, l'organisation du back-end Java et la structure du front-end Thymeleaf. Le chapitre suivant illustre la réalisation par les captures d'écran des interfaces.
+Ce chapitre a présenté l'architecture en couches de \nomapplication, l'organisation du back-end Java et la structure du front-end Thymeleaf. La refonte de l'interface — charte AmanaBank, landing autonome, layouts à sidebar et composants KPI réutilisables — assure une cohérence visuelle entre l'espace agence et le portail client. Le chapitre suivant illustre ces interfaces par des captures d'écran commentées.

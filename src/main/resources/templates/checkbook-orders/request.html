@@ -3,9 +3,11 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:replace="~{fragments/ui :: back(@{/checkbook-orders}, 'Chéquiers')}"></nav>
     <div class="welcome-card">
         <p class="text-muted">Comptes courants ou professionnels actifs, sans commande en attente.</p>
-        <form th:action="@{/checkbook-orders}" th:object="${checkbookOrderForm}" method="post">
+        <form th:action="@{/checkbook-orders}" th:object="${checkbookOrderForm}" method="post"
+              data-confirm="Confirmer la commande de chéquier pour ce compte ?">
             <div class="mb-3">
                 <label for="accountId" class="form-label">Compte *</label>
                 <select id="accountId" class="form-select" th:field="*{accountId}"
@@ -41,9 +43,13 @@
                 <input type="text" id="notes" class="form-control" th:field="*{notes}" maxlength="255">
             </div>
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary" th:text="${submitLabel}"
-                        th:disabled="${eligibleAccounts.isEmpty()}">Valider</button>
-                <a th:href="@{/checkbook-orders}" class="btn btn-outline-secondary">Annuler</a>
+                <button type="submit" class="btn btn-primary btn-with-icon" th:disabled="${eligibleAccounts.isEmpty()}">
+                    <i class="bi bi-check-lg" aria-hidden="true"></i>
+                    <span th:text="${submitLabel}">Valider</span>
+                </button>
+                <a th:href="@{/checkbook-orders}" class="btn btn-outline-secondary btn-with-icon">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i> Annuler
+                </a>
             </div>
         </form>
     </div>

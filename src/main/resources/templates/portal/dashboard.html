@@ -15,25 +15,104 @@
         <h3 class="h6 mb-2">À votre attention</h3>
         <div class="d-flex flex-wrap gap-2">
             <a th:if="${unreadNotifications > 0}" th:href="@{/portal/notifications}"
-               class="alert alert-primary mb-0 py-2 px-3 text-decoration-none">
-                <i class="bi bi-bell" aria-hidden="true"></i>
+               class="alert alert-primary mb-0 py-2 px-3 text-decoration-none alert-chip">
+                <i class="bi bi-bell-fill" aria-hidden="true"></i>
                 <strong th:text="${unreadNotifications}">0</strong> notification(s) non lue(s)
             </a>
             <a th:if="${pendingCheckbooks > 0}" th:href="@{/portal/checkbook-orders}"
-               class="alert alert-info mb-0 py-2 px-3 text-decoration-none">
+               class="alert alert-info mb-0 py-2 px-3 text-decoration-none alert-chip">
                 <i class="bi bi-journal-check" aria-hidden="true"></i>
                 <strong th:text="${pendingCheckbooks}">0</strong> commande(s) de chéquier en cours
             </a>
         </div>
     </div>
 
+    <div class="row g-3 mt-2" th:with="totalBalance=${#aggregates.sum(accounts.![balance])}">
+        <div class="col-md-3">
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Solde total</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--volume" aria-hidden="true">
+                        <i class="bi bi-safe2"></i>
+                    </span>
+                </div>
+                <p class="stat-value"
+                   th:text="${#numbers.formatDecimal(totalBalance, 1, 2)} + ' MAD'">0,00 MAD</p>
+                <a th:href="@{/portal/accounts}" class="stat-card-action">
+                    <i class="bi bi-wallet2" aria-hidden="true"></i>
+                    Mes comptes
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Mes comptes</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--accounts" aria-hidden="true">
+                        <i class="bi bi-wallet2"></i>
+                    </span>
+                </div>
+                <p class="stat-value" th:text="${accounts.size()}">0</p>
+                <a th:href="@{/portal/accounts}" class="stat-card-action">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                    Voir le détail
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Notifications</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--notifications" aria-hidden="true">
+                        <i class="bi bi-bell-fill"></i>
+                    </span>
+                </div>
+                <p class="stat-value" th:text="${unreadNotifications}">0</p>
+                <a th:href="@{/portal/notifications}" class="stat-card-action">
+                    <i class="bi bi-bell" aria-hidden="true"></i>
+                    Consulter
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Chéquiers en cours</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--checkbook" aria-hidden="true">
+                        <i class="bi bi-journal-check"></i>
+                    </span>
+                </div>
+                <p class="stat-value" th:text="${pendingCheckbooks}">0</p>
+                <a th:href="@{/portal/checkbook-orders}" class="stat-card-action">
+                    <i class="bi bi-journal-text" aria-hidden="true"></i>
+                    Mes commandes
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-3 mt-2">
         <div class="col-md-4" th:each="account : ${accounts}">
-            <div class="stat-card">
-                <h3>
-                    <i class="bi bi-wallet2 stat-card-icon" aria-hidden="true"></i>
-                    <span th:text="${account.type.label}">Type</span>
-                </h3>
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3 th:text="${account.type.label}">Type</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--accounts" aria-hidden="true"
+                          th:if="${account.type.name() == 'COURANT'}">
+                        <i class="bi bi-bank"></i>
+                    </span>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--volume" aria-hidden="true"
+                          th:if="${account.type.name() == 'EPARGNE'}">
+                        <i class="bi bi-piggy-bank"></i>
+                    </span>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--operations" aria-hidden="true"
+                          th:if="${account.type.name() == 'PROFESSIONNEL'}">
+                        <i class="bi bi-briefcase"></i>
+                    </span>
+                </div>
                 <p class="stat-value"
                    th:text="${#numbers.formatDecimal(account.balance, 1, 2)} + ' MAD'">0,00 MAD</p>
                 <p class="text-muted mb-0" th:text="${account.accountNumber}">ACC-00001</p>
@@ -64,13 +143,21 @@
                     <td th:text="${tx.type.label}">Type</td>
                     <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)} + ' MAD'">0,00</td>
                     <td>
-                        <a th:href="@{/portal/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary">Reçu</a>
+                        <a th:href="@{/portal/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary btn-with-icon">
+                            <i class="bi bi-receipt" aria-hidden="true"></i>
+                            Reçu
+                        </a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <p class="mb-0 mt-2"><a th:href="@{/portal/transactions}">Voir tout l'historique</a></p>
+        <p class="mb-0 mt-2">
+            <a th:href="@{/portal/transactions}" class="dashboard-link">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                Voir tout l'historique
+            </a>
+        </p>
     </div>
 </section>
 </body>

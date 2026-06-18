@@ -5,6 +5,7 @@ import com.banque.agence.domain.entity.BillProvider;
 import com.banque.agence.security.SecurityUser;
 import com.banque.agence.service.BillPaymentService;
 import com.banque.agence.service.BusinessRuleException;
+import com.banque.agence.service.DashboardService;
 import com.banque.agence.service.ResourceNotFoundException;
 import com.banque.agence.service.TransactionService;
 import com.banque.agence.web.dto.BillPaymentForm;
@@ -30,11 +31,14 @@ public class OperationController {
 
     private final TransactionService transactionService;
     private final BillPaymentService billPaymentService;
+    private final DashboardService dashboardService;
 
     public OperationController(TransactionService transactionService,
-                               BillPaymentService billPaymentService) {
+                               BillPaymentService billPaymentService,
+                               DashboardService dashboardService) {
         this.transactionService = transactionService;
         this.billPaymentService = billPaymentService;
+        this.dashboardService = dashboardService;
     }
 
     @ModelAttribute("activeAccounts")
@@ -51,6 +55,8 @@ public class OperationController {
     public String index(Model model) {
         model.addAttribute("pageTitle", "Opérations");
         model.addAttribute("activePage", "operations");
+        model.addAttribute("stats", dashboardService.getStats());
+        model.addAttribute("recentTransactions", dashboardService.getRecentTransactions());
         return "operations/index";
     }
 

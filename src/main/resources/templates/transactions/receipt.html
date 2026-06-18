@@ -13,6 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body class="receipt-body">
+<nav th:replace="~{fragments/ui :: back(${backUrl}, 'Historique')}"></nav>
 <div class="receipt-container">
     <header class="receipt-header text-center mb-4">
         <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
@@ -66,11 +67,15 @@
     <div th:if="${successMessage}" class="alert alert-success text-center no-print mt-3 mb-0" th:text="${successMessage}"></div>
 
     <div class="receipt-actions no-print mt-4 d-flex gap-2 justify-content-center flex-wrap">
-        <a th:href="${pdfUrl}" class="btn btn-success" th:download="${receiptFileName}">
-            <i class="bi bi-file-earmark-pdf"></i> Télécharger PDF
+        <a th:href="${pdfUrl}" class="btn btn-success btn-with-icon" th:download="${receiptFileName}">
+            <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i> Télécharger PDF
         </a>
-        <button type="button" class="btn btn-primary" onclick="window.print()">Imprimer</button>
-        <a th:href="${backUrl}" class="btn btn-outline-secondary">Historique</a>
+        <button type="button" class="btn btn-primary btn-with-icon" onclick="window.print()">
+            <i class="bi bi-printer" aria-hidden="true"></i> Imprimer
+        </button>
+        <a th:href="${backUrl}" class="btn btn-outline-secondary btn-with-icon">
+            <i class="bi bi-clock-history" aria-hidden="true"></i> Historique
+        </a>
     </div>
 </div>
 </body>

@@ -13,32 +13,68 @@
 
     <div class="row g-3 mt-2">
         <div class="col-md-3">
-            <div class="stat-card">
-                <h3>Clients actifs</h3>
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Clients actifs</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--clients" aria-hidden="true">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+                </div>
                 <p class="stat-value" th:text="${stats.activeClients}">0</p>
-                <p class="text-muted mb-0"><a th:href="@{/clients}">Gérer les clients</a></p>
+                <a th:href="@{/clients}" class="stat-card-action">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                    Gérer les clients
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card">
-                <h3>Comptes actifs</h3>
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Comptes actifs</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--accounts" aria-hidden="true">
+                        <i class="bi bi-wallet2"></i>
+                    </span>
+                </div>
                 <p class="stat-value" th:text="${stats.activeAccounts}">0</p>
-                <p class="text-muted mb-0"><a th:href="@{/accounts}">Gérer les comptes</a></p>
+                <a th:href="@{/accounts}" class="stat-card-action">
+                    <i class="bi bi-wallet2" aria-hidden="true"></i>
+                    Gérer les comptes
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card">
-                <h3>Opérations aujourd'hui</h3>
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Opérations aujourd'hui</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--operations" aria-hidden="true">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </span>
+                </div>
                 <p class="stat-value" th:text="${stats.todayTransactionCount}">0</p>
-                <p class="text-muted mb-0"><a th:href="@{/operations}">Nouvelle opération</a></p>
+                <a th:href="@{/operations}" class="stat-card-action">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                    Nouvelle opération
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card">
-                <h3>Volume du jour</h3>
+            <div class="stat-card stat-card--kpi">
+                <div class="stat-card-head">
+                    <h3>Volume du jour</h3>
+                    <span class="stat-card-icon-wrap stat-card-icon-wrap--volume" aria-hidden="true">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+                </div>
                 <p class="stat-value"
                    th:text="${#numbers.formatDecimal(stats.todayTransactionAmount, 1, 2)} + ' MAD'">0,00 MAD</p>
-                <p class="text-muted mb-0"><a th:href="@{/transactions}">Historique complet</a></p>
+                <a th:href="@{/transactions}" class="stat-card-action">
+                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                    Historique complet
+                    <i class="bi bi-chevron-right stat-card-action-arrow" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -49,13 +85,15 @@
         <div class="d-flex flex-wrap gap-2">
             <a th:if="${stats.pendingCheckbookOrders > 0}"
                th:href="@{/checkbook-orders(status='PENDING')}"
-               class="alert alert-warning mb-0 py-2 px-3 text-decoration-none">
+               class="alert alert-warning mb-0 py-2 px-3 text-decoration-none alert-chip">
+                <i class="bi bi-journal-check" aria-hidden="true"></i>
                 <strong th:text="${stats.pendingCheckbookOrders}">0</strong>
                 commande(s) de chéquier en attente
             </a>
             <a th:if="${stats.processingCheckbookOrders > 0}"
                th:href="@{/checkbook-orders(status='PROCESSING')}"
-               class="alert alert-info mb-0 py-2 px-3 text-decoration-none">
+               class="alert alert-info mb-0 py-2 px-3 text-decoration-none alert-chip">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
                 <strong th:text="${stats.processingCheckbookOrders}">0</strong>
                 commande(s) en cours de traitement
             </a>
@@ -89,12 +127,21 @@
                     </td>
                     <td th:text="${tx.executedBy.fullName}">Agent</td>
                     <td>
-                        <a th:href="@{/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary">Reçu</a>
+                        <a th:href="@{/transactions/{id}/receipt(id=${tx.id})}" class="btn btn-sm btn-outline-secondary btn-with-icon">
+                            <i class="bi bi-receipt" aria-hidden="true"></i>
+                            Reçu
+                        </a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <p class="mb-0 mt-2" th:unless="${recentTransactions.isEmpty()}">
+            <a th:href="@{/transactions}" class="dashboard-link">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                Voir tout l'historique
+            </a>
+        </p>
     </div>
 </section>
 </body>

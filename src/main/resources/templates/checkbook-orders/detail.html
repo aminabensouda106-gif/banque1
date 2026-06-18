@@ -3,6 +3,7 @@
       th:replace="~{layout/main :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
+    <nav th:replace="~{fragments/ui :: back(@{/checkbook-orders}, 'Chéquiers')}"></nav>
     <div class="welcome-card mb-3">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
             <div>
@@ -43,18 +44,23 @@
         <h3 class="h6 mb-3">Changer le statut</h3>
         <div class="d-flex flex-wrap gap-2">
             <form th:each="next : ${nextStatuses}"
-                  th:action="@{/checkbook-orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                  th:action="@{/checkbook-orders/{id}/status(id=${order.id})}" method="post" class="d-inline"
+                  th:data-confirm="${next.name() == 'CANCELLED'} ? 'Annuler définitivement cette commande de chéquier ?' : |Passer la commande au statut « ${next.label} » ?|">
                 <input type="hidden" name="status" th:value="${next.name()}">
-                <button type="submit" class="btn btn-sm"
-                        th:classappend="${next.name() == 'CANCELLED'} ? ' btn-outline-secondary' : ' btn-primary'"
-                        th:text="${next.label}">Statut</button>
+                <button type="submit" class="btn btn-sm btn-with-icon"
+                        th:classappend="${next.name() == 'CANCELLED'} ? ' btn-danger' : ' btn-primary'">
+                    <i class="bi" aria-hidden="true"
+                       th:classappend="${next.name() == 'CANCELLED'} ? ' bi-x-circle' : (${next.name() == 'DELIVERED'} ? ' bi-check-circle' : ' bi-arrow-right-circle')"></i>
+                    <span th:text="${next.label}">Statut</span>
+                </button>
             </form>
         </div>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-        <a th:href="@{/checkbook-orders}" class="btn btn-outline-secondary">Toutes les commandes</a>
-        <a th:href="@{/accounts/{id}(id=${order.account.id})}" class="btn btn-outline-primary">Fiche compte</a>
+    <div class="d-flex flex-wrap gap-2 action-toolbar">
+        <a th:href="@{/accounts/{id}(id=${order.account.id})}" class="btn btn-outline-primary btn-with-icon">
+            <i class="bi bi-wallet2" aria-hidden="true"></i> Fiche compte
+        </a>
     </div>
 </section>
 </body>

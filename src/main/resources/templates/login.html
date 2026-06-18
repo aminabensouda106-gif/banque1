@@ -14,10 +14,16 @@
 </head>
 <body class="login-body">
 <div class="login-container">
+    <p class="login-back">
+        <a th:href="@{/}">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            Retour à l'accueil
+        </a>
+    </p>
     <div class="login-card">
         <div class="login-header">
             <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
-                 alt="AmanaBank" class="brand-logo" width="200" height="52">
+                 alt="AmanaBank" class="brand-logo">
             <p class="login-tagline">Connexion personnel ou espace client</p>
         </div>
 
