@@ -437,7 +437,10 @@ src/main/resources/db/migration/
 
 ## 8. UI conventions
 
-- **Bootstrap 5** layout: sidebar nav + top bar with user/role.
+- **Bootstrap 5** + **Bootstrap Icons** : layout commun sidebar + en-tête.
+- **Personnel** (`layout/main.html`) : thème bleu, menu latéral sticky avec icônes, cloche notifications en en-tête, bloc utilisateur (nom + rôle).
+- **Client** (`portal/layout.html`) : même structure (sidebar sticky, icônes, cloche, déconnexion) ; thème **teal** ; infos client (nom, n° client, CIN).
+- **Login** (`/login`) : page unique personnel + client ; champs avec icônes ; redirection selon rôle (`/dashboard` ou `/portal/dashboard`).
 - **French** UI labels (application métier).
 - Flash messages via `RedirectAttributes` for success/error.
 - Forms: server-side validation (`@Valid` + Bean Validation).

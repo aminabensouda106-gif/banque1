@@ -192,6 +192,12 @@ note bottom of Transaction
   Associée à l'utilisateur exécutant
 end note
 
+note bottom of Client
+  Portail v2 : passwordHash, portalEnabled
+  UI /portal : shell commun (sidebar icônes, cloche)
+  Login partagé /login → /portal/dashboard
+end note
+
 note bottom of User
   Mot de passe jamais stocké en clair
 end note

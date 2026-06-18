@@ -3,7 +3,9 @@
       th:replace="~{portal/layout :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
-    <div th:if="${accounts.isEmpty()}" class="welcome-card text-muted">Aucun compte associé.</div>
+    <div th:if="${accounts.isEmpty()}" class="welcome-card text-muted">
+        <i class="bi bi-wallet2" aria-hidden="true"></i> Aucun compte associé.
+    </div>
     <div th:unless="${accounts.isEmpty()}" class="table-responsive welcome-card">
         <table class="table table-hover align-middle mb-0">
             <thead>

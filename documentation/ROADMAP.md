@@ -965,6 +965,15 @@ git push origin main
 
 > **Référence :** commit `92b2d22` sur `main` (regroupe Phase 13 + Phase 14 en un seul livrable).
 
+### Mise à jour conception v2.2 (UI portail alignée agence)
+
+- [x] `portal/layout.html` — sidebar sticky, icônes, cloche en-tête (comme personnel)
+- [x] `login.html` — icônes, hints personnel / client séparés
+- [x] `03-portail-client.puml` — shell UI commun, thème teal
+- [x] `diagramme-classes.puml` — note Client (portail + UI)
+- [x] `manuel-utilisateur.md`, `TECHNICAL.md` §8 UI
+- [x] Régénérer les SVG PlantUML
+
 ### Mise à jour conception v2.1 (seed modulaire + auth dual)
 
 - [x] Séquence `01-authentification` — login personnel ou client, redirections `/dashboard` vs `/portal/dashboard`

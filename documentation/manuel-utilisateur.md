@@ -156,7 +156,13 @@ Menu **Journal d'audit** (admin et chef d'agence) :
 
 Connexion avec **n° client** ou **CIN** + mot de passe (même page `/login` que le personnel).
 
-Fonctionnalités (`/portal/**`) :
+### Navigation (alignée sur l'interface agence)
+
+- **Sidebar** : icônes Bootstrap, menu sticky, pied de page avec nom du client et déconnexion.
+- **En-tête** : titre de page + **cloche** (badge notifications non lues).
+- **Couleur** : thème teal pour distinguer l'espace client du thème bleu agence.
+
+### Fonctionnalités (`/portal/**`)
 
 - **Tableau de bord** : soldes et dernières opérations
 - **Mes comptes** : liste des comptes du client

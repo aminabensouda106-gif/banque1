@@ -3,7 +3,9 @@
       th:replace="~{portal/layout :: layout(${pageTitle}, ~{::section})}">
 <body>
 <section th:fragment="section">
-    <div th:if="${orders.isEmpty()}" class="welcome-card text-muted">Aucune commande de chéquier.</div>
+    <div th:if="${orders.isEmpty()}" class="welcome-card text-muted">
+        <i class="bi bi-journal-check" aria-hidden="true"></i> Aucune commande de chéquier.
+    </div>
     <div th:unless="${orders.isEmpty()}" class="table-responsive welcome-card">
         <table class="table table-hover align-middle mb-0">
             <thead>

@@ -4,8 +4,9 @@
 <body>
 <section th:fragment="section">
     <div class="welcome-card">
-        <h2 th:text="'Bonjour, ' + ${client.firstName} + ' !'">Bonjour</h2>
+        <h2 th:text="'Bienvenue, ' + ${client.firstName} + ' !'">Bienvenue</h2>
         <p class="text-muted mb-0">
+            Vous êtes connecté en tant que <strong>Client bancaire</strong>.
             Consultez vos comptes, opérations et notifications en temps réel.
         </p>
     </div>
@@ -15,10 +16,12 @@
         <div class="d-flex flex-wrap gap-2">
             <a th:if="${unreadNotifications > 0}" th:href="@{/portal/notifications}"
                class="alert alert-primary mb-0 py-2 px-3 text-decoration-none">
+                <i class="bi bi-bell" aria-hidden="true"></i>
                 <strong th:text="${unreadNotifications}">0</strong> notification(s) non lue(s)
             </a>
             <a th:if="${pendingCheckbooks > 0}" th:href="@{/portal/checkbook-orders}"
                class="alert alert-info mb-0 py-2 px-3 text-decoration-none">
+                <i class="bi bi-journal-check" aria-hidden="true"></i>
                 <strong th:text="${pendingCheckbooks}">0</strong> commande(s) de chéquier en cours
             </a>
         </div>
@@ -27,7 +30,10 @@
     <div class="row g-3 mt-2">
         <div class="col-md-4" th:each="account : ${accounts}">
             <div class="stat-card">
-                <h3 th:text="${account.type.label}">Type</h3>
+                <h3>
+                    <i class="bi bi-wallet2 stat-card-icon" aria-hidden="true"></i>
+                    <span th:text="${account.type.label}">Type</span>
+                </h3>
                 <p class="stat-value"
                    th:text="${#numbers.formatDecimal(account.balance, 1, 2)} + ' MAD'">0,00 MAD</p>
                 <p class="text-muted mb-0" th:text="${account.accountNumber}">ACC-00001</p>

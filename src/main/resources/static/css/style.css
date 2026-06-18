@@ -52,6 +52,33 @@ body {
     margin-bottom: 0;
 }
 
+.login-hint-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.login-hint-box {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #0d47a1;
+    color: #444;
+}
+
+.login-hint-box.portal-hint {
+    border-left-color: #0d9488;
+}
+
+.login-hint-box code {
+    font-size: 0.8rem;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+}
+
 .brand-icon {
     display: inline-flex;
     align-items: center;
@@ -222,6 +249,20 @@ body {
     color: #0d47a1;
 }
 
+.portal-body .notification-bell:hover {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+.notification-bell-active {
+    background: #e3f2fd;
+}
+
+.portal-body .notification-bell-active {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
 .notification-badge {
     position: absolute;
     top: 0;
@@ -269,6 +310,14 @@ body {
     margin-top: 0;
     font-size: 1rem;
     color: #0d47a1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-card-icon {
+    font-size: 1.1rem;
+    opacity: 0.85;
 }
 
 .stat-value {
@@ -345,6 +394,39 @@ body {
     background: linear-gradient(180deg, #0d4f4f 0%, #0a3d3d 100%);
 }
 
+.portal-sidebar .sidebar-brand .brand-icon,
+.portal-brand-icon {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.portal-body .app-header h1 {
+    color: #0f766e;
+}
+
+.portal-body .stat-card h3 {
+    color: #0f766e;
+}
+
 .portal-body .welcome-card {
     border-left: 4px solid #0d9488;
+}
+
+.portal-body .btn-primary {
+    background-color: #0d9488;
+    border-color: #0d9488;
+}
+
+.portal-body .btn-primary:hover {
+    background-color: #0f766e;
+    border-color: #0f766e;
+}
+
+.portal-body .btn-outline-primary {
+    color: #0d9488;
+    border-color: #0d9488;
+}
+
+.portal-body .btn-outline-primary:hover {
+    background-color: #0d9488;
+    border-color: #0d9488;
 }

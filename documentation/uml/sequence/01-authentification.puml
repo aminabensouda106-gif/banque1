@@ -42,7 +42,9 @@ deactivate C
 
 note over S, DB
   Mot de passe vérifié via BCrypt
-  Même page /login pour personnel et client
+  Page /login unique (icônes Bootstrap)
+  Personnel → /dashboard (sidebar bleue)
+  Client → /portal/dashboard (sidebar teal, cloche)
   Démo : DemoPortalSync active le portail (CD789012, BE123456)
 end note
 

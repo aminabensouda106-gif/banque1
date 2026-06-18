@@ -14,7 +14,7 @@
 <div class="app-shell">
     <aside class="sidebar portal-sidebar">
         <div class="sidebar-brand">
-            <span class="brand-icon">BA</span>
+            <span class="brand-icon portal-brand-icon">EC</span>
             <span class="brand-text">Espace client</span>
         </div>
         <nav class="sidebar-nav">
@@ -34,17 +34,17 @@
                 <i class="bi bi-journal-check" aria-hidden="true"></i>
                 <span>Chéquiers</span>
             </a>
-            <a th:href="@{/portal/notifications}" class="sidebar-link" th:classappend="${activePage == 'notifications'} ? ' active'">
-                <i class="bi bi-bell" aria-hidden="true"></i>
-                <span>Notifications</span>
-            </a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
                 <i class="bi bi-person-circle sidebar-user-icon" aria-hidden="true"></i>
                 <div>
                     <strong sec:authentication="principal.client.fullName">Client</strong>
-                    <small sec:authentication="principal.client.clientNumber">N° client</small>
+                    <small>
+                        Client bancaire<br>
+                        <span sec:authentication="principal.client.clientNumber">N° client</span>
+                        · <span sec:authentication="principal.client.cin">CIN</span>
+                    </small>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post">
@@ -58,7 +58,8 @@
     <div class="app-main">
         <header class="app-header d-flex justify-content-between align-items-center">
             <h1 th:text="${title}">Page</h1>
-            <a th:href="@{/portal/notifications}" class="notification-bell" title="Notifications">
+            <a th:href="@{/portal/notifications}" class="notification-bell" title="Notifications"
+               th:classappend="${activePage == 'notifications'} ? ' notification-bell-active' : ''">
                 <i class="bi bi-bell" aria-hidden="true"></i>
                 <span th:if="${unreadNotificationCount > 0}" class="notification-badge"
                       th:text="${unreadNotificationCount > 9} ? '9+' : ${unreadNotificationCount}">0</span>
