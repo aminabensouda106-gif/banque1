@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' — Espace client'">Espace client</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body class="app-body portal-body">
@@ -18,28 +19,39 @@
         </div>
         <nav class="sidebar-nav">
             <a th:href="@{/portal/dashboard}" class="sidebar-link" th:classappend="${activePage == 'dashboard'} ? ' active'">
-                Tableau de bord
+                <i class="bi bi-speedometer2" aria-hidden="true"></i>
+                <span>Tableau de bord</span>
             </a>
             <a th:href="@{/portal/accounts}" class="sidebar-link" th:classappend="${activePage == 'accounts'} ? ' active'">
-                Mes comptes
+                <i class="bi bi-wallet2" aria-hidden="true"></i>
+                <span>Mes comptes</span>
             </a>
             <a th:href="@{/portal/transactions}" class="sidebar-link" th:classappend="${activePage == 'transactions'} ? ' active'">
-                Historique
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Historique</span>
             </a>
             <a th:href="@{/portal/checkbook-orders}" class="sidebar-link" th:classappend="${activePage == 'checkbook-orders'} ? ' active'">
-                Chéquiers
+                <i class="bi bi-journal-check" aria-hidden="true"></i>
+                <span>Chéquiers</span>
             </a>
             <a th:href="@{/portal/notifications}" class="sidebar-link" th:classappend="${activePage == 'notifications'} ? ' active'">
-                Notifications
+                <i class="bi bi-bell" aria-hidden="true"></i>
+                <span>Notifications</span>
             </a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
-                <strong sec:authentication="principal.client.fullName">Client</strong>
-                <small sec:authentication="principal.client.clientNumber">N° client</small>
+                <i class="bi bi-person-circle sidebar-user-icon" aria-hidden="true"></i>
+                <div>
+                    <strong sec:authentication="principal.client.fullName">Client</strong>
+                    <small sec:authentication="principal.client.clientNumber">N° client</small>
+                </div>
             </div>
             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn btn-outline-light btn-sm w-100">Déconnexion</button>
+                <button type="submit" class="btn btn-outline-light btn-sm w-100">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    Déconnexion
+                </button>
             </form>
         </div>
     </aside>
@@ -47,9 +59,7 @@
         <header class="app-header d-flex justify-content-between align-items-center">
             <h1 th:text="${title}">Page</h1>
             <a th:href="@{/portal/notifications}" class="notification-bell" title="Notifications">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 1.197-.393 1.744-.17.343-.341.686-.512 1.03-.066.133-.099.266-.099.4v.1c0 .563.437 1 1 1h9c.563 0 1-.437 1-1v-.1c0-.134-.033-.267-.099-.4-.171-.344-.342-.687-.512-1.03C13.197 7.197 13 6.628 13 6a4.002 4.002 0 0 0-4.803-3.92zM9 0H7a5 5 0 0 0-5 5v.1c0 .563-.187 1.123-.533 1.57-.346.447-.8.83-1.267 1.13A1 1 0 0 0 1 9h14a1 1 0 0 0 .8-1.6c-.467-.3-.92-.683-1.267-1.13A3.98 3.98 0 0 1 13 5.1V5a5 5 0 0 0-4-4.9z"/>
-                </svg>
+                <i class="bi bi-bell" aria-hidden="true"></i>
                 <span th:if="${unreadNotificationCount > 0}" class="notification-badge"
                       th:text="${unreadNotificationCount > 9} ? '9+' : ${unreadNotificationCount}">0</span>
             </a>
