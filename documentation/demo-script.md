@@ -27,7 +27,7 @@
 ## 4. Historique et documents (1 min)
 
 1. **Historique** → filtrer par compte `ACC-00001`
-2. Ouvrir un **reçu** imprimable (bouton sur une transaction)
+2. Ouvrir un **reçu** imprimable (bouton sur une transaction) → **Télécharger PDF** (ex. `reçu-DEPOT-2026-06-14.pdf`)
 3. **Comptes** → relevé du compte courant Ahmed
 
 ## 5. Paiement de facture (45 s)
@@ -61,7 +61,7 @@
 1. Déconnexion → login **client** : CIN `CD789012` ou n° `CL-00001` / `client123`
 2. **Tableau de bord** : soldes des comptes Ahmed
 3. **Notifications** : montrer une alerte (ex. après un dépôt agent en direct)
-4. **Historique** → ouvrir un **reçu**
+4. **Historique** → ouvrir un **reçu** → télécharger le PDF
 5. **Chéquiers** : suivi de la commande en cours
 
 ---

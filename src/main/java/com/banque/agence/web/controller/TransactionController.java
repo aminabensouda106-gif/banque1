@@ -4,11 +4,15 @@ import com.banque.agence.domain.entity.Transaction;
 import com.banque.agence.domain.enums.TransactionType;
 import com.banque.agence.repository.UserRepository;
 import com.banque.agence.service.BillPaymentService;
+import com.banque.agence.service.ReceiptFileNameBuilder;
+import com.banque.agence.service.ReceiptPdfService;
 import com.banque.agence.service.TransactionService;
+import com.banque.agence.web.ReceiptDownloadResponse;
 import com.banque.agence.web.dto.TransactionFilterForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +30,19 @@ public class TransactionController {
     private final TransactionService transactionService;
     private final UserRepository userRepository;
     private final BillPaymentService billPaymentService;
+    private final ReceiptPdfService receiptPdfService;
+    private final ReceiptFileNameBuilder receiptFileNameBuilder;
 
     public TransactionController(TransactionService transactionService,
                                  UserRepository userRepository,
-                                 BillPaymentService billPaymentService) {
+                                 BillPaymentService billPaymentService,
+                                 ReceiptPdfService receiptPdfService,
+                                 ReceiptFileNameBuilder receiptFileNameBuilder) {
         this.transactionService = transactionService;
         this.userRepository = userRepository;
         this.billPaymentService = billPaymentService;
+        this.receiptPdfService = receiptPdfService;
+        this.receiptFileNameBuilder = receiptFileNameBuilder;
     }
 
     @GetMapping
@@ -63,6 +73,17 @@ public class TransactionController {
         var transaction = transactionService.findById(id);
         model.addAttribute("transaction", transaction);
         billPaymentService.findByTransactionId(id).ifPresent(bp -> model.addAttribute("billPayment", bp));
+        model.addAttribute("backUrl", "/transactions");
+        model.addAttribute("pdfUrl", "/transactions/" + id + "/receipt.pdf");
+        model.addAttribute("receiptFileName", receiptFileNameBuilder.build(transaction));
         return "transactions/receipt";
+    }
+
+    @GetMapping("/{id}/receipt.pdf")
+    public ResponseEntity<byte[]> receiptPdf(@PathVariable Long id) {
+        var transaction = transactionService.findById(id);
+        var billPayment = billPaymentService.findByTransactionId(id);
+        byte[] pdf = receiptPdfService.generate(transaction, billPayment);
+        return ReceiptDownloadResponse.pdf(pdf, transaction, receiptFileNameBuilder);
     }
 }

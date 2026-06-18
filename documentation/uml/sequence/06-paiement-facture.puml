@@ -31,7 +31,7 @@ else compte éligible
     svc --> ctrl : BillPaymentResult + transactionId
     ctrl --> agent : succès + lien reçu
     agent -> ctrl : GET /transactions/{id}/receipt
-    ctrl --> agent : reçu imprimable (HTML)
+    ctrl --> agent : reçu imprimable (HTML)\nou PDF (reçu-TYPE-date.pdf)
   end
 end
 

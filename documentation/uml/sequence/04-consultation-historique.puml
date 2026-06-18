@@ -40,13 +40,24 @@ deactivate AC
 
 Agent -> TC : GET /transactions/{id}/receipt
 activate TC
-TC -> TS : getReceipt(transactionId)
+TC -> TS : findById(transactionId)
 activate TS
 TS -> DB : SELECT transaction + comptes + user
 DB --> TS : détails complets
-TS --> TC : reçu
+TS --> TC : transaction
 deactivate TS
-TC --> Agent : Reçu imprimable
+TC --> Agent : Reçu imprimable (HTML)
+
+opt Télécharger en PDF
+  Agent -> TC : GET /transactions/{id}/receipt.pdf
+  TC -> TS : findById(transactionId)
+  activate TS
+  TS -> DB : SELECT transaction + bill_payment si facture
+  DB --> TS : détails complets
+  TS --> TC : transaction
+  deactivate TS
+  TC --> Agent : fichier reçu-TYPE-date.pdf
+end
 deactivate TC
 
 @enduml

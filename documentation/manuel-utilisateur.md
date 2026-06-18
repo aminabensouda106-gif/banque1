@@ -98,7 +98,7 @@ Menu **Opérations** :
 | Virement | Transfert entre deux comptes actifs |
 | Paiement facture | Débit pour un facturier (LYDEC, IAM, etc.) |
 
-Chaque opération réussie peut générer un **reçu** depuis l'historique.
+Chaque opération réussie peut générer un **reçu** depuis l'historique : page imprimable ou **téléchargement PDF** (bouton sur le reçu). Le fichier est enregistré sous la forme `reçu-TYPE-AAAA-MM-JJ.pdf` (ex. `reçu-DEPOT-2026-06-14.pdf`).
 
 ### Messages d'erreur courants
 
@@ -113,7 +113,7 @@ Chaque opération réussie peut générer un **reçu** depuis l'historique.
 Menu **Historique** :
 
 - Filtrer par compte, type, dates
-- Consulter le détail et imprimer le **reçu**
+- Consulter le détail, imprimer ou **télécharger en PDF** le **reçu**
 
 Types affichés : Dépôt, Retrait, Virement, Paiement facture.
 
@@ -167,7 +167,7 @@ Connexion avec **n° client** ou **CIN** + mot de passe (même page `/login` que
 - **Tableau de bord** : soldes et dernières opérations
 - **Mes comptes** : liste des comptes du client
 - **Historique** : opérations sur ses comptes uniquement, filtres par type et date
-- **Reçus** : impression depuis l'historique
+- **Reçus** : impression ou téléchargement PDF depuis l'historique (`reçu-TYPE-date.pdf`)
 - **Chéquiers** : suivi des commandes (statut, dates)
 - **Notifications** : alertes sur dépôts, retraits, virements, factures et chéquiers
 

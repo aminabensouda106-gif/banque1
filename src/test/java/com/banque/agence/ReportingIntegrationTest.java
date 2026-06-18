@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -141,7 +144,20 @@ class ReportingIntegrationTest {
         mockMvc.perform(get("/transactions/{id}/receipt", transactionId))
                 .andExpect(status().isOk())
                 .andExpect(view().name("transactions/receipt"))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Reçu d'opération")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Reçu d'opération")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Télécharger PDF")));
+    }
+
+    @Test
+    @WithUserDetails("agent")
+    void agentCanDownloadTransactionReceiptPdf() throws Exception {
+        mockMvc.perform(get("/transactions/{id}/receipt.pdf", transactionId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        org.hamcrest.Matchers.containsString("DEPOT")))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        org.hamcrest.Matchers.containsString(".pdf")));
     }
 
     @Test

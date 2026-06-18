@@ -1,5 +1,7 @@
 package com.banque.agence.web.controller;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -7,7 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     @GetMapping("/")
-    public String home() {
-        return "redirect:/dashboard";
+    public String home(Authentication authentication) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            boolean isClient = authentication.getAuthorities().stream()
+                    .anyMatch(a -> "ROLE_CLIENT".equals(a.getAuthority()));
+            return isClient ? "redirect:/portal/dashboard" : "redirect:/dashboard";
+        }
+        return "landing";
     }
 }

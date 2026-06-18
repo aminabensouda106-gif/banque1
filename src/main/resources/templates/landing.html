@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AmanaBank — banque de proximité. Comptes, épargne, crédit et services digitaux pour particuliers et professionnels au Maroc.">
+    <title>AmanaBank — Votre banque de confiance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.png}">
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
+</head>
+<body class="landing-page">
+
+<header class="landing-header">
+    <div class="landing-container landing-header-inner">
+        <a th:href="@{/}" class="landing-logo" aria-label="AmanaBank — accueil">
+            <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
+                 alt="AmanaBank" class="landing-logo-img" width="168" height="40">
+        </a>
+        <nav aria-label="Navigation principale">
+            <ul class="landing-nav">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#digital">Espace digital</a></li>
+                <li><a href="#engagements">Nos engagements</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="landing-header-actions">
+            <a th:href="@{/login}" class="landing-btn landing-btn-outline">Connexion</a>
+            <a th:href="@{/login}" class="landing-btn landing-btn-primary">Ouvrir un compte</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="landing-hero" aria-labelledby="hero-title">
+        <div class="landing-hero-bg" role="img" aria-label="Siège social et architecture contemporaine"></div>
+        <div class="landing-hero-overlay"></div>
+        <div class="landing-container landing-hero-content">
+            <span class="landing-hero-eyebrow">Depuis 1998 · Maroc</span>
+            <h1 id="hero-title">La banque de confiance, au service de vos projets</h1>
+            <p class="landing-hero-lead">
+                AmanaBank accompagne particuliers et entreprises avec des solutions bancaires
+                rigoureuses, une relation de proximité et des outils digitaux sécurisés.
+            </p>
+            <div class="landing-hero-actions">
+                <a th:href="@{/login}" class="landing-btn landing-btn-primary">Accéder à mon espace</a>
+                <a href="#services" class="landing-btn landing-btn-light">Découvrir nos services</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-stats" aria-label="Chiffres clés">
+        <div class="landing-container">
+            <div class="landing-stats-grid">
+                <div>
+                    <div class="landing-stat-value">28+</div>
+                    <div class="landing-stat-label">Années d'expérience</div>
+                </div>
+                <div>
+                    <div class="landing-stat-value">120K+</div>
+                    <div class="landing-stat-label">Clients accompagnés</div>
+                </div>
+                <div>
+                    <div class="landing-stat-value">45</div>
+                    <div class="landing-stat-label">Agences au royaume</div>
+                </div>
+                <div>
+                    <div class="landing-stat-value">4.8/5</div>
+                    <div class="landing-stat-label">Satisfaction client</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-section" id="services" aria-labelledby="services-title">
+        <div class="landing-container">
+            <header class="landing-section-header centered">
+                <p class="landing-section-eyebrow">Nos services</p>
+                <h2 id="services-title">Des solutions bancaires complètes</h2>
+                <p>De la gestion quotidienne de vos comptes à l'accompagnement de vos investissements,
+                    nos équipes vous conseillent avec exigence et transparence.</p>
+            </header>
+            <div class="landing-services-grid">
+                <article class="landing-service-card">
+                    <img th:src="@{/images/branch.jpg}" src="/images/branch.jpg"
+                         alt="Conseiller accueillant un client en agence" width="400" height="200" loading="lazy">
+                    <div class="landing-service-card-body">
+                        <div class="landing-service-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></div>
+                        <h3>Comptes &amp; moyens de paiement</h3>
+                        <p>Comptes courants, épargne et cartes adaptés à votre profil, avec un suivi clair de vos opérations.</p>
+                    </div>
+                </article>
+                <article class="landing-service-card">
+                    <img th:src="@{/images/advisory.jpg}" src="/images/advisory.jpg"
+                         alt="Conseiller analysant un dossier financier" width="400" height="200" loading="lazy">
+                    <div class="landing-service-card-body">
+                        <div class="landing-service-icon" aria-hidden="true"><i class="bi bi-graph-up-arrow"></i></div>
+                        <h3>Conseil &amp; financement</h3>
+                        <p>Crédit immobilier, financement professionnel et accompagnement patrimonial par des experts dédiés.</p>
+                    </div>
+                </article>
+                <article class="landing-service-card">
+                    <img th:src="@{/images/digital.jpg}" src="/images/digital.jpg"
+                         alt="Application bancaire sur smartphone" width="400" height="200" loading="lazy">
+                    <div class="landing-service-card-body">
+                        <div class="landing-service-icon" aria-hidden="true"><i class="bi bi-phone"></i></div>
+                        <h3>Services digitaux</h3>
+                        <p>Consultez vos comptes, suivez vos opérations et recevez vos alertes depuis votre espace client sécurisé.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-section landing-section-alt" id="digital" aria-labelledby="digital-title">
+        <div class="landing-container landing-split">
+            <div>
+                <p class="landing-section-eyebrow">Espace client</p>
+                <h2 id="digital-title">Votre banque, accessible à tout moment</h2>
+                <p class="landing-split-intro">
+                    L'espace client AmanaBank vous permet de consulter vos soldes, votre historique
+                    d'opérations et vos notifications en toute sécurité — où que vous soyez.
+                </p>
+                <ul class="landing-checklist">
+                    <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        Consultation des comptes et relevés en temps réel</li>
+                    <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        Notifications sur chaque opération effectuée en agence</li>
+                    <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        Téléchargement des reçus au format PDF</li>
+                    <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        Suivi de vos demandes de chéquier</li>
+                </ul>
+                <a th:href="@{/login}" class="landing-btn landing-btn-primary">Se connecter à l'espace client</a>
+            </div>
+            <div class="landing-split-image">
+                <img th:src="@{/images/digital.jpg}" src="/images/digital.jpg"
+                     alt="Client consultant son compte sur mobile" width="600" height="420" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-section" id="engagements" aria-labelledby="engagements-title">
+        <div class="landing-container">
+            <header class="landing-section-header centered">
+                <p class="landing-section-eyebrow">Nos engagements</p>
+                <h2 id="engagements-title">Pourquoi choisir AmanaBank</h2>
+                <p>Le mot <em>Amana</em> (أمانة) incarne notre promesse : intégrité, sécurité et responsabilité
+                    dans chaque relation que nous construisons.</p>
+            </header>
+            <div class="landing-values-grid">
+                <div class="landing-value-item">
+                    <h3>Sécurité &amp; conformité</h3>
+                    <p>Infrastructures robustes, contrôles rigoureux et respect des normes bancaires
+                        pour protéger vos données et vos avoirs.</p>
+                </div>
+                <div class="landing-value-item">
+                    <h3>Proximité humaine</h3>
+                    <p>Des conseillers disponibles dans nos agences pour vous accompagner
+                        dans vos décisions financières importantes.</p>
+                </div>
+                <div class="landing-value-item">
+                    <h3>Transparence</h3>
+                    <p>Des conditions claires, des relevés détaillés et une communication
+                        directe sur l'ensemble de vos opérations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-cta" id="contact" aria-labelledby="cta-title">
+        <div class="landing-container">
+            <h2 id="cta-title">Prenez contact avec nos équipes</h2>
+            <p>Visitez l'agence la plus proche ou connectez-vous à votre espace pour gérer
+                vos comptes en ligne.</p>
+            <div class="landing-cta-actions">
+                <a th:href="@{/login}" class="landing-btn landing-btn-primary">Connexion sécurisée</a>
+                <a href="tel:+212520000000" class="landing-btn landing-btn-light">
+                    <i class="bi bi-telephone" aria-hidden="true"></i> +212 5 20 00 00 00
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="landing-footer">
+    <div class="landing-container">
+        <div class="landing-footer-grid">
+            <div>
+                <div class="landing-footer-brand">
+                    <img th:src="@{/images/amana-logo.png}" src="/images/amana-logo.png"
+                         alt="AmanaBank" class="landing-footer-logo" width="140" height="34">
+                </div>
+                <p>Établissement de crédit agréé. Siège social : Casablanca, Maroc.<br>
+                    Banque de proximité au service des particuliers et des professionnels.</p>
+            </div>
+            <div>
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#services">Comptes &amp; épargne</a></li>
+                    <li><a href="#services">Financement</a></li>
+                    <li><a href="#digital">Espace client</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Informations</h4>
+                <ul>
+                    <li><a href="#engagements">Nos engagements</a></li>
+                    <li><a href="#contact">Nous contacter</a></li>
+                    <li><a th:href="@{/login}">Connexion</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li>Boulevard Mohammed V, Casablanca</li>
+                    <li><a href="mailto:contact@amanabank.ma">contact@amanabank.ma</a></li>
+                    <li>Lun–Ven : 8h30 – 17h30</li>
+                </ul>
+            </div>
+        </div>
+        <div class="landing-footer-bottom">
+            <span>© 2026 AmanaBank. Tous droits réservés.</span>
+            <span>Photos : Unsplash (usage illustratif)</span>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/landing-header.js}" src="/js/landing-header.js" defer></script>
+</body>
+</html>

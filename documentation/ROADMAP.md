@@ -556,10 +556,13 @@ git push origin main
 
 #### Étape 8.3 — Reçu d'opération
 - [x] `GET /transactions/{id}/receipt` — page imprimable (HTML simple)
+- [x] `GET /transactions/{id}/receipt.pdf` — téléchargement PDF (OpenPDF)
+- [x] Nom de fichier : `reçu-{TYPE}-{yyyy-MM-dd}.pdf` (ex. `reçu-DEPOT-2026-06-14.pdf`)
 - [x] Infos : type, montant, date, comptes, agent responsable
 
 #### Étape 8.4 — Export PDF (si le temps le permet)
-- [ ] Export PDF du relevé avec OpenPDF — **optionnel**, le HTML imprimable suffit pour le cahier
+- [x] Export PDF du **reçu** avec OpenPDF (`ReceiptPdfService`, `ReceiptFileNameBuilder`)
+- [ ] Export PDF du **relevé** — **optionnel**, le HTML imprimable suffit pour le cahier
 
 #### Étape 8.5 — Journal d'audit (consultation)
 - [x] `GET /admin/audit` — liste paginée des actions sensibles
@@ -575,6 +578,7 @@ mvn spring-boot:run
 | 10 dernières opérations visibles | ☐ |
 | Relevé d'un compte filtré par date | ☐ |
 | Reçu imprimable depuis une transaction | ☐ |
+| Téléchargement PDF du reçu (nom `reçu-TYPE-date.pdf`) | ☐ |
 | Journal d'audit liste les opérations passées | ☐ |
 
 ### Commit & push
@@ -817,7 +821,7 @@ git push origin main
 ### 14.2 — Espace client (consultation)
 
 - [x] Tableau de bord : comptes, soldes, opérations récentes
-- [x] Mes comptes, historique filtré, reçus imprimables
+- [x] Mes comptes, historique filtré, reçus imprimables et **téléchargeables en PDF**
 - [x] Suivi commandes chéquier
 - [x] Layout dédié `portal/layout.html`
 
@@ -965,6 +969,14 @@ git push origin main
 
 > **Référence :** commit `92b2d22` sur `main` (regroupe Phase 13 + Phase 14 en un seul livrable).
 
+### Mise à jour conception v2.3 (reçu PDF)
+
+- [x] `ReceiptPdfService` + `ReceiptFileNameBuilder` — OpenPDF, nom `reçu-{TYPE}-{date}.pdf`
+- [x] Endpoints `/transactions/{id}/receipt.pdf` et `/portal/transactions/{id}/receipt.pdf`
+- [x] Séquences `04-consultation-historique`, `06-paiement-facture` — option téléchargement PDF
+- [x] `manuel-utilisateur.md`, `demo-script.md`, `TECHNICAL.md`
+- [x] Régénérer les SVG PlantUML concernés
+
 ### Mise à jour conception v2.2 (UI portail alignée agence)
 
 - [x] `portal/layout.html` — sidebar sticky, icônes, cloche en-tête (comme personnel)
@@ -1007,4 +1019,4 @@ git push origin main
 
 ---
 
-*Dernière mise à jour : 2026-06-14 (réorganisation pistes + seed modulaire)*
+*Dernière mise à jour : 2026-06-14 (reçu PDF + nommage fichier)*

@@ -82,7 +82,7 @@ Exemples à personnaliser :
 ## Slide 11 — Conclusion
 
 - Objectifs atteints (checklist cahier des charges + extensions)
-- Perspectives : API REST, CI/CD, export PDF relevé (hors scope actuel)
+- Perspectives : API REST, CI/CD, export PDF **relevé** (reçu PDF déjà livré)
 
 ## Slide 12 — Questions
 

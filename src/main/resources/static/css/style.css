@@ -1,19 +1,120 @@
 :root {
-    --sidebar-bg: #0d47a1;
-    --sidebar-width: 260px;
-    --header-bg: #ffffff;
-    --content-bg: #f4f6f8;
+    /* Aligné sur le logo AmanaBank */
+    --color-brown-900: #4B3621;
+    --color-brown-800: #5C4229;
+    --color-brown-700: #6B5344;
+    --color-brown-600: #7A6352;
+
+    --color-beige-100: #F9F6F1;
+    --color-beige-50: #FDFBF8;
+    --color-beige-200: #EDE6DA;
+    --color-beige-300: #DDD2C3;
+
+    --color-gold-500: #A6893A;
+    --color-gold-600: #8B722E;
+    --color-gold-400: #B8994A;
+    --color-gold-soft: rgba(166, 137, 58, 0.12);
+
+    --color-text: #3A2E22;
+    --color-text-muted: #6B5B4F;
+    --color-text-on-dark: #F9F6F1;
+    --color-danger: #9B2C2C;
+
+    --sidebar-bg: var(--color-brown-900);
+    --sidebar-width: 268px;
+    --header-bg: var(--color-beige-50);
+    --content-bg: var(--color-beige-100);
+    --card-bg: var(--color-beige-50);
+    --card-shadow: 0 1px 3px rgba(75, 54, 33, 0.06);
+    --border-color: var(--color-beige-300);
+    --radius: 6px;
+}
+body {
+    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+    margin: 0;
+    color: var(--color-text);
 }
 
-body {
-    font-family: system-ui, -apple-system, sans-serif;
-    margin: 0;
-    color: #1a1a1a;
+/* Bootstrap theme overrides */
+.btn-primary {
+    --bs-btn-bg: var(--color-gold-500);
+    --bs-btn-border-color: var(--color-gold-500);
+    --bs-btn-color: var(--color-text-on-dark);
+    --bs-btn-hover-bg: var(--color-gold-600);
+    --bs-btn-hover-border-color: var(--color-gold-600);
+    --bs-btn-hover-color: var(--color-text-on-dark);
+    --bs-btn-active-bg: var(--color-gold-600);
+    --bs-btn-active-border-color: var(--color-gold-600);
+    --bs-btn-focus-shadow-rgb: 166, 137, 58;    font-weight: 600;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--color-gold-500);
+    --bs-btn-border-color: var(--color-gold-500);
+    --bs-btn-hover-bg: var(--color-gold-500);
+    --bs-btn-hover-border-color: var(--color-gold-500);
+    --bs-btn-hover-color: var(--color-text-on-dark);
+    --bs-btn-active-bg: var(--color-gold-600);
+    --bs-btn-active-border-color: var(--color-gold-600);
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--color-brown-700);
+    --bs-btn-border-color: var(--color-beige-300);
+    --bs-btn-hover-bg: var(--color-beige-200);
+    --bs-btn-hover-border-color: var(--color-brown-600);
+    --bs-btn-hover-color: var(--color-brown-900);
+}
+
+.btn-success {
+    --bs-btn-bg: #5C6B3A;
+    --bs-btn-border-color: #5C6B3A;
+    --bs-btn-hover-bg: #4A572E;
+    --bs-btn-hover-border-color: #4A572E;
+}
+
+.btn-outline-light {
+    --bs-btn-color: var(--color-text-on-dark);
+    --bs-btn-border-color: rgba(247, 242, 234, 0.45);
+    --bs-btn-hover-bg: rgba(247, 242, 234, 0.12);
+    --bs-btn-hover-border-color: var(--color-text-on-dark);
+    --bs-btn-hover-color: var(--color-text-on-dark);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-gold-400);
+    box-shadow: 0 0 0 0.2rem rgba(166, 137, 58, 0.18);}
+
+a {
+    color: var(--color-gold-600);
+}
+
+a:hover {
+    color: var(--color-brown-900);
+}
+
+.table {
+    --bs-table-bg: var(--color-beige-50);
+    --bs-table-striped-bg: var(--color-beige-100);
+    --bs-table-hover-bg: var(--color-beige-200);
+    color: var(--color-text);
+}
+
+.table thead th {
+    background: var(--color-beige-200);
+    color: var(--color-brown-900);
+    border-bottom-color: var(--color-beige-300);
+    font-weight: 600;
+}
+
+.text-muted {
+    color: var(--color-text-muted) !important;
 }
 
 /* Login */
 .login-body {
-    background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+    background: var(--color-brown-900);
     min-height: 100vh;
 }
 
@@ -22,32 +123,40 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 .login-card {
     width: 100%;
-    max-width: 420px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    background: var(--color-beige-50);
+    border-radius: var(--radius);
+    padding: 2.25rem 2rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--color-beige-300);
 }
 
 .login-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
 }
 
-.login-header h1 {
-    font-size: 1.5rem;
-    margin: 0.5rem 0 0;
-    color: #0d47a1;
+.login-header .brand-logo {
+    height: 66px;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
 }
 
+.login-tagline {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
 .login-hint {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text-muted);
     text-align: center;
     margin-bottom: 0;
 }
@@ -61,38 +170,71 @@ body {
 .login-hint-box {
     font-size: 0.85rem;
     padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid #0d47a1;
-    color: #444;
+    background: var(--color-beige-100);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-beige-300);
+    border-left: 3px solid var(--color-brown-700);
+    color: var(--color-text);
 }
-
 .login-hint-box.portal-hint {
-    border-left-color: #0d9488;
+    border-left-color: var(--color-gold-500);
 }
 
 .login-hint-box code {
     font-size: 0.8rem;
+    color: var(--color-brown-800);
 }
 
 .input-group-text {
-    background: #f8f9fa;
+    background: var(--color-beige-100);
+    border-color: var(--color-beige-300);
+    color: var(--color-brown-700);
 }
 
-.brand-icon {
+/* Brand logo */
+.brand-logo {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+.brand-logo-wrap {
+    background: var(--color-beige-50);
+    border-radius: 4px;
+    padding: 0.4rem 0.55rem;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: #0d47a1;
-    color: #fff;
-    font-weight: 700;
-    border-radius: 10px;
-    font-size: 1rem;
+    line-height: 0;
+    text-decoration: none;
 }
 
-/* App shell */
+.brand-logo-wrap .brand-logo {
+    height: 34px;
+}
+
+.sidebar-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 1.1rem 1rem;
+    border-bottom: 1px solid rgba(249, 246, 241, 0.1);
+    flex-shrink: 0;
+}
+
+.portal-sidebar .sidebar-brand-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(249, 246, 241, 0.55);
+    padding-left: 0.15rem;
+}
+
+.brand-text {
+    display: none;
+}
+
 .app-body {
     background: var(--content-bg);
 }
@@ -105,7 +247,7 @@ body {
 .sidebar {
     width: var(--sidebar-width);
     background: var(--sidebar-bg);
-    color: #fff;
+    color: var(--color-text-on-dark);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -113,27 +255,6 @@ body {
     top: 0;
     height: 100vh;
     overflow: hidden;
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    flex-shrink: 0;
-}
-
-.sidebar-brand .brand-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 0.85rem;
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.brand-text {
-    font-weight: 600;
-    font-size: 1rem;
 }
 
 .sidebar-nav {
@@ -148,9 +269,10 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 1.25rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(247, 242, 234, 0.88);
     text-decoration: none;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    border-left: 3px solid transparent;
 }
 
 .sidebar-link i {
@@ -164,17 +286,19 @@ body {
 .sidebar-link:hover i,
 .sidebar-link.active i {
     opacity: 1;
+    color: var(--color-gold-400);
 }
 
 .sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: rgba(247, 242, 234, 0.08);
+    color: var(--color-text-on-dark);
 }
 
 .sidebar-link.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: var(--color-gold-soft);
+    color: var(--color-text-on-dark);
     font-weight: 600;
+    border-left-color: var(--color-gold-400);
 }
 
 .sidebar-link.disabled {
@@ -184,7 +308,7 @@ body {
 
 .sidebar-footer {
     padding: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(247, 242, 234, 0.12);
     flex-shrink: 0;
 }
 
@@ -200,6 +324,7 @@ body {
     font-size: 1.75rem;
     opacity: 0.9;
     flex-shrink: 0;
+    color: var(--color-gold-400);
 }
 
 .sidebar-footer .btn i {
@@ -220,47 +345,39 @@ body {
 
 .app-header {
     background: var(--header-bg);
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 1rem 1.75rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .app-header h1 {
     margin: 0;
-    font-size: 1.35rem;
-    color: #0d47a1;
+    font-size: 1.125rem;
+    color: var(--color-brown-900);
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
-
 .notification-bell {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #0d47a1;
+    color: var(--color-brown-800);
     text-decoration: none;
     padding: 0.35rem;
     border-radius: 8px;
-    transition: background 0.15s;
+    transition: background 0.15s, color 0.15s;
     font-size: 1.25rem;
     line-height: 1;
 }
 
 .notification-bell:hover {
-    background: #e3f2fd;
-    color: #0d47a1;
-}
-
-.portal-body .notification-bell:hover {
-    background: #ccfbf1;
-    color: #0f766e;
+    background: var(--color-gold-soft);
+    color: var(--color-gold-600);
 }
 
 .notification-bell-active {
-    background: #e3f2fd;
-}
-
-.portal-body .notification-bell-active {
-    background: #ccfbf1;
-    color: #0f766e;
+    background: var(--color-gold-soft);
+    color: var(--color-gold-600);
 }
 
 .notification-badge {
@@ -271,7 +388,7 @@ body {
     height: 1.1rem;
     padding: 0 0.25rem;
     border-radius: 999px;
-    background: #d32f2f;
+    background: var(--color-danger);
     color: #fff;
     font-size: 0.65rem;
     font-weight: 700;
@@ -280,8 +397,8 @@ body {
 }
 
 .notification-list .notification-unread {
-    border-left: 4px solid #0d47a1;
-    background: #f5f9ff;
+    border-left: 4px solid var(--color-gold-500);
+    background: var(--color-beige-100);
 }
 
 .alert-alerts .alert {
@@ -289,46 +406,53 @@ body {
 }
 
 .app-content {
-    padding: 1.5rem;
+    padding: 1.75rem;
     flex: 1;
 }
 
 .welcome-card,
 .stat-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1.35rem 1.5rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--color-beige-300);
 }
 
 .welcome-card h2 {
     margin-top: 0;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    color: var(--color-brown-900);
+    font-weight: 600;
 }
 
 .stat-card h3 {
     margin-top: 0;
-    font-size: 1rem;
-    color: #0d47a1;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .stat-card-icon {
-    font-size: 1.1rem;
-    opacity: 0.85;
+    font-size: 1rem;
+    color: var(--color-brown-700);
+    opacity: 1;
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin: 0.25rem 0 0.5rem;
-    color: #1a1a1a;
+    margin: 0.35rem 0 0.5rem;
+    color: var(--color-brown-900);
+    letter-spacing: -0.02em;
 }
-
 .receipt-body {
-    background: #f4f6f8;
+    background: var(--color-beige-100);
     min-height: 100vh;
     padding: 2rem 1rem;
 }
@@ -336,18 +460,30 @@ body {
 .receipt-container {
     max-width: 520px;
     margin: 0 auto;
-    background: #fff;
-    border-radius: 8px;
+    background: var(--color-beige-50);
+    border-radius: 10px;
     padding: 2rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--color-beige-300);
 }
 
-.receipt-header .brand-icon {
-    margin: 0 auto;
+.receipt-header .brand-logo {
+    height: 54px;
+    margin: 0 auto 0.75rem;
+}
+
+.receipt-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--color-brown-900);
+}
+
+.receipt-header h1 {
+    color: var(--color-brown-900);
 }
 
 .receipt-details dt {
-    color: #666;
+    color: var(--color-text-muted);
 }
 
 @media print {
@@ -363,14 +499,29 @@ body {
     .receipt-container {
         box-shadow: none;
         max-width: 100%;
+        border: none;
     }
 }
 
 .toolbar-card {
-    background: #fff;
-    border-radius: 8px;
+    background: var(--card-bg);
+    border-radius: 10px;
     padding: 1rem 1.25rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--color-beige-200);
+}
+
+.card {
+    background: var(--card-bg);
+    border-color: var(--color-beige-200);
+    box-shadow: var(--card-shadow);
+}
+
+.card-header {
+    background: var(--color-beige-200);
+    color: var(--color-brown-900);
+    font-weight: 600;
+    border-bottom-color: var(--color-beige-300);
 }
 
 @media (max-width: 768px) {
@@ -390,43 +541,11 @@ body {
     }
 }
 
+/* Portal — sidebar légèrement plus clair */
 .portal-sidebar {
-    background: linear-gradient(180deg, #0d4f4f 0%, #0a3d3d 100%);
-}
-
-.portal-sidebar .sidebar-brand .brand-icon,
-.portal-brand-icon {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.portal-body .app-header h1 {
-    color: #0f766e;
-}
-
-.portal-body .stat-card h3 {
-    color: #0f766e;
+    background: var(--color-brown-800);
 }
 
 .portal-body .welcome-card {
-    border-left: 4px solid #0d9488;
-}
-
-.portal-body .btn-primary {
-    background-color: #0d9488;
-    border-color: #0d9488;
-}
-
-.portal-body .btn-primary:hover {
-    background-color: #0f766e;
-    border-color: #0f766e;
-}
-
-.portal-body .btn-outline-primary {
-    color: #0d9488;
-    border-color: #0d9488;
-}
-
-.portal-body .btn-outline-primary:hover {
-    background-color: #0d9488;
-    border-color: #0d9488;
+    border-color: var(--color-beige-300);
 }

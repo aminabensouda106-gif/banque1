@@ -172,6 +172,7 @@ note bottom of BillPayment
   Extension v1.1 — paiement facture
   Débite le compte via Transaction PAIEMENT_FACTURE
   Reçu réutilise la transaction liée
+  Téléchargement PDF : reçu-TYPE-date.pdf
 end note
 
 note bottom of CheckbookOrder

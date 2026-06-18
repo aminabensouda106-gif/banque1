@@ -180,7 +180,7 @@ java -jar plantuml.jar -tsvg documentation/modele-donnees/*.puml documentation/u
 | **Migrations** | Flyway | latest stable |
 | **Frontend** | Thymeleaf + Bootstrap | Bootstrap 5.3 |
 | **Build** | Maven | 3.9+ |
-| **PDF export** | OpenPDF or iText (later phase) | TBD |
+| **PDF export** | OpenPDF | 2.0.3 — reçu d'opération (`receipt.pdf`) ; relevé HTML uniquement |
 | **Tests** | JUnit 5 + Spring Boot Test | minimal set |
 | **VCS** | Git + GitHub | — |
 
@@ -423,7 +423,7 @@ src/main/resources/db/migration/
 | 8 | Transaction history + filters | P1 | Done (Phase 6) |
 | 9 | User management (admin) | P1 | Done (Phase 7) |
 | 10 | Audit log | P1 | Done (Phase 8) |
-| 11 | Statement / receipt PDF | P2 | Done (Phase 8 — HTML imprimable) |
+| 11 | Statement / receipt PDF | P2 | Done — reçu PDF (OpenPDF) + relevé HTML imprimable |
 | 12 | Bill payment + receipt | P1 | Done (Phase 10) |
 | 13 | Checkbook order workflow | P2 | Done (Phase 11) |
 | 14 | Demo seed data (dev) | P2 | Done (Phase 12) |
@@ -438,8 +438,8 @@ src/main/resources/db/migration/
 ## 8. UI conventions
 
 - **Bootstrap 5** + **Bootstrap Icons** : layout commun sidebar + en-tête.
-- **Personnel** (`layout/main.html`) : thème bleu, menu latéral sticky avec icônes, cloche notifications en en-tête, bloc utilisateur (nom + rôle).
-- **Client** (`portal/layout.html`) : même structure (sidebar sticky, icônes, cloche, déconnexion) ; thème **teal** ; infos client (nom, n° client, CIN).
+- **Personnel** (`layout/main.html`) : thème **brown / beige / jaune sombre** (`#3E2C22`, `#F7F2EA`, `#8B6914`), menu latéral sticky avec icônes, cloche notifications en en-tête, bloc utilisateur (nom + rôle).
+- **Client** (`portal/layout.html`) : même structure et palette ; sidebar légèrement plus claire ; accent gold sur cartes et liens actifs.
 - **Login** (`/login`) : page unique personnel + client ; champs avec icônes ; redirection selon rôle (`/dashboard` ou `/portal/dashboard`).
 - **French** UI labels (application métier).
 - Flash messages via `RedirectAttributes` for success/error.
@@ -619,7 +619,8 @@ Target: **~10–15 focused tests**, not 100% coverage.
 | 2026-06-15 | Block disable/demote of last active ADMIN | Prevents lockout of administration |
 | 2026-06-15 | Dashboard KPIs via `DashboardService` | Phase 8 — active clients/accounts, today's volume |
 | 2026-06-15 | Account statement at `/accounts/{id}/statement` | Phase 8 — date filter + current balance header |
-| 2026-06-15 | Printable receipt at `/transactions/{id}/receipt` | Phase 8 — HTML print, no OpenPDF dependency |
+| 2026-06-15 | Printable receipt at `/transactions/{id}/receipt` | Phase 8 — HTML print + bouton imprimer |
+| 2026-06-14 | Receipt PDF at `.../receipt.pdf` | OpenPDF — nom `reçu-{TYPE}-{yyyy-MM-dd}.pdf`, staff + portail |
 | 2026-06-15 | Audit log view at `/admin/audit` for ADMIN + CHEF | Phase 8 — paginated consultation |
 | 2026-06-14 | Extensions v1.1 : paiement facture + commande chéquier | Enrichissement PFA côté agence ; crédit et portail client exclus |
 | 2026-06-14 | `BillPayment` lié 1–1 à `Transaction` PAIEMENT_FACTURE | Réutilise historique et reçu existants |
