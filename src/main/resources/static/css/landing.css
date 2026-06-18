@@ -14,7 +14,7 @@
     --text-muted: #6B5B4F;
     --text-on-dark: #F9F6F1;
     --container: 1120px;
-    --header-h: 80px;
+    --header-h: 64px;
     --radius: 6px;
 }
 
@@ -85,12 +85,14 @@ body.landing-page {
     flex-shrink: 0;
     text-decoration: none;
     line-height: 0;
+    height: 100%;
+    margin-right: 0.25rem;
 }
 
 .landing-logo-img {
-    height: 70px;
+    height: 50px;
     width: auto;
-    max-height: calc(var(--header-h) - 10px);
+    max-height: calc(var(--header-h) - 8px);
     display: block;
     object-fit: contain;
 }
@@ -550,11 +552,12 @@ body.landing-page {
 
 @media (max-width: 576px) {
     :root {
-        --header-h: 72px;
+        --header-h: 58px;
     }
 
     .landing-logo-img {
-        height: 58px;
+        height: 44px;
+        max-height: calc(var(--header-h) - 8px);
     }
 
     .landing-header-actions .landing-btn-outline {

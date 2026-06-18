@@ -74,7 +74,7 @@ L'écran de connexion (\texttt{/login}) est le \textbf{point d'entrée unique} p
     \item le \textbf{client} via son CIN ou son numéro client.
 \end{itemize}
 
-L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstrap, un bouton de connexion doré et deux encadrés d'aide rappelant les identifiants de démonstration. Un lien «\,Retour à l'accueil\,» permet de revenir à la landing sans utiliser le bouton précédent du navigateur.
+L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstrap, un bouton de connexion doré et deux encadrés d'aide rappelant les identifiants de démonstration (ex.\ CIN \texttt{MB654321} pour le client \textbf{Moncef Bensouda}). Un lien «\,Retour à l'accueil\,» permet de revenir à la landing sans utiliser le bouton précédent du navigateur.
 
 \begin{figure}[H]
     \centering
@@ -159,7 +159,7 @@ L'écran de liste clients permet la \textbf{recherche}, la création et la consu
 
 \subsection{Comptes bancaires}
 
-La fiche compte affiche le numéro, le type (courant, épargne, professionnel), le solde, le statut et les actions disponibles (blocage, clôture, relevé). Les badges colorés distinguent visuellement les statuts.
+La fiche compte affiche le numéro, le type (courant, épargne, professionnel), le solde, le statut et les actions disponibles (blocage, clôture, relevé). La figure~\ref{fig:compte} illustre le compte courant de \textbf{Moncef Bensouda} (\texttt{ACC-00001}), client le plus aisé du jeu de démonstration.
 
 \begin{figure}[H]
     \centering
@@ -170,7 +170,7 @@ La fiche compte affiche le numéro, le type (courant, épargne, professionnel), 
         \textit{[Capture : \texttt{compte-detail.png}]}
         \vspace{2cm}}}%
     }
-    \caption{Fiche détail compte — solde, statut et actions}
+    \caption{Fiche détail — compte courant Moncef Bensouda (\texttt{ACC-00001})}
     \label{fig:compte}
 \end{figure}
 
@@ -292,7 +292,7 @@ Le dashboard client synthétise la situation du titulaire :
     \item \textbf{Chéquiers en cours} — commandes en attente ou en traitement.
 \end{itemize}
 
-Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de statut). Le tableau des \textbf{5 dernières opérations} permet de télécharger les reçus PDF.
+Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de statut). La figure~\ref{fig:portal} montre l'espace de \textbf{Moncef Bensouda} (CIN \texttt{MB654321}), dont le solde total dépasse 600\,000~MAD sur trois comptes. Le tableau des \textbf{5 dernières opérations} permet de télécharger les reçus PDF.
 
 \begin{figure}[H]
     \centering
@@ -300,7 +300,7 @@ Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de
         \includegraphics[width=\textwidth]{portal-dashboard.png}%
     }{%
         \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
-        \textit{[Capture client : \texttt{portal-dashboard.png} — compte \texttt{CD789012}]}
+        \textit{[Capture : \texttt{portal-dashboard.png}]}
         \vspace{2cm}}}%
     }
     \caption{Tableau de bord espace client — KPI, comptes et historique récent}

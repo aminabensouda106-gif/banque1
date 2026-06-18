@@ -24,8 +24,8 @@ public class DemoPortalSync {
     public static final String DEMO_PASSWORD = "client123";
 
     public static final Map<String, String> DEMO_PORTAL_CLIENTS = Map.of(
-            "CD789012", "Ahmed Benali",
-            "BE123456", "Youssef Idrissi"
+            "MB654321", "Moncef Bensouda",
+            "AR234567", "Abdellah Raisouni"
     );
 
     private final ClientRepository clientRepository;
