@@ -25,7 +25,7 @@ public class DemoPortalSync {
 
     public static final Map<String, String> DEMO_PORTAL_CLIENTS = Map.of(
             "MB654321", "Moncef Bensouda",
-            "AI876543", "Abdellah Idrissi"
+            "MH876543", "Mohamed Amine Hassouni"
     );
 
     private final ClientRepository clientRepository;

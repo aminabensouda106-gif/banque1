@@ -22,7 +22,9 @@ FROM (VALUES
     ('CL-00005', 'MC123789', 'Mehdi', 'Chraibi', 'mehdi.chraibi@email.ma', '0655667788',
      '14 Bd Pasteur, Tanger', NULL, 'ACTIVE')
 ) AS v(client_number, cin, first_name, last_name, email, phone, address, professional_info, status)
-WHERE NOT EXISTS (SELECT 1 FROM clients c WHERE c.cin = v.cin);
+WHERE NOT EXISTS (
+    SELECT 1 FROM clients c WHERE c.cin = v.cin OR c.client_number = v.client_number
+);
 
 UPDATE accounts
 SET client_id = (SELECT id FROM clients WHERE cin = 'KA234567' LIMIT 1)

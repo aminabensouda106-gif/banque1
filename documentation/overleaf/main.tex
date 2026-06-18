@@ -41,6 +41,7 @@
 \usepackage{multirow}
 \usepackage{colortbl}
 \usepackage{etoolbox}
+\usepackage{xparse}
 \usepackage{caption}
 
 \captionsetup{
@@ -126,6 +127,16 @@
     \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{#2}%
     \caption{#3}%
     \label{#4}%
+  \end{figure}%
+}
+
+% Capture d'écran : [largeur], fichier, titre court (table des figures), description, label
+\NewDocumentCommand{\includescreenshot}{O{\textwidth} m m m m}{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1,keepaspectratio]{#2}%
+    \caption[#3]{#4}%
+    \label{#5}%
   \end{figure}%
 }
 
@@ -290,39 +301,15 @@ Dans le cadre de notre formation en \filiere\ à l'\ecole, nous avons développ�
 
 \section{Problématique}
 
-Comment concevoir et réaliser une application web fiable permettant à une agence bancaire de :
-\begin{itemize}[leftmargin=*]
-    \item centraliser la gestion des clients et de leurs comptes ;
-    \item exécuter des opérations financières en respectant les règles métier (solde, statut des comptes) ;
-    \item assurer la traçabilité des actions sensibles et la sécurité des accès ;
-    \item offrir au client un espace de consultation et de suivi en ligne ?
-\end{itemize}
-
-Les approches manuelles ne garantissent ni la cohérence des soldes, ni l'identification de l'agent exécutant, ni une supervision efficace pour le chef d'agence.
+Comment concevoir et réaliser une application web fiable qui permette à une agence bancaire de centraliser la gestion des clients et de leurs comptes, d'exécuter des opérations financières en respectant les règles métier (contrôle du solde et du statut des comptes), d'assurer la traçabilité des actions sensibles et la sécurité des accès, tout en offrant au client un espace de consultation et de suivi en ligne ? Les approches manuelles ne garantissent ni la cohérence des soldes, ni l'identification de l'agent exécutant, ni une supervision efficace pour le chef d'agence.
 
 \section{Objectifs du projet}
 
-Les objectifs principaux sont :
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{Analyser} le besoin à partir du cahier des charges et modéliser le système (UML, MCD/MLD).
-    \item \textbf{Concevoir} une architecture en couches (Spring Boot, PostgreSQL, Flyway).
-    \item \textbf{Réaliser} les fonctionnalités métier : clients, comptes, transactions, utilisateurs, reporting.
-    \item \textbf{Étendre} le périmètre : paiement de factures, commande de chéquier, notifications, portail client.
-    \item \textbf{Valider} le système par des tests d'intégration et une démonstration reproductible.
-\end{enumerate}
+Notre démarche vise d'abord à analyser le besoin à partir du cahier des charges et à modéliser le système à l'aide de l'UML et du modèle de données (MCD/MLD). Nous avons ensuite conçu une architecture en couches reposant sur Spring Boot, PostgreSQL et Flyway, avant de réaliser les fonctionnalités métier essentielles : gestion des clients, des comptes, des transactions, des utilisateurs et du reporting. Le périmètre a été enrichi par des extensions cohérentes avec le métier bancaire : paiement de factures, commande de chéquier, centre de notifications et portail client. Enfin, le système a été validé par des tests d'intégration et une démonstration reproductible en conditions de soutenance.
 
 \section{Plan du rapport}
 
-Ce rapport est structuré en cinq chapitres :
-\begin{itemize}[leftmargin=*]
-    \item Le \textbf{chapitre~\ref{ch:contexte}} présente le contexte du projet, l'organisme d'accueil, l'étude de l'existant et la méthodologie de travail.
-    \item Le \textbf{chapitre~\ref{ch:conception}} détaille l'analyse des besoins, l'identification des acteurs et la modélisation UML.
-    \item Le \textbf{chapitre~\ref{ch:techno}} décrit l'environnement de travail et les technologies utilisées.
-    \item Le \textbf{chapitre~\ref{ch:archi}} expose l'architecture technique du back-end et du front-end.
-    \item Le \textbf{chapitre~\ref{ch:realisation}} illustre la réalisation par les captures d'écran des interfaces.
-\end{itemize}
-
-Une \textbf{conclusion générale} synthétise le bilan, les difficultés rencontrées et les perspectives d'évolution.
+Le \textbf{chapitre~\ref{ch:contexte}} présente le contexte du projet, l'organisme d'accueil, l'étude de l'existant et la méthodologie de travail. Le \textbf{chapitre~\ref{ch:conception}} détaille l'analyse des besoins, l'identification des acteurs et la modélisation UML. Le \textbf{chapitre~\ref{ch:techno}} décrit l'environnement de travail et les technologies utilisées. Le \textbf{chapitre~\ref{ch:archi}} expose l'architecture technique du back-end et du front-end. Le \textbf{chapitre~\ref{ch:realisation}} illustre la réalisation par des captures d'écran commentées des interfaces. Une \textbf{conclusion générale} synthétise le bilan, les difficultés rencontrées et les perspectives d'évolution.
 
 \chapter{Contexte du projet et méthodologie}
 \label{ch:contexte}
@@ -343,63 +330,29 @@ Le projet simule la gestion d'une \textbf{agence bancaire fictive} baptisée \te
 
 \subsection{Équipe projet}
 
-Le projet a été mené en binôme :
-\begin{itemize}[leftmargin=*]
-    \item \textbf{\etudianteun}
-    \item \textbf{\etudiantedeux}
-\end{itemize}
+Le projet a été mené en binôme par \textbf{\etudianteun} et \textbf{\etudiantedeux}, sous l'encadrement de \encadrante.
 
 \section{Étude de l'existant et critique}
 
 \subsection{Description de l'existant}
 
-Dans de nombreuses agences de taille modeste, la gestion repose encore sur :
-\begin{itemize}[leftmargin=*]
-    \item Des fiches clients papier ou des fichiers non centralisés.
-    \item Un suivi des soldes via tableur, sans contrôle automatique des règles métier.
-    \item Des opérations saisies manuellement, sujettes aux erreurs humaines.
-    \item L'absence de journal centralisé des actions sensibles.
-    \item Aucun accès en ligne pour le client.
-\end{itemize}
+Dans de nombreuses agences de taille modeste, la gestion repose encore sur des fiches clients papier ou des fichiers non centralisés, un suivi des soldes via tableur sans contrôle automatique des règles métier, et des opérations saisies manuellement, sujettes aux erreurs humaines. Par ailleurs, il n'existe souvent aucun journal centralisé des actions sensibles ni d'accès en ligne permettant au client de consulter ses mouvements.
 
 \subsection{Critique de l'existant}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Manque d'efficacité} : saisies répétitives, recherches longues, doublons possibles (CIN).
-    \item \textbf{Incohérences de solde} : absence de verrouillage transactionnel.
-    \item \textbf{Faible traçabilité} : difficulté à identifier l'agent responsable d'une opération.
-    \item \textbf{Sécurité insuffisante} : mots de passe ou données sans politique homogène.
-    \item \textbf{Supervision limitée} : pas de tableau de bord ni d'alertes pour le chef d'agence.
-\end{itemize}
+Ces pratiques entraînent un manque d'efficacité (saisies répétitives, recherches longues, risque de doublons sur le CIN), des incohérences de solde faute de verrouillage transactionnel, et une faible traçabilité lorsqu'il s'agit d'identifier l'agent responsable d'une opération. La sécurité des données reste insuffisante lorsque les mots de passe ou les informations clients ne suivent pas une politique homogène. Enfin, le chef d'agence dispose rarement d'un tableau de bord ni d'alertes pour superviser l'activité en temps réel.
 
 \subsection{Solution proposée}
 
-Nous proposons \textbf{\nomapplication}, une application web intégrée couvrant :
-\begin{itemize}[leftmargin=*]
-    \item Gestion des \textbf{clients} et \textbf{comptes} (ouverture, blocage, clôture).
-    \item \textbf{Opérations financières} : dépôt, retrait, virement, paiement de factures.
-    \item \textbf{Administration} du personnel et journal d'\textbf{audit}.
-    \item \textbf{Reporting} : dashboard, relevés, reçus HTML et PDF.
-    \item \textbf{Extensions} : chéquier, notifications, portail client.
-\end{itemize}
+Pour répondre à ces limites, nous proposons \textbf{\nomapplication}, une application web intégrée couvrant la gestion des clients et des comptes (ouverture, blocage, clôture), les opérations financières (dépôt, retrait, virement, paiement de factures), l'administration du personnel et le journal d'audit, ainsi que le reporting (dashboard, relevés, reçus HTML et PDF). Des extensions complètent le périmètre : commande de chéquier, notifications in-app et portail client en consultation.
 
 \section{Méthodologie de travail}
 
 \subsection{Processus de développement}
 
-Nous avons adopté une approche \textbf{itérative et incrémentale}, inspirée du processus \textbf{2TUP} (Two-Track Unified Process) :
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{Piste conception} : analyse du cahier des charges, diagrammes UML, MCD/MLD.
-    \item \textbf{Piste réalisation} : développement par phases verticales, chacune livrant une fonctionnalité testable.
-\end{enumerate}
+Nous avons adopté une approche \textbf{itérative et incrémentale}, inspirée du processus \textbf{2TUP} (Two-Track Unified Process). La piste de conception regroupe l'analyse du cahier des charges, les diagrammes UML et le modèle de données ; la piste de réalisation correspond au développement par phases verticales, chacune livrant une fonctionnalité testable avant de passer à la suivante.
 
-Le projet a été découpé en \textbf{quatre pistes logiques} (voir tableau~\ref{tab:phases}) :
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Noyau} (phases 1 à 8) : cahier des charges.
-    \item \textbf{Extensions agence} (phases 10 et 11) : factures, chéquier.
-    \item \textbf{Canal client} (phases 13 et 14) : notifications, portail.
-    \item \textbf{Clôture} (phase 12) : démo, documentation, soutenance.
-\end{itemize}
+Le projet a été organisé en quatre pistes logiques (voir tableau~\ref{tab:phases}) : le \textbf{noyau} (phases 1 à 8) couvre le cahier des charges ; les \textbf{extensions agence} (phases 10 et 11) ajoutent le paiement de factures et la commande de chéquier ; le \textbf{canal client} (phases 13 et 14) apporte les notifications et le portail en ligne ; la \textbf{clôture} (phase 12) regroupe la préparation de la démo, de la documentation et de la soutenance.
 
 \subsection{Planification}
 
@@ -462,10 +415,7 @@ L'authentification est unifiée sur \texttt{/login} ; la redirection post-connex
 
 \subsection{Périmètre}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Inclus} : CRUD clients/comptes, opérations financières, utilisateurs, audit, reporting, paiement facture, chéquier, notifications, portail client.
-    \item \textbf{Exclu} : crédit, cartes bancaires, GAB, interbancaire, microservices.
-\end{itemize}
+Le périmètre retenu inclut le CRUD clients et comptes, les opérations financières, la gestion des utilisateurs, l'audit, le reporting, le paiement de factures, la commande de chéquier, les notifications et le portail client. Sont volontairement exclus les domaines hors cahier des charges : crédit, cartes bancaires, GAB, interbancaire et architecture microservices.
 
 \subsection{Fonctionnalités principales}
 
@@ -493,13 +443,7 @@ L'authentification est unifiée sur \texttt{/login} ; la redirection post-connex
 
 \subsection{Règles de gestion}
 
-\begin{itemize}[leftmargin=*]
-    \item R1--R2 : un client possède un ou plusieurs comptes ; un compte appartient à un seul client.
-    \item R3 : retrait/paiement refusé si solde insuffisant.
-    \item R4 : virement — comptes source et destination actifs.
-    \item R5--R8 : traçabilité, comptes bloqués/clôturés inopérants, BCrypt, audit.
-    \item R9--R14 : extensions facture et chéquier (référence obligatoire, une commande PENDING max).
-\end{itemize}
+Les règles de gestion structurent le comportement métier du système. Un client peut posséder un ou plusieurs comptes, chaque compte étant rattaché à un seul client (R1--R2). Les retraits et paiements sont refusés lorsque le solde est insuffisant (R3), et un virement n'est autorisé que si les comptes source et destination sont actifs (R4). La traçabilité des opérations, l'interdiction d'utiliser des comptes bloqués ou clôturés, le hachage BCrypt des mots de passe et l'enregistrement des actions sensibles dans le journal d'audit complètent ce socle (R5--R8). Les extensions facture et chéquier imposent une référence obligatoire pour les paiements et limitent à une seule commande en attente par compte (R9--R14).
 
 \section{Modélisation UML}
 
@@ -552,26 +496,15 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
 
 \subsection{Poste de développement}
 
-\begin{itemize}[leftmargin=*]
-    \item Système d'exploitation : Windows 10/11
-    \item Processeur et mémoire adaptés au développement Java et PostgreSQL
-    \item IDE : Visual Studio Code / Cursor (édition) + terminal Maven
-\end{itemize}
+Le développement a été réalisé sur un poste Windows 10/11, avec des ressources matérielles adaptées à Java et PostgreSQL. L'édition du code s'effectue via Visual Studio Code ou Cursor, tandis que la compilation et les tests passent par le terminal Maven intégré au projet (\texttt{mvnw}).
 
 \subsection{Base de données}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{PostgreSQL 18} installé localement (port \textbf{5433})
-    \item Base : \texttt{banque\_agence}, utilisateur \texttt{banque}
-    \item Script d'initialisation : \texttt{documentation/setup-postgresql.sql}
-\end{itemize}
+La persistance repose sur \textbf{PostgreSQL 18}, installé localement sur le port \textbf{5433} pour éviter les conflits avec d'autres instances. La base \texttt{banque\_agence} est alimentée par l'utilisateur \texttt{banque} ; un script d'initialisation (\texttt{documentation/setup-postgresql.sql}) facilite la mise en place de l'environnement.
 
 \subsection{Outils de gestion de version}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Git} pour le versionnement du code source
-    \item Dépôt structuré par phases (commits incrémentaux)
-\end{itemize}
+Le code source est versionné avec \textbf{Git}. Le dépôt est structuré par phases de développement, chaque livraison fonctionnelle faisant l'objet de commits incrémentaux traçables.
 
 \section{Technologies et outils utilisés}
 
@@ -619,23 +552,11 @@ Ce chapitre présente l'environnement matériel et logiciel utilisé pour le dé
 
 \subsection{Outils de conception et documentation}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{PlantUML} : diagrammes UML (cas d'utilisation, classes, séquences, activité, MCD/MLD).
-    \item \textbf{StarUML} ou éditeur texte : alternative pour la modélisation.
-    \item \textbf{GanttProject} : planification des phases (optionnel).
-    \item \textbf{JUnit 5 + Spring Boot Test + MockMvc} : tests d'intégration (80 tests).
-\end{itemize}
+La modélisation UML est produite avec \textbf{PlantUML} (cas d'utilisation, classes, séquences, activité, MCD/MLD), complétée si besoin par StarUML ou un éditeur texte. La planification des phases peut s'appuyer sur GanttProject. La qualité logicielle est assurée par \textbf{JUnit 5}, Spring Boot Test et MockMvc, pour un total de 80 tests d'intégration automatisés.
 
 \subsection{Choix technologiques}
 
-Nous avons retenu un \textbf{monolithe Spring Boot} pour les raisons suivantes :
-\begin{itemize}[leftmargin=*]
-    \item Adapté à un projet PFA solo/binôme — un seul dépôt, un JAR déployable.
-    \item Spring Security offre une story solide pour l'authentification bancaire.
-    \item Thymeleaf évite la complexité d'un SPA React/Angular séparé.
-    \item PostgreSQL garantit l'intégrité relationnelle des données financières.
-    \item Flyway permet une évolution reproductible du schéma (défendable en soutenance).
-\end{itemize}
+Nous avons retenu un \textbf{monolithe Spring Boot}, adapté à un projet PFA mené en binôme : un seul dépôt, un JAR déployable et une courbe d'apprentissage maîtrisée. Spring Security fournit une base solide pour l'authentification bancaire par rôles. Thymeleaf évite la complexité d'un SPA React ou Angular séparé tout en conservant un rendu serveur sécurisé. PostgreSQL garantit l'intégrité relationnelle des données financières, et Flyway assure une évolution reproductible du schéma, argument défendable en soutenance.
 
 \section{Conclusion}
 
@@ -713,11 +634,7 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
 
 \subsection{Couche persistance}
 
-\begin{itemize}[leftmargin=*]
-    \item \texttt{repository/} : interfaces Spring Data JPA (\texttt{ClientRepository}, \texttt{AccountRepository}, \texttt{TransactionRepository}…).
-    \item \texttt{TransactionSpecifications.java} : filtres dynamiques pour l'historique.
-    \item Migrations SQL : \texttt{src/main/resources/db/migration/V1\_\_} à \texttt{V11\_\_}.
-\end{itemize}
+La couche persistance regroupe les interfaces Spring Data JPA dans le package \texttt{repository/} (\texttt{ClientRepository}, \texttt{AccountRepository}, \texttt{TransactionRepository}, etc.). La classe \texttt{TransactionSpecifications.java} permet des filtres dynamiques sur l'historique des transactions. L'évolution du schéma relationnel est assurée par onze migrations Flyway (\texttt{V1\_\_} à \texttt{V11\_\_}) versionnées dans \texttt{src/main/resources/db/migration/}.
 
 \subsection{Couche métier (services)}
 
@@ -747,53 +664,21 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
 
 \subsection{Couche web (contrôleurs)}
 
-\textbf{Agence} (\texttt{web.controller/}) :
-\begin{itemize}[leftmargin=*]
-    \item \texttt{HomeController} — landing \texttt{/}
-    \item \texttt{LoginController}, \texttt{DashboardController}
-    \item \texttt{ClientController}, \texttt{AccountController}
-    \item \texttt{OperationController} — dépôt, retrait, virement, facture
-    \item \texttt{TransactionController} — historique, reçu HTML/PDF
-    \item \texttt{CheckbookOrderController}, \texttt{NotificationController}
-    \item \texttt{AdminUserController}, \texttt{AuditController}
-\end{itemize}
+Côté agence, le package \texttt{web.controller/} regroupe les contrôleurs métier : \texttt{HomeController} pour la landing (\texttt{/}), \texttt{LoginController} et \texttt{DashboardController} pour l'authentification et la synthèse, \texttt{ClientController} et \texttt{AccountController} pour la gestion des tiers, \texttt{OperationController} pour les dépôts, retraits, virements et paiements de factures, \texttt{TransactionController} pour l'historique et les reçus HTML/PDF, ainsi que \texttt{CheckbookOrderController}, \texttt{NotificationController}, \texttt{AdminUserController} et \texttt{AuditController} pour les extensions et la supervision.
 
-\textbf{Portail client} (\texttt{web.controller.portal/}) :
-\begin{itemize}[leftmargin=*]
-    \item \texttt{PortalDashboardController}, \texttt{PortalAccountController}
-    \item \texttt{PortalTransactionController}, \texttt{PortalCheckbookController}
-    \item \texttt{PortalNotificationController}
-\end{itemize}
-
-\textbf{DTO} (\texttt{web.dto/}) : objets formulaire (\texttt{ClientForm}, \texttt{OperationForm}, \texttt{BillPaymentForm}…).
+Le portail client (\texttt{web.controller.portal/}) expose \texttt{PortalDashboardController}, \texttt{PortalAccountController}, \texttt{PortalTransactionController}, \texttt{PortalCheckbookController} et \texttt{PortalNotificationController}, tous en lecture seule. Les objets formulaire sont regroupés dans \texttt{web.dto/} (\texttt{ClientForm}, \texttt{OperationForm}, \texttt{BillPaymentForm}, etc.).
 
 \subsection{Sécurité}
 
-\begin{itemize}[leftmargin=*]
-    \item \texttt{UserDetailsServiceImpl} : charge \texttt{User} (personnel) ou \texttt{Client} (portail).
-    \item \texttt{SecurityUser} / \texttt{SecurityClient} : wrappers Spring Security.
-    \item Routes : \texttt{/portal/**} $\rightarrow$ ROLE\_CLIENT ; \texttt{/admin/**} $\rightarrow$ ROLE\_ADMIN.
-\end{itemize}
+La classe \texttt{UserDetailsServiceImpl} charge indifféremment un \texttt{User} du personnel ou un \texttt{Client} pour le portail. Les wrappers \texttt{SecurityUser} et \texttt{SecurityClient} adaptent ces entités au modèle Spring Security. Les routes \texttt{/portal/**} exigent le rôle \texttt{ROLE\_CLIENT}, tandis que \texttt{/admin/**} est réservé au \texttt{ROLE\_ADMIN}.
 
 \section{Front-end (Thymeleaf)}
 
 \subsection{Identité visuelle et charte graphique}
 
-L'interface a été entièrement repensée autour de l'identité \textbf{AmanaBank}. La palette repose sur trois familles de couleurs définies en variables CSS (\texttt{:root}) :
+L'interface a été entièrement repensée autour de l'identité \textbf{AmanaBank}. La palette repose sur trois familles de couleurs définies en variables CSS (\texttt{:root}) : le \textbf{marron} (\texttt{\#4B3621} à \texttt{\#7A6352}) pour la barre latérale et les textes principaux, le \textbf{beige} (\texttt{\#FDFBF8} à \texttt{\#EDE6DA}) pour les arrière-plans et les cartes, et l'\textbf{or} (\texttt{\#A6893A}) pour les boutons d'action et les accents. La police \textbf{DM Sans} (Google Fonts) assure une lecture confortable ; le logo officiel et le favicon renforcent la cohérence de marque sur la vitrine et dans les espaces connectés.
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Marron} (\texttt{\#4B3621} à \texttt{\#7A6352}) : barre latérale, textes principaux ;
-    \item \textbf{Beige} (\texttt{\#FDFBF8} à \texttt{\#EDE6DA}) : arrière-plans, cartes et en-têtes ;
-    \item \textbf{Or} (\texttt{\#A6893A}) : boutons d'action, liens actifs et accents.
-\end{itemize}
-
-La police \textbf{DM Sans} (Google Fonts) assure une lecture confortable sur tous les écrans. Le logo officiel (\texttt{amana-logo.png} pour la vitrine, \texttt{AmanaBank.png} dans les espaces connectés) et le favicon renforcent la cohérence de marque.
-
-Deux feuilles de style complémentaires structurent le rendu :
-\begin{itemize}[leftmargin=*]
-    \item \texttt{landing.css} — page publique autonome (header fixe, hero plein écran, grilles de services) ;
-    \item \texttt{style.css} — espaces connectés agence et portail (sidebar, cartes KPI, formulaires, tableaux).
-\end{itemize}
+Deux feuilles de style structurent le rendu : \texttt{landing.css} pour la page publique autonome (header fixe, hero plein écran, grilles de services) et \texttt{style.css} pour les espaces agence et portail (sidebar, cartes KPI, formulaires et tableaux).
 
 \subsection{Structure des templates}
 
@@ -829,29 +714,11 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
 
 \subsection{Ressources statiques}
 
-\begin{itemize}[leftmargin=*]
-    \item \texttt{static/css/style.css} — thème unifié agence et portail (sidebar, cartes KPI, login).
-    \item \texttt{static/css/landing.css} — vitrine marketing (hero, statistiques, services, footer).
-    \item \texttt{static/js/landing-header.js} — en-tête fixe avec masquage au défilement.
-    \item \texttt{static/images/} — logos, favicon, visuels (\texttt{hero.jpg}, \texttt{branch.jpg}, \texttt{digital.jpg}…).
-\end{itemize}
+Les ressources statiques sont centralisées sous \texttt{static/}. Le fichier \texttt{css/style.css} définit le thème unifié des espaces agence et portail ; \texttt{css/landing.css} porte la vitrine marketing (hero, statistiques, services, footer). Le script \texttt{js/landing-header.js} gère l'en-tête fixe avec masquage au défilement. Le dossier \texttt{images/} contient logos, favicon et visuels (\texttt{hero.jpg}, \texttt{branch.jpg}, \texttt{digital.jpg}, etc.).
 
 \subsection{Page d'accueil publique (\texttt{landing.html})}
 
-La landing est une page \textbf{autonome} (sans layout Thymeleaf partagé) structurée en sections ancrées :
-
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{En-tête fixe} — logo, navigation (Services, Espace digital, Engagements, Contact), boutons Connexion et Ouvrir un compte.
-    \item \textbf{Hero} — image de fond (\texttt{hero.jpg}), accroche institutionnelle et appels à l'action.
-    \item \textbf{Chiffres clés} — bandeau de statistiques (expérience, clients, agences, satisfaction).
-    \item \textbf{Services} — trois cartes illustrées (comptes, financement, services digitaux).
-    \item \textbf{Espace client} — présentation du portail avec liste à puces et visuel mobile.
-    \item \textbf{Engagements} — valeurs de la banque (sécurité, proximité, transparence).
-    \item \textbf{Contact} — appel à l'action et coordonnées.
-    \item \textbf{Pied de page} — liens, adresse et mentions légales.
-\end{enumerate}
-
-Le contrôleur \texttt{HomeController} sert cette page sur la route \texttt{/} sans authentification.
+La landing est une page \textbf{autonome} (sans layout Thymeleaf partagé) structurée en sections ancrées. L'en-tête fixe affiche le logo, la navigation (Services, Espace digital, Engagements, Contact) et les boutons Connexion et Ouvrir un compte. La section hero présente une image de fond (\texttt{hero.jpg}), une accroche institutionnelle et des appels à l'action. Un bandeau de chiffres clés renforce la crédibilité, suivi d'une grille de trois cartes de services (comptes, financement, services digitaux). L'espace client digital met en avant le portail en ligne ; les engagements rappellent les valeurs de la banque (sécurité, proximité, transparence). Le contact et le pied de page clôturent la page avec coordonnées et mentions légales. Le contrôleur \texttt{HomeController} sert cette page sur \texttt{/} sans authentification.
 
 \subsection{Connexion unifiée (\texttt{login.html})}
 
@@ -867,11 +734,7 @@ Les tableaux de bord (\texttt{dashboard.html}, \texttt{portal/dashboard.html}) r
 
 \subsection{Composants transverses}
 
-\begin{itemize}[leftmargin=*]
-    \item \texttt{NotificationModelAdvice} : injecte \texttt{unreadNotificationCount} dans toutes les vues.
-    \item \texttt{thymeleaf-extras-springsecurity6} : affichage conditionnel selon rôle (\texttt{sec:authorize}).
-    \item Messages flash (\texttt{RedirectAttributes}) pour succès et erreurs métier.
-\end{itemize}
+Le composant \texttt{NotificationModelAdvice} injecte le compteur \texttt{unreadNotificationCount} dans toutes les vues. L'extension \texttt{thymeleaf-extras-springsecurity6} permet l'affichage conditionnel selon le rôle (\texttt{sec:authorize}). Les messages flash transmis via \texttt{RedirectAttributes} informent l'utilisateur des succès et des erreurs métier après redirection.
 
 \section{Conclusion}
 
@@ -890,13 +753,7 @@ Chaque section présente d'abord le \textbf{rôle} de l'écran, puis sa \textbf{
 
 \subsection{Charte graphique}
 
-L'identité AmanaBank repose sur une palette \textbf{marron -- beige -- or}, inspirée du logo de l'établissement. Cette harmonie chromatique traverse l'ensemble des écrans :
-
-\begin{itemize}[leftmargin=*]
-    \item la \textbf{landing page} utilise un fond clair, un hero sombre et des boutons dorés pour les actions principales ;
-    \item les \textbf{espaces connectés} affichent une sidebar marron foncé et un contenu sur fond beige, facilitant la lecture prolongée ;
-    \item les \textbf{cartes KPI} (indicateurs clés) reprennent des icônes colorées par thème (clients, comptes, opérations, volume).
-\end{itemize}
+L'identité AmanaBank repose sur une palette \textbf{marron -- beige -- or}, inspirée du logo de l'établissement. Sur la landing page, le fond clair, le hero sombre et les boutons dorés guident l'attention vers les actions principales. Dans les espaces connectés, la sidebar marron foncé et le contenu beige facilitent une lecture prolongée. Les cartes KPI reprennent des icônes colorées par thème (clients, comptes, opérations, volume) pour une lecture immédiate des indicateurs.
 
 \subsection{Responsive et accessibilité}
 
@@ -906,62 +763,23 @@ Bootstrap~5.3 assure l'adaptation aux différentes largeurs d'écran (grille \te
 
 \subsection{Page d'accueil (landing page)}
 
-La page d'accueil (\texttt{/}) constitue la \textbf{vitrine institutionnelle} d'AmanaBank. Elle n'exige aucune authentification et vise à présenter l'offre bancaire tout en orientant vers la connexion.
+La page d'accueil (\texttt{/}) constitue la \textbf{vitrine institutionnelle} d'AmanaBank. Elle n'exige aucune authentification et vise à présenter l'offre bancaire tout en orientant vers la connexion. L'en-tête fixe affiche le logo cliquable, un menu d'ancrage (Services, Espace digital, Engagements, Contact) et les boutons «\,Connexion\,» et «\,Ouvrir un compte\,» ; un script JavaScript masque l'en-tête au défilement pour libérer l'espace visuel. La section hero met en avant une photographie d'architecture (\texttt{hero.jpg}), un titre accrocheur et deux appels à l'action. Un bandeau de statistiques (28+ années, 120K+ clients, 45 agences, note 4.8/5) renforce la crédibilité, suivi d'une grille de services, de la présentation du portail en ligne, des engagements de la banque et d'un pied de page avec coordonnées et mentions légales.
 
-\textbf{Structure de la page :}
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{En-tête fixe} — logo cliquable, menu d'ancrage (Services, Espace digital, Engagements, Contact), boutons «\,Connexion\,» et «\,Ouvrir un compte\,». Un script JavaScript masque l'en-tête au défilement vers le bas pour libérer l'espace visuel.
-    \item \textbf{Section hero} — photographie d'architecture (\texttt{hero.jpg}), titre accrocheur, texte de présentation et deux appels à l'action (accès espace client, découverte des services).
-    \item \textbf{Bandeau statistiques} — quatre chiffres clés (28+ années, 120K+ clients, 45 agences, note 4.8/5) renforçant la crédibilité institutionnelle.
-    \item \textbf{Grille de services} — trois cartes illustrées : comptes et moyens de paiement, conseil et financement, services digitaux.
-    \item \textbf{Espace client digital} — mise en avant du portail en ligne avec liste des fonctionnalités (consultation soldes, notifications, reçus PDF, suivi chéquier).
-    \item \textbf{Engagements} — trois piliers : sécurité, proximité humaine, transparence (référence au sens du mot \emph{Amana}).
-    \item \textbf{Contact et pied de page} — coordonnées, horaires, liens utiles et mentions légales.
-\end{enumerate}
+\includescreenshot{landing.png}{Page d'accueil publique — section hero}{Cette capture montre la partie supérieure de la page d'accueil publique d'AmanaBank. On distingue l'en-tête fixe avec le logo et les liens de navigation, ainsi que la section hero avec l'image de fond et les boutons d'accès à l'espace client. L'ensemble illustre la première impression institutionnelle offerte au visiteur non connecté.}{fig:landing}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{landing.png}
-    \caption{Page d'accueil publique — section hero et navigation principale}
-    \label{fig:landing}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{landing-services.png}
-    \caption{Page d'accueil — présentation des services et de l'espace client digital}
-    \label{fig:landing-services}
-\end{figure}
+\includescreenshot{landing-services.png}{Page d'accueil — services et espace client}{Cette vue présente la portion médiane de la landing page, dédiée à la présentation des services bancaires et à la mise en avant de l'espace client digital. Les cartes illustrées décrivent l'offre (comptes, financement, services en ligne) et orientent l'utilisateur vers la connexion au portail. La mise en page reprend la charte marron, beige et or de l'application.}{fig:landing-services}
 
 \subsection{Page de connexion}
 
-L'écran de connexion (\texttt{/login}) est le \textbf{point d'entrée unique} pour tous les utilisateurs. Un même formulaire accepte :
-\begin{itemize}[leftmargin=*]
-    \item le \textbf{personnel} (admin, agent, chef d'agence) via son nom d'utilisateur ;
-    \item le \textbf{client} via son CIN ou son numéro client.
-\end{itemize}
+L'écran de connexion (\texttt{/login}) est le \textbf{point d'entrée unique} pour tous les utilisateurs. Un même formulaire accepte le personnel (administrateur, agent ou chef d'agence) via son nom d'utilisateur, ainsi que le client via son CIN ou son numéro client. L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstrap, un bouton de connexion doré et deux encadrés d'aide rappelant les identifiants de démonstration (ex.\ CIN \texttt{MB654321} pour le client \textbf{Moncef Bensouda}). Un lien «\,Retour à l'accueil\,» permet de revenir à la landing sans utiliser le bouton précédent du navigateur.
 
-L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstrap, un bouton de connexion doré et deux encadrés d'aide rappelant les identifiants de démonstration (ex.\ CIN \texttt{MB654321} pour le client \textbf{Moncef Bensouda}). Un lien «\,Retour à l'accueil\,» permet de revenir à la landing sans utiliser le bouton précédent du navigateur.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\textwidth]{login.png}
-    \caption{Connexion unifiée — personnel et espace client}
-    \label{fig:login}
-\end{figure}
+\includescreenshot[0.75\textwidth]{login.png}{Connexion unifiée — personnel et client}{Cette capture présente l'écran de connexion unifié d'AmanaBank. Le formulaire centralise l'authentification du personnel et des clients sur une seule page, avec des champs identifiants et mot de passe ainsi que des encadrés d'aide pour la démonstration. Le design sobre et la charte graphique préparent l'accès aux espaces agence ou portail selon le profil connecté.}{fig:login}
 
 \section{Espace agence — personnel}
 
 \subsection{Layout et navigation}
 
-Une fois authentifié, le personnel accède à un \textbf{layout à sidebar} (\texttt{layout/main.html}). La barre latérale marron regroupe les modules métier ; l'élément actif est mis en surbrillance dorée. Le pied de sidebar affiche le nom et le rôle de l'utilisateur connecté, ainsi qu'un bouton de déconnexion.
-
-Le menu s'adapte au \textbf{rôle} :
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Agent} : clients, comptes, opérations, historique, chéquiers ;
-    \item \textbf{Chef d'agence} : mêmes modules + notifications et journal d'audit ;
-    \item \textbf{Administrateur} : ajout de la gestion des utilisateurs internes.
-\end{itemize}
+Une fois authentifié, le personnel accède à un \textbf{layout à sidebar} (\texttt{layout/main.html}). La barre latérale marron regroupe les modules métier ; l'élément actif est mis en surbrillance dorée. Le pied de sidebar affiche le nom et le rôle de l'utilisateur connecté, ainsi qu'un bouton de déconnexion. Le menu s'adapte au rôle : l'agent accède aux clients, comptes, opérations, historique et chéquiers ; le chef d'agence dispose des mêmes modules avec en plus les notifications et le journal d'audit ; l'administrateur ajoute la gestion des utilisateurs internes.
 
 \subsection{Tableau de bord}
 
@@ -988,99 +806,47 @@ Des \textbf{alertes métier} apparaissent lorsque des commandes de chéquier son
 
 En dessous, un tableau récapitule les \textbf{10 dernières opérations} avec accès immédiat au reçu de chaque transaction.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{dashboard-agent.png}
-    \caption{Tableau de bord agence — cartes KPI, alertes chéquier et opérations récentes}
-    \label{fig:dashboard}
-\end{figure}
+\includescreenshot{dashboard-agent.png}{Tableau de bord agence — KPI et alertes}{Cette capture illustre le tableau de bord de l'espace agence après connexion d'un agent. Quatre cartes KPI synthétisent l'activité (clients actifs, comptes, opérations et volume du jour), tandis que des alertes signalent les commandes de chéquier en attente. Le tableau inférieur liste les dernières opérations avec un accès direct aux reçus.}{fig:dashboard}
 
 \subsection{Gestion des clients}
 
 L'écran de liste clients permet la \textbf{recherche}, la création et la consultation des fiches. Chaque fiche regroupe les informations d'identité, le statut (actif, suspendu, fermé) et la liste des comptes associés.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{clients-liste.png}
-    \caption{Liste et recherche des clients}
-    \label{fig:clients}
-\end{figure}
+\includescreenshot{clients-liste.png}{Liste et recherche des clients}{Cette vue montre l'écran de gestion des clients accessible à l'agent bancaire. Un champ de recherche et un tableau récapitulatif permettent de retrouver rapidement un titulaire, de consulter son statut et d'accéder à sa fiche détaillée. Le bouton de création ouvre le formulaire d'enregistrement d'un nouveau client.}{fig:clients}
 
 \subsection{Comptes bancaires}
 
 La fiche compte affiche le numéro, le type (courant, épargne, professionnel), le solde, le statut et les actions disponibles (blocage, clôture, relevé). La figure~\ref{fig:compte} illustre le compte courant de \textbf{Moncef Bensouda} (\texttt{ACC-00001}), client le plus aisé du jeu de démonstration.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{compte-detail.png}
-    \caption{Fiche détail — compte courant Moncef Bensouda (\texttt{ACC-00001})}
-    \label{fig:compte}
-\end{figure}
+\includescreenshot{compte-detail.png}{Fiche détail d'un compte bancaire}{Cette capture présente la fiche détail d'un compte bancaire, ici le compte courant \texttt{ACC-00001} de Moncef Bensouda. Le solde, le type de compte et son statut sont affichés en évidence, avec des actions permettant le blocage, la clôture ou la consultation du relevé. Cet écran centralise les informations nécessaires avant toute opération financière.}{fig:compte}
 
 \subsection{Opérations financières}
 
-Le module opérations regroupe quatre types d'actions, chacune sur un formulaire dédié avec validation côté serveur (montants positifs, solde suffisant, comptes actifs) :
+Le module opérations regroupe quatre types d'actions, chacune sur un formulaire dédié avec validation côté serveur : le dépôt crédite un compte, le retrait débite avec contrôle de solde, le virement transfère des fonds entre deux comptes actifs, et le paiement de facture enregistre le fournisseur (LYDEC, ONEE, IAM, etc.) tout en débitant le compte sélectionné.
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Dépôt} — crédit d'un compte ;
-    \item \textbf{Retrait} — débit avec contrôle de solde ;
-    \item \textbf{Virement} — transfert entre deux comptes ;
-    \item \textbf{Paiement de facture} — débit et enregistrement du fournisseur (LYDEC, ONEE, IAM…).
-\end{itemize}
+\includescreenshot[0.85\textwidth]{operations-depot.png}{Formulaire de dépôt sur compte}{Cette capture montre le formulaire de dépôt utilisé par l'agent pour créditer le compte d'un client. L'agent sélectionne le compte concerné, saisit le montant et valide l'opération ; le serveur contrôle alors le statut du compte et enregistre la transaction dans l'historique. L'interface reprend les composants de formulaire standardisés de l'application.}{fig:depot}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{operations-depot.png}
-    \caption{Formulaire de dépôt sur compte client}
-    \label{fig:depot}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{paiement-facture.png}
-    \caption{Paiement de facture — sélection du fournisseur et du compte}
-    \label{fig:facture}
-\end{figure}
+\includescreenshot[0.85\textwidth]{paiement-facture.png}{Paiement de facture — fournisseur et compte}{Cette vue correspond au module de paiement de factures. L'agent choisit le fournisseur (électricité, eau, télécom, etc.), le compte à débiter et la référence de la facture avant validation. Le système vérifie le solde disponible et génère une transaction liée au paiement, consultable ensuite dans l'historique et sur le reçu.}{fig:facture}
 
 \subsection{Historique et reçu PDF}
 
 Chaque opération génère une entrée dans l'historique. La page de reçu présente le détail de la transaction et propose le \textbf{téléchargement PDF} via OpenPDF, avec un nom de fichier normalisé.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{recu-pdf.png}
-    \caption{Reçu d'opération avec bouton de téléchargement PDF}
-    \label{fig:recu}
-\end{figure}
+\includescreenshot{recu-pdf.png}{Reçu d'opération avec téléchargement PDF}{Cette capture affiche la page de reçu d'une opération financière. Les informations essentielles (type, montant, compte, date, agent) sont présentées dans un format lisible, avec un bouton permettant de télécharger le document au format PDF. Ce reçu peut être remis au client ou archivé pour la traçabilité de l'agence.}{fig:recu}
 
 \subsection{Commandes de chéquier et notifications}
 
 Les commandes de chéquier suivent un \textbf{workflow} sans impact sur le solde : demande, traitement, livraison. Le chef d'agence reçoit des notifications et peut consulter le centre dédié via la cloche en en-tête.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{chequier-liste.png}
-    \caption{Suivi des commandes de chéquier par statut}
-    \label{fig:chequier}
-\end{figure}
+\includescreenshot{chequier-liste.png}{Suivi des commandes de chéquier}{Cette vue présente l'écran de suivi des commandes de chéquier pour le personnel de l'agence. Les demandes sont classées par statut (en attente, en traitement, livrée) et permettent au chef d'agence de piloter le workflow administratif. Aucun mouvement financier n'est associé à cette fonctionnalité, qui relève du service client.}{fig:chequier}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{notifications.png}
-    \caption{Centre de notifications — chef d'agence}
-    \label{fig:notifications}
-\end{figure}
+\includescreenshot{notifications.png}{Centre de notifications — chef d'agence}{Cette capture montre le centre de notifications accessible au chef d'agence depuis la cloche en en-tête. Les alertes signalent notamment les nouvelles commandes de chéquier ou les événements nécessitant une supervision. Chaque notification peut être marquée comme lue pour suivre l'activité de l'agence en temps réel.}{fig:notifications}
 
 \subsection{Administration}
 
 L'administrateur gère les comptes du personnel (création, modification, réinitialisation de mot de passe). Le journal d'audit, accessible au chef et à l'admin, recense les actions sensibles pour la traçabilité.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{admin-users.png}
-    \caption{Gestion des utilisateurs internes}
-    \label{fig:admin}
-\end{figure}
+\includescreenshot{admin-users.png}{Gestion des utilisateurs internes}{Cette capture illustre l'écran d'administration des utilisateurs internes, réservé au rôle administrateur. La liste présente les comptes du personnel avec leurs rôles respectifs, et permet la création, la modification ou la réinitialisation des mots de passe. Cet écran garantit le contrôle des accès au back-office de l'agence.}{fig:admin}
 
 \section{Espace client (portail)}
 
@@ -1090,30 +856,11 @@ Le portail client (\texttt{/portal/**}) offre une \textbf{consultation en lectur
 
 \subsection{Tableau de bord client}
 
-Le dashboard client synthétise la situation du titulaire :
+Le dashboard client synthétise la situation du titulaire : le solde total correspond à la somme des comptes actifs, le nombre de comptes ouvre un accès rapide au détail, les notifications non lues signalent les opérations effectuées en agence, et le compteur de chéquiers en cours indique les commandes en attente ou en traitement. Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de statut). La figure~\ref{fig:portal} montre l'espace de \textbf{Moncef Bensouda} (CIN \texttt{MB654321}), dont le solde total dépasse 600\,000~MAD sur trois comptes. Le tableau des \textbf{5 dernières opérations} permet de télécharger les reçus PDF.
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Solde total} — somme des comptes actifs ;
-    \item \textbf{Nombre de comptes} — accès rapide au détail ;
-    \item \textbf{Notifications non lues} — alertes sur les opérations effectuées en agence ;
-    \item \textbf{Chéquiers en cours} — commandes en attente ou en traitement.
-\end{itemize}
+\includescreenshot{portal-dashboard.png}{Tableau de bord espace client}{Cette capture présente le tableau de bord de l'espace client connecté en tant que Moncef Bensouda. Les indicateurs en tête résument le patrimoine bancaire du titulaire, tandis que des cartes détaillent chaque compte et un tableau liste les dernières opérations. Le client peut consulter ses soldes et télécharger les reçus PDF sans passer par l'agence.}{fig:portal}
 
-Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de statut). La figure~\ref{fig:portal} montre l'espace de \textbf{Moncef Bensouda} (CIN \texttt{MB654321}), dont le solde total dépasse 600\,000~MAD sur trois comptes. Le tableau des \textbf{5 dernières opérations} permet de télécharger les reçus PDF.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{portal-dashboard.png}
-    \caption{Tableau de bord espace client — KPI, comptes et historique récent}
-    \label{fig:portal}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{portal-notifications.png}
-    \caption{Notifications client — opérations et mises à jour chéquier}
-    \label{fig:portal-notif}
-\end{figure}
+\includescreenshot{portal-notifications.png}{Notifications client — opérations et chéquier}{Cette vue montre le centre de notifications du portail client. Le titulaire y retrouve les alertes liées aux opérations réalisées en agence et aux mises à jour de ses commandes de chéquier. L'interface reprend la charte visuelle de l'espace agence tout en limitant les actions à la consultation.}{fig:portal-notif}
 
 \section{Conclusion}
 
@@ -1130,37 +877,17 @@ La réalisation de ce projet de fin d'année, intitulé \textbf{\nomapplication}
 
 \section*{Bilan}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Conception} : diagrammes UML complets (cas d'utilisation, classes, séquences, activité, MCD/MLD).
-    \item \textbf{Implémentation} : 11 migrations Flyway, 9 entités JPA, architecture en couches Spring Boot.
-    \item \textbf{Fonctionnalités} : gestion clients/comptes, opérations financières contrôlées, admin, audit, reporting, reçus PDF.
-    \item \textbf{Extensions} : factures, chéquier, notifications bidirectionnelles, portail client lecture seule.
-    \item \textbf{Qualité} : 80 tests d'intégration, seed de démo modulaire, documentation technique complète.
-    \item \textbf{Interface} : refonte graphique complète — landing marketing, login unifié, dashboards KPI et charte AmanaBank (marron/beige/or, DM Sans).
-\end{itemize}
+Sur le plan de la conception, nous avons produit une modélisation UML complète (cas d'utilisation, classes, séquences, activité, MCD/MLD). L'implémentation repose sur onze migrations Flyway, neuf entités JPA et une architecture en couches Spring Boot. Les fonctionnalités couvrent la gestion des clients et des comptes, les opérations financières contrôlées, l'administration, l'audit, le reporting et les reçus PDF. Les extensions (factures, chéquier, notifications bidirectionnelles, portail client en lecture seule) enrichissent le périmètre initial. La qualité est assurée par 80 tests d'intégration, un seed de démonstration modulaire et une documentation technique complète. Enfin, l'interface a fait l'objet d'une refonte graphique intégrale : landing marketing, login unifié, tableaux de bord KPI et charte AmanaBank (marron, beige, or, DM Sans).
 
 Les objectifs fixés en introduction ont été atteints : centralisation des données, respect des règles métier, traçabilité et expérience utilisateur adaptée à chaque rôle.
 
 \section*{Difficultés rencontrées}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Configuration PostgreSQL} : conflit de ports locaux (5432 occupé) — résolu en utilisant le port 5433.
-    \item \textbf{Cohérence transactionnelle} : gestion des soldes avec verrouillage optimiste (\texttt{@Version}) et \texttt{@Transactional}.
-    \item \textbf{Authentification dual} : un seul formulaire de login pour personnel et clients — résolu via \texttt{UserDetailsServiceImpl} composite.
-    \item \textbf{Portail sur base existante} : synchronisation des accès client via \texttt{DemoPortalSync} au démarrage.
-    \item \textbf{Workflow chéquier} : distinguer service administratif (sans mouvement financier) des transactions.
-\end{itemize}
+La configuration de PostgreSQL a d'abord posé problème en raison d'un conflit de ports locaux (5432 déjà occupé), résolu en utilisant le port 5433. La cohérence transactionnelle des soldes a nécessité un verrouillage optimiste (\texttt{@Version}) et des services annotés \texttt{@Transactional}. L'authentification dual sur un seul formulaire de login a été traitée via un \texttt{UserDetailsServiceImpl} composite chargeant indifféremment personnel ou client. L'activation du portail sur la base de démonstration existante passe par \texttt{DemoPortalSync} au démarrage. Enfin, le workflow chéquier a exigé de distinguer clairement un service administratif sans mouvement financier des transactions bancaires classiques.
 
 \section*{Perspectives d'évolution}
 
-\begin{itemize}[leftmargin=*]
-    \item Export PDF des \textbf{relevés de compte} (reçus déjà en PDF).
-    \item API REST documentée (Swagger) pour intégrations futures.
-    \item Pipeline CI/CD (GitHub Actions) et déploiement conteneurisé.
-    \item Enrichissement du portail client (demandes en ligne, messagerie).
-    \item Authentification à deux facteurs (2FA) pour le personnel.
-    \item Tableau de bord analytique avancé (graphiques, exports Excel).
-\end{itemize}
+Plusieurs évolutions sont envisageables : l'export PDF des relevés de compte (les reçus le sont déjà), une API REST documentée via Swagger pour de futures intégrations, un pipeline CI/CD avec déploiement conteneurisé, un enrichissement du portail client (demandes en ligne, messagerie), une authentification à deux facteurs pour le personnel, et un tableau de bord analytique avancé avec graphiques et exports Excel.
 
 \vspace{0.5cm}
 En conclusion, \nomapplication\ constitue une solution concrète et défendable pour la digitalisation d'une agence bancaire. Ce PFA nous a permis de consolider nos compétences en conception orientée objet, développement Java/Spring et travail en binôme, et constitue une base solide pour nos futurs projets professionnels.
