@@ -1,4 +1,4 @@
-# Build
+﻿# Build
 target/
 *.class
 *.jar
@@ -20,3 +20,14 @@ Thumbs.db
 
 # Local config
 application-local.properties
+
+# LaTeX build artifacts (rapport PFA)
+documentation/rapport/*.aux
+documentation/rapport/*.log
+documentation/rapport/*.toc
+documentation/rapport/*.lof
+documentation/rapport/*.lot
+documentation/rapport/*.out
+documentation/rapport/*.fls
+documentation/rapport/*.fdb_latexmk
+documentation/rapport/*.synctex.gz

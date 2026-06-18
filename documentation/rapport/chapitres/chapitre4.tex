@@ -1,0 +1,188 @@
+\chapter{Architecture technique de l'application}
+\label{ch:archi}
+
+\section{Introduction}
+
+Ce chapitre décrit l'architecture logicielle de \nomapplication\ : organisation du back-end Java, structure du front-end Thymeleaf, et flux de données entre les couches.
+
+\section{Architecture globale}
+
+L'application suit une \textbf{architecture en couches} (layered monolith) :
+
+\begin{center}
+\begin{tabular}{c}
+    \textbf{Navigateur (HTML/CSS/JS)} \\
+    $\downarrow$ \\
+    \textbf{Contrôleurs} (\texttt{web.controller}) \\
+    $\downarrow$ \\
+    \textbf{Services métier} (\texttt{service}) — \texttt{@Transactional} \\
+    $\downarrow$ \\
+    \textbf{Repositories} (\texttt{repository}) — Spring Data JPA \\
+    $\downarrow$ \\
+    \textbf{PostgreSQL} (Flyway V1--V11) \\
+\end{tabular}
+\end{center}
+
+Transversal : \textbf{Spring Security} (filtre HTTP), \textbf{AuditService}, \textbf{NotificationModelAdvice}.
+
+\section{Arborescence du back-end}
+
+Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
+
+\subsection{Point d'entrée et configuration}
+
+\begin{table}[H]
+    \centering
+    \caption{Packages de configuration}
+    \label{tab:config}
+    \small
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Fichier / classe} & \textbf{Rôle} \\
+        \midrule
+        \texttt{BanqueAgenceApplication.java} & Point d'entrée Spring Boot \\
+        \texttt{config/SecurityConfig.java} & Chaîne de sécurité, rôles, redirection login \\
+        \texttt{config/DevUserInitializer.java} & Seed utilisateurs (admin, agent, chef) \\
+        \texttt{config/DevDemoDataInitializer.java} & Seed données métier (clients, comptes…) \\
+        \texttt{config/DemoPortalSync.java} & Activation portail client démo \\
+        \texttt{application.yml} & Port 8081, profil actif \\
+        \texttt{application-dev.yml} & Connexion PostgreSQL, flags seed \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Couche domaine}
+
+\begin{table}[H]
+    \centering
+    \caption{Entités et énumérations}
+    \label{tab:domain}
+    \small
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Package} & \textbf{Contenu} \\
+        \midrule
+        \texttt{domain/entity/} & \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog} \\
+        \texttt{domain/enums/} & \texttt{UserRole}, \texttt{AccountType}, \texttt{AccountStatus}, \texttt{TransactionType}, \texttt{ClientStatus}, \texttt{CheckbookOrderStatus}, \texttt{NotificationType}… \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Couche persistance}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{repository/} : interfaces Spring Data JPA (\texttt{ClientRepository}, \texttt{AccountRepository}, \texttt{TransactionRepository}…).
+    \item \texttt{TransactionSpecifications.java} : filtres dynamiques pour l'historique.
+    \item Migrations SQL : \texttt{src/main/resources/db/migration/V1\_\_} à \texttt{V11\_\_}.
+\end{itemize}
+
+\subsection{Couche métier (services)}
+
+\begin{table}[H]
+    \centering
+    \caption{Services principaux}
+    \label{tab:services}
+    \small
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Service} & \textbf{Responsabilité} \\
+        \midrule
+        \texttt{ClientService} & CRUD clients, recherche, changement statut \\
+        \texttt{AccountService} & Ouverture, blocage, clôture comptes \\
+        \texttt{TransactionService} & Dépôt, retrait, virement (\texttt{@Transactional}) \\
+        \texttt{BillPaymentService} & Paiement facture + transaction liée \\
+        \texttt{CheckbookOrderService} & Workflow chéquier sans impact solde \\
+        \texttt{DashboardService} & KPIs et opérations récentes \\
+        \texttt{NotificationService} & Création et lecture notifications \\
+        \texttt{ClientPortalService} & Données portail client (lecture seule) \\
+        \texttt{ReceiptPdfService} & Génération PDF OpenPDF \\
+        \texttt{UserService} & Administration personnel \\
+        \texttt{AuditService} & Journalisation actions sensibles \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Couche web (contrôleurs)}
+
+\textbf{Agence} (\texttt{web.controller/}) :
+\begin{itemize}[leftmargin=*]
+    \item \texttt{HomeController} — landing \texttt{/}
+    \item \texttt{LoginController}, \texttt{DashboardController}
+    \item \texttt{ClientController}, \texttt{AccountController}
+    \item \texttt{OperationController} — dépôt, retrait, virement, facture
+    \item \texttt{TransactionController} — historique, reçu HTML/PDF
+    \item \texttt{CheckbookOrderController}, \texttt{NotificationController}
+    \item \texttt{AdminUserController}, \texttt{AuditController}
+\end{itemize}
+
+\textbf{Portail client} (\texttt{web.controller.portal/}) :
+\begin{itemize}[leftmargin=*]
+    \item \texttt{PortalDashboardController}, \texttt{PortalAccountController}
+    \item \texttt{PortalTransactionController}, \texttt{PortalCheckbookController}
+    \item \texttt{PortalNotificationController}
+\end{itemize}
+
+\textbf{DTO} (\texttt{web.dto/}) : objets formulaire (\texttt{ClientForm}, \texttt{OperationForm}, \texttt{BillPaymentForm}…).
+
+\subsection{Sécurité}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{UserDetailsServiceImpl} : charge \texttt{User} (personnel) ou \texttt{Client} (portail).
+    \item \texttt{SecurityUser} / \texttt{SecurityClient} : wrappers Spring Security.
+    \item Routes : \texttt{/portal/**} $\rightarrow$ ROLE\_CLIENT ; \texttt{/admin/**} $\rightarrow$ ROLE\_ADMIN.
+\end{itemize}
+
+\section{Front-end (Thymeleaf)}
+
+\subsection{Structure des templates}
+
+Les vues se trouvent dans \texttt{src/main/resources/templates/}.
+
+\begin{table}[H]
+    \centering
+    \caption{Organisation des templates}
+    \label{tab:templates}
+    \small
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Dossier / fichier} & \textbf{Rôle} \\
+        \midrule
+        \texttt{landing.html} & Page vitrine publique AmanaBank \\
+        \texttt{login.html} & Connexion unique personnel + client \\
+        \texttt{layout/main.html} & Layout agence (sidebar, cloche, menu) \\
+        \texttt{dashboard.html} & Tableau de bord KPIs et alertes \\
+        \texttt{clients/} & Liste, formulaire, fiche détail client \\
+        \texttt{accounts/} & Liste, ouverture, détail, relevé \\
+        \texttt{operations/} & Dépôt, retrait, virement, paiement facture \\
+        \texttt{transactions/} & Historique, reçu imprimable \\
+        \texttt{checkbook-orders/} & Liste, demande, détail workflow \\
+        \texttt{notifications/} & Centre de notifications personnel \\
+        \texttt{admin/users/} & Gestion utilisateurs internes \\
+        \texttt{admin/audit/} & Journal d'audit \\
+        \texttt{portal/layout.html} & Layout espace client \\
+        \texttt{portal/} & Dashboard, comptes, historique, chéquiers, notifications \\
+        \texttt{error/403.html}, \texttt{404.html} & Pages d'erreur \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Ressources statiques}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{static/css/style.css} — thème agence et portail (palette marron/beige/or).
+    \item \texttt{static/css/landing.css} — styles page vitrine.
+    \item \texttt{static/js/landing-header.js} — navigation landing.
+    \item \texttt{static/images/} — logo AmanaBank, favicon, images hero.
+\end{itemize}
+
+\subsection{Composants transverses}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{NotificationModelAdvice} : injecte \texttt{unreadNotificationCount} dans toutes les vues.
+    \item \texttt{thymeleaf-extras-springsecurity6} : affichage conditionnel selon rôle (\texttt{sec:authorize}).
+    \item Messages flash (\texttt{RedirectAttributes}) pour succès et erreurs métier.
+\end{itemize}
+
+\section{Conclusion}
+
+Ce chapitre a présenté l'architecture en couches de \nomapplication, l'organisation du back-end Java et la structure du front-end Thymeleaf. Le chapitre suivant illustre la réalisation par les captures d'écran des interfaces.

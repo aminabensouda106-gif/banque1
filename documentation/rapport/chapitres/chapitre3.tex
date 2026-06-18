@@ -1,0 +1,98 @@
+\chapter{Environnement de travail et technologies}
+\label{ch:techno}
+
+\section{Introduction}
+
+Ce chapitre présente l'environnement matériel et logiciel utilisé pour le développement de \nomapplication, ainsi que les technologies et frameworks retenus.
+
+\section{Environnement de travail}
+
+\subsection{Poste de développement}
+
+\begin{itemize}[leftmargin=*]
+    \item Système d'exploitation : Windows 10/11
+    \item Processeur et mémoire adaptés au développement Java et PostgreSQL
+    \item IDE : Visual Studio Code / Cursor (édition) + terminal Maven
+\end{itemize}
+
+\subsection{Base de données}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{PostgreSQL 18} installé localement (port \textbf{5433})
+    \item Base : \texttt{banque\_agence}, utilisateur \texttt{banque}
+    \item Script d'initialisation : \texttt{documentation/setup-postgresql.sql}
+\end{itemize}
+
+\subsection{Outils de gestion de version}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Git} pour le versionnement du code source
+    \item Dépôt structuré par phases (commits incrémentaux)
+\end{itemize}
+
+\section{Technologies et outils utilisés}
+
+\subsection{Back-end}
+
+\begin{table}[H]
+    \centering
+    \caption{Stack back-end}
+    \label{tab:stack-backend}
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Technologie} & \textbf{Rôle} \\
+        \midrule
+        Java 21 & Langage principal \\
+        Spring Boot 3.4 & Framework applicatif (web, sécurité, JPA) \\
+        Spring Security & Authentification, autorisation par rôles \\
+        Spring Data JPA & Persistance objet-relationnelle (Hibernate) \\
+        Flyway & Migrations versionnées de la base (V1 à V11) \\
+        Bean Validation & Validation des formulaires côté serveur \\
+        OpenPDF 2.0.3 & Génération des reçus PDF \\
+        Maven 3.9+ & Build, dépendances, tests \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Front-end}
+
+\begin{table}[H]
+    \centering
+    \caption{Stack front-end}
+    \label{tab:stack-frontend}
+    \begin{tabular}{@{}lp{9cm}@{}}
+        \toprule
+        \textbf{Technologie} & \textbf{Rôle} \\
+        \midrule
+        Thymeleaf & Moteur de templates serveur (MVC) \\
+        Bootstrap 5.3 & Framework CSS responsive \\
+        Bootstrap Icons & Icônes de navigation (sidebar, cloche) \\
+        CSS personnalisé & Charte graphique AmanaBank (marron/beige/or) \\
+        JavaScript & Scripts légers (landing page) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Outils de conception et documentation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{PlantUML} : diagrammes UML (cas d'utilisation, classes, séquences, activité, MCD/MLD).
+    \item \textbf{StarUML} ou éditeur texte : alternative pour la modélisation.
+    \item \textbf{GanttProject} : planification des phases (optionnel).
+    \item \textbf{JUnit 5 + Spring Boot Test + MockMvc} : tests d'intégration (80 tests).
+\end{itemize}
+
+\subsection{Choix technologiques}
+
+Nous avons retenu un \textbf{monolithe Spring Boot} pour les raisons suivantes :
+\begin{itemize}[leftmargin=*]
+    \item Adapté à un projet PFA solo/binôme — un seul dépôt, un JAR déployable.
+    \item Spring Security offre une story solide pour l'authentification bancaire.
+    \item Thymeleaf évite la complexité d'un SPA React/Angular séparé.
+    \item PostgreSQL garantit l'intégrité relationnelle des données financières.
+    \item Flyway permet une évolution reproductible du schéma (défendable en soutenance).
+\end{itemize}
+
+\section{Conclusion}
+
+Ce chapitre a présenté l'environnement de développement et la stack technique de \nomapplication. Le chapitre suivant détaille l'architecture logicielle et l'organisation du code source.

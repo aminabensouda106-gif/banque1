@@ -1,0 +1,104 @@
+\chapter{Contexte du projet et méthodologie}
+\label{ch:contexte}
+
+\section{Introduction}
+
+Ce chapitre situe notre projet dans son contexte institutionnel et métier. Nous présentons l'organisme d'accueil, l'étude de l'existant avec sa critique, puis la méthodologie adoptée pour mener le développement.
+
+\section{Présentation du contexte et de l'organisme d'accueil}
+
+\subsection{Contexte académique}
+
+Ce projet a été réalisé au sein de l'\textbf{\ecole\ (\villeecole)}, dans le cadre du \textbf{projet de fin d'année (PFA)} de \niveau\ en \filiere. Il répond au cahier des charges fourni par l'établissement et a été encadré par \encadrante.
+
+\subsection{Contexte métier}
+
+Le projet simule la gestion d'une \textbf{agence bancaire fictive} baptisée \textbf{\nomapplication}. L'objectif est de reproduire les processus quotidiens d'une agence : accueil client, ouverture de comptes, opérations financières, supervision et reporting. L'organisme d'accueil académique nous a fourni le cadre méthodologique ; le domaine métier s'inspire des pratiques bancaires courantes au Maroc.
+
+\subsection{Équipe projet}
+
+Le projet a été mené en binôme :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{\etudianteun}
+    \item \textbf{\etudiantedeux}
+\end{itemize}
+
+\section{Étude de l'existant et critique}
+
+\subsection{Description de l'existant}
+
+Dans de nombreuses agences de taille modeste, la gestion repose encore sur :
+\begin{itemize}[leftmargin=*]
+    \item Des fiches clients papier ou des fichiers non centralisés.
+    \item Un suivi des soldes via tableur, sans contrôle automatique des règles métier.
+    \item Des opérations saisies manuellement, sujettes aux erreurs humaines.
+    \item L'absence de journal centralisé des actions sensibles.
+    \item Aucun accès en ligne pour le client.
+\end{itemize}
+
+\subsection{Critique de l'existant}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Manque d'efficacité} : saisies répétitives, recherches longues, doublons possibles (CIN).
+    \item \textbf{Incohérences de solde} : absence de verrouillage transactionnel.
+    \item \textbf{Faible traçabilité} : difficulté à identifier l'agent responsable d'une opération.
+    \item \textbf{Sécurité insuffisante} : mots de passe ou données sans politique homogène.
+    \item \textbf{Supervision limitée} : pas de tableau de bord ni d'alertes pour le chef d'agence.
+\end{itemize}
+
+\subsection{Solution proposée}
+
+Nous proposons \textbf{\nomapplication}, une application web intégrée couvrant :
+\begin{itemize}[leftmargin=*]
+    \item Gestion des \textbf{clients} et \textbf{comptes} (ouverture, blocage, clôture).
+    \item \textbf{Opérations financières} : dépôt, retrait, virement, paiement de factures.
+    \item \textbf{Administration} du personnel et journal d'\textbf{audit}.
+    \item \textbf{Reporting} : dashboard, relevés, reçus HTML et PDF.
+    \item \textbf{Extensions} : chéquier, notifications, portail client.
+\end{itemize}
+
+\section{Méthodologie de travail}
+
+\subsection{Processus de développement}
+
+Nous avons adopté une approche \textbf{itérative et incrémentale}, inspirée du processus \textbf{2TUP} (Two-Track Unified Process) :
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Piste conception} : analyse du cahier des charges, diagrammes UML, MCD/MLD.
+    \item \textbf{Piste réalisation} : développement par phases verticales, chacune livrant une fonctionnalité testable.
+\end{enumerate}
+
+Le projet a été découpé en \textbf{quatre pistes logiques} (voir tableau~\ref{tab:phases}) :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Noyau} (phases 1 à 8) : cahier des charges.
+    \item \textbf{Extensions agence} (phases 10 et 11) : factures, chéquier.
+    \item \textbf{Canal client} (phases 13 et 14) : notifications, portail.
+    \item \textbf{Clôture} (phase 12) : démo, documentation, soutenance.
+\end{itemize}
+
+\subsection{Planification}
+
+\begin{table}[H]
+    \centering
+    \caption{Phases principales du projet \nomapplication}
+    \label{tab:phases}
+    \small
+    \begin{tabular}{@{}clp{7cm}@{}}
+        \toprule
+        \textbf{Phase} & \textbf{Intitulé} & \textbf{Livrable} \\
+        \midrule
+        1 & Conception UML & Cas d'utilisation, classes, séquences, MCD/MLD \\
+        2--3 & Bootstrap + Auth & Projet Spring Boot, login, rôles \\
+        4--6 & Métier cœur & Clients, comptes, transactions \\
+        7--8 & Admin + Reporting & Utilisateurs, dashboard, audit \\
+        10--11 & Extensions & Paiement facture, chéquier \\
+        13--14 & Canal client & Notifications, portail \\
+        12 & Clôture & Manuel, script démo, rapport \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Chaque phase a été validée par des tests (\texttt{mvn test}) avant de passer à la suivante.
+
+\section{Conclusion}
+
+Ce chapitre a situé le projet dans son contexte académique et métier, mis en évidence les limites des approches manuelles et présenté notre méthodologie itérative. Le chapitre suivant détaille l'analyse des besoins et la conception du système.

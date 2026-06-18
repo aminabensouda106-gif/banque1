@@ -1,0 +1,45 @@
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\label{ch:intro}
+
+\section{Contexte général}
+
+La digitalisation des services bancaires constitue aujourd'hui un enjeu majeur pour les établissements financiers. Au sein d'une agence, les agents traitent quotidiennement des demandes variées : ouverture de comptes, dépôts, retraits, virements, consultation d'historiques et supervision des opérations. Sans outil centralisé, ces tâches reposent souvent sur des registres papier, des fichiers tableur ou des logiciels non intégrés, ce qui complique le contrôle des soldes et la traçabilité des actions.
+
+Dans le cadre de notre formation en \filiere\ à l'\ecole, nous avons développé \textbf{\nomapplication}, un système web de gestion d'agence bancaire répondant au cahier des charges du projet de fin d'année (PFA). Ce travail s'inscrit dans une démarche de conception rigoureuse (UML, modèle de données) suivie d'une implémentation incrémentale en Java.
+
+\section{Problématique}
+
+Comment concevoir et réaliser une application web fiable permettant à une agence bancaire de :
+\begin{itemize}[leftmargin=*]
+    \item centraliser la gestion des clients et de leurs comptes ;
+    \item exécuter des opérations financières en respectant les règles métier (solde, statut des comptes) ;
+    \item assurer la traçabilité des actions sensibles et la sécurité des accès ;
+    \item offrir au client un espace de consultation et de suivi en ligne ?
+\end{itemize}
+
+Les approches manuelles ne garantissent ni la cohérence des soldes, ni l'identification de l'agent exécutant, ni une supervision efficace pour le chef d'agence.
+
+\section{Objectifs du projet}
+
+Les objectifs principaux sont :
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Analyser} le besoin à partir du cahier des charges et modéliser le système (UML, MCD/MLD).
+    \item \textbf{Concevoir} une architecture en couches (Spring Boot, PostgreSQL, Flyway).
+    \item \textbf{Réaliser} les fonctionnalités métier : clients, comptes, transactions, utilisateurs, reporting.
+    \item \textbf{Étendre} le périmètre : paiement de factures, commande de chéquier, notifications, portail client.
+    \item \textbf{Valider} le système par des tests d'intégration et une démonstration reproductible.
+\end{enumerate}
+
+\section{Plan du rapport}
+
+Ce rapport est structuré en cinq chapitres :
+\begin{itemize}[leftmargin=*]
+    \item Le \textbf{chapitre~\ref{ch:contexte}} présente le contexte du projet, l'organisme d'accueil, l'étude de l'existant et la méthodologie de travail.
+    \item Le \textbf{chapitre~\ref{ch:conception}} détaille l'analyse des besoins, l'identification des acteurs et la modélisation UML.
+    \item Le \textbf{chapitre~\ref{ch:techno}} décrit l'environnement de travail et les technologies utilisées.
+    \item Le \textbf{chapitre~\ref{ch:archi}} expose l'architecture technique du back-end et du front-end.
+    \item Le \textbf{chapitre~\ref{ch:realisation}} illustre la réalisation par les captures d'écran des interfaces.
+\end{itemize}
+
+Une \textbf{conclusion générale} synthétise le bilan, les difficultés rencontrées et les perspectives d'évolution.

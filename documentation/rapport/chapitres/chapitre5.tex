@@ -1,0 +1,203 @@
+\chapter{Réalisation et implémentation des fonctionnalités}
+\label{ch:realisation}
+
+\section{Introduction}
+
+Ce chapitre présente les interfaces réalisées de \nomapplication. Chaque figure correspond à un écran de l'application ; les captures sont à déposer dans \texttt{figures/captures/} (voir README du dossier).
+
+\section{Espace public et connexion}
+
+\subsection{Page d'accueil (landing)}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/landing.png}{%
+        \includegraphics[width=\textwidth]{landing.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{figures/captures/landing.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Page d'accueil publique \nomapplication}
+    \label{fig:landing}
+\end{figure}
+
+\subsection{Page de connexion}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/login.png}{%
+        \includegraphics[width=0.75\textwidth]{login.png}%
+    }{%
+        \fbox{\parbox{0.75\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{login.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Connexion personnel et client (CIN, n° client ou username)}
+    \label{fig:login}
+\end{figure}
+
+\section{Espace agence — personnel}
+
+\subsection{Tableau de bord}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/dashboard-agent.png}{%
+        \includegraphics[width=\textwidth]{dashboard-agent.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture chef : \texttt{dashboard-agent.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Dashboard avec indicateurs et alertes chéquier}
+    \label{fig:dashboard}
+\end{figure}
+
+\subsection{Gestion des clients}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/clients-liste.png}{%
+        \includegraphics[width=\textwidth]{clients-liste.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{clients-liste.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Liste et recherche des clients}
+    \label{fig:clients}
+\end{figure}
+
+\subsection{Comptes bancaires}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/compte-detail.png}{%
+        \includegraphics[width=\textwidth]{compte-detail.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{compte-detail.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Fiche détail compte — solde, statut, actions}
+    \label{fig:compte}
+\end{figure}
+
+\subsection{Opérations financières}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/operations-depot.png}{%
+        \includegraphics[width=0.85\textwidth]{operations-depot.png}%
+    }{%
+        \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{operations-depot.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Formulaire de dépôt}
+    \label{fig:depot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/paiement-facture.png}{%
+        \includegraphics[width=0.85\textwidth]{paiement-facture.png}%
+    }{%
+        \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{paiement-facture.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Paiement de facture (LYDEC, ONEE, IAM…)}
+    \label{fig:facture}
+\end{figure}
+
+\subsection{Historique et reçu PDF}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/recu-pdf.png}{%
+        \includegraphics[width=\textwidth]{recu-pdf.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{recu-pdf.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Reçu d'opération avec téléchargement PDF}
+    \label{fig:recu}
+\end{figure}
+
+\subsection{Commandes de chéquier et notifications}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/chequier-liste.png}{%
+        \includegraphics[width=\textwidth]{chequier-liste.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{chequier-liste.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Suivi des commandes de chéquier}
+    \label{fig:chequier}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/notifications.png}{%
+        \includegraphics[width=\textwidth]{notifications.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{notifications.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Centre de notifications (chef d'agence)}
+    \label{fig:notifications}
+\end{figure}
+
+\subsection{Administration}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/admin-users.png}{%
+        \includegraphics[width=\textwidth]{admin-users.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{admin-users.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Gestion des utilisateurs internes}
+    \label{fig:admin}
+\end{figure}
+
+\section{Espace client (portail)}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/portal-dashboard.png}{%
+        \includegraphics[width=\textwidth]{portal-dashboard.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture client CD789012 : \texttt{portal-dashboard.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Tableau de bord espace client}
+    \label{fig:portal}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{figures/captures/portal-notifications.png}{%
+        \includegraphics[width=\textwidth]{portal-notifications.png}%
+    }{%
+        \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}
+        \textit{[Capture : \texttt{portal-notifications.png}]}
+        \vspace{2cm}}}%
+    }
+    \caption{Notifications client après opération en agence}
+    \label{fig:portal-notif}
+\end{figure}
+
+\section{Conclusion}
+
+Ce chapitre a illustré les principales interfaces de \nomapplication\ : vitrine publique, back-office agence et portail client. L'ensemble reflète une charte graphique cohérente et une séparation claire des rôles.
