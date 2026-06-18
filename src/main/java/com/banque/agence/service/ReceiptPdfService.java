@@ -2,7 +2,6 @@ package com.banque.agence.service;
 
 import com.banque.agence.domain.entity.BillPayment;
 import com.banque.agence.domain.entity.Transaction;
-import com.lowagie.text.BaseColor;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -19,6 +18,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,18 +37,18 @@ public class ReceiptPdfService {
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.of("Africa/Casablanca"));
 
-    private static final BaseColor BROWN_900 = new BaseColor(75, 54, 33);
-    private static final BaseColor GOLD_500 = new BaseColor(166, 137, 58);
-    private static final BaseColor BEIGE_100 = new BaseColor(249, 246, 241);
-    private static final BaseColor BEIGE_300 = new BaseColor(221, 210, 195);
-    private static final BaseColor TEXT_MUTED = new BaseColor(107, 91, 79);
-    private static final BaseColor TEXT = new BaseColor(58, 46, 34);
+    private static final Color BROWN_900 = new Color(75, 54, 33);
+    private static final Color GOLD_500 = new Color(166, 137, 58);
+    private static final Color BEIGE_100 = new Color(249, 246, 241);
+    private static final Color BEIGE_300 = new Color(221, 210, 195);
+    private static final Color TEXT_MUTED = new Color(107, 91, 79);
+    private static final Color TEXT = new Color(58, 46, 34);
 
     private static final DecimalFormat AMOUNT_FORMAT = amountFormat();
 
     private final Font receiptTitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BROWN_900);
     private final Font receiptSubtitleFont = FontFactory.getFont(FontFactory.HELVETICA, 9, TEXT_MUTED);
-    private final Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.WHITE);
+    private final Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE);
     private final Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, TEXT_MUTED);
     private final Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, TEXT);
     private final Font amountFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BROWN_900);
@@ -176,7 +176,7 @@ public class ReceiptPdfService {
     }
 
     private int addDetailRow(PdfPTable table, String label, String value, int rowIndex) {
-        BaseColor rowBg = rowIndex % 2 == 0 ? BEIGE_100 : BaseColor.WHITE;
+        Color rowBg = rowIndex % 2 == 0 ? BEIGE_100 : Color.WHITE;
 
         PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
         styleDataCell(labelCell, rowBg);
@@ -192,7 +192,7 @@ public class ReceiptPdfService {
     }
 
     private int addAmountRow(PdfPTable table, String amount, int rowIndex) {
-        BaseColor rowBg = rowIndex % 2 == 0 ? BEIGE_100 : BaseColor.WHITE;
+        Color rowBg = rowIndex % 2 == 0 ? BEIGE_100 : Color.WHITE;
 
         PdfPCell labelCell = new PdfPCell(new Phrase("Montant", labelFont));
         styleDataCell(labelCell, rowBg);
@@ -209,7 +209,7 @@ public class ReceiptPdfService {
         return rowIndex + 1;
     }
 
-    private void styleDataCell(PdfPCell cell, BaseColor background) {
+    private void styleDataCell(PdfPCell cell, Color background) {
         cell.setBackgroundColor(background);
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setBorderWidthBottom(0.5f);
@@ -219,7 +219,7 @@ public class ReceiptPdfService {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
     }
 
-    private PdfPCell accentBar(BaseColor color, float height) {
+    private PdfPCell accentBar(Color color, float height) {
         PdfPCell cell = new PdfPCell();
         cell.setFixedHeight(height);
         cell.setBackgroundColor(color);

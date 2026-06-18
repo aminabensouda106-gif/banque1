@@ -1,28 +1,69 @@
 \begin{titlepage}
-    \centering
-    \vspace*{1cm}
-    {\large Année universitaire \anneeuniv\par}
-    \vspace{1.5cm}
-    {\LARGE\bfseries Rapport de projet de fin d'année\par}
-    \vspace{0.5cm}
-    {\large \niveau\par}
-    \vspace{0.3cm}
-    {\large \filiere\par}
-    \vspace{2cm}
-    {\large Sous le thème\par}
-    \vspace{0.8cm}
-    {\Huge\bfseries \titreprojet\par}
-    \vspace{0.5cm}
-    {\Large Application web \nomapplication\par}
-    \vfill
-    \begin{minipage}{0.8\textwidth}
-        \centering
-        \textbf{Réalisé par :}\\[0.4cm]
-        \etudianteun\\
-        \etudiantedeux\\[1.2cm]
-        \textbf{Encadrée par :}\\
-        \encadrante\\[1.2cm]
-        \ecole\ \villeecole
-    \end{minipage}
-    \vfill
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+    % Bandeau supérieur
+    \fill[amBeige] (current page.north west) rectangle ([yshift=-5.2cm]current page.north east);
+    \fill[amBrown] ([yshift=-5.2cm]current page.north west) rectangle ([yshift=-5.45cm]current page.north east);
+    % Bandeau inférieur
+    \fill[amBrown] (current page.south west) rectangle ([yshift=3.8cm]current page.south east);
+    \fill[amGold] ([yshift=3.8cm]current page.south west) rectangle ([yshift=3.95cm]current page.south east);
+    % Accent vertical
+    \fill[amGold] ([xshift=1.6cm]current page.west) rectangle ([xshift=1.85cm]current page.east);
+\end{tikzpicture}
+
+\vspace*{0.4cm}
+\begin{center}
+    \IfFileExists{images/amana-logo.png}{%
+        \includegraphics[height=2.4cm]{amana-logo.png}%
+    }{%
+        \IfFileExists{amana-logo.png}{%
+            \includegraphics[height=2.4cm]{amana-logo.png}%
+        }{%
+            {\sffamily\bfseries\Huge\color{amBrown}\nomapplication}%
+        }%
+    }\\[0.6cm]
+    {\sffamily\small\color{amBrownMid}\textsc{Banque de proximité — Maroc}}\\[1.8cm]
+
+    {\sffamily\color{amBrownMid}Année universitaire}\\[0.2cm]
+    {\sffamily\Large\bfseries\color{amBrown}\anneeuniv}\\[1.6cm]
+
+    {\color{amGold}\rule{0.55\textwidth}{1.2pt}}\\[1.2cm]
+
+    {\sffamily\large\color{amBrownMid}Rapport de projet de fin d'année}\\[0.5cm]
+    {\sffamily\normalsize\color{amBrownLight}\niveau\ — \filiere}\\[1.8cm]
+
+    {\sffamily\color{amBrownMid}Sous le thème de}\\[0.6cm]
+    {\color{amBrown}\rule{0.35\textwidth}{0.6pt}}\\[0.8cm]
+    {\sffamily\Huge\bfseries\color{amBrown}\titreprojet}\\[0.5cm]
+    {\sffamily\Large\color{amGoldDark}Application web \textbf{\nomapplication}}\\[0.8cm]
+    {\color{amGold}\rule{0.55\textwidth}{1.2pt}}
+\end{center}
+
+\vfill
+
+\begin{center}
+\begin{minipage}{0.72\textwidth}
+\begin{tcolorbox}[
+    enhanced,
+    colback=white,
+    colframe=amBeigeDark,
+    boxrule=0.6pt,
+    arc=3pt,
+    left=14pt, right=14pt, top=12pt, bottom=12pt,
+    drop shadow={0.4mm}{-0.6mm}{0mm}{black!12}
+]
+\centering
+{\sffamily\small\color{amBrownMid}\textsc{Réalisé par}}\\[0.5cm]
+{\large\bfseries\color{amBrown}\etudianteun}\\[0.15cm]
+{\large\bfseries\color{amBrown}\etudiantedeux}\\[1cm]
+{\sffamily\small\color{amBrownMid}\textsc{Encadrée par}}\\[0.4cm]
+{\large\color{amBrown}\encadrante}\\[1cm]
+{\sffamily\color{amBrownMid}\ecole}\\[0.1cm]
+{\sffamily\bfseries\color{amBrown}\villeecole}
+\end{tcolorbox}
+\end{minipage}
+\end{center}
+
+\vspace{1.2cm}
 \end{titlepage}

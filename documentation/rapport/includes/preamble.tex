@@ -1,65 +1,183 @@
-% Préambule — Rapport PFA AmanaBank
+% Préambule — Rapport PFA AmanaBank (charte graphique)
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
+\usepackage{microtype}
+
+% --- Typographie ---
+\usepackage{libertinus}
+\usepackage[scaled=0.94]{helvet}
+\usepackage{courier}
+\renewcommand{\familydefault}{\rmdefault}
+
 \usepackage{geometry}
-\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\geometry{
+    left=2.8cm,
+    right=2.5cm,
+    top=2.8cm,
+    bottom=2.8cm,
+    headheight=15pt
+}
+
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{multirow}
+\usepackage{colortbl}
+\usepackage[table]{xcolor}
 \usepackage{hyperref}
 \usepackage{setspace}
 \usepackage{titlesec}
+\usepackage{titletoc}
 \usepackage{fancyhdr}
 \usepackage{tocloft}
 \usepackage{enumitem}
 \usepackage{caption}
-\usepackage{xcolor}
 \usepackage{listings}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{etoolbox}
+
+% --- Palette AmanaBank ---
+\definecolor{amBrown}{HTML}{4B3621}
+\definecolor{amBrownMid}{HTML}{6B5344}
+\definecolor{amBrownLight}{HTML}{7A6352}
+\definecolor{amBeige}{HTML}{F9F6F1}
+\definecolor{amBeigeDark}{HTML}{EDE6DA}
+\definecolor{amGold}{HTML}{A6893A}
+\definecolor{amGoldDark}{HTML}{8B722E}
+\definecolor{amText}{HTML}{3A2E22}
+\definecolor{amTableRow}{HTML}{FAF7F2}
 
 \hypersetup{
     colorlinks=true,
-    linkcolor=black,
-    citecolor=black,
-    urlcolor=blue!60!black
+    linkcolor=amBrown,
+    citecolor=amBrownMid,
+    urlcolor=amGoldDark,
+    pdfborder={0 0 0}
 }
 
 \onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em plus 0.1em minus 0.05em}
 
+% --- En-têtes et pieds de page ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\leftmark}
-\fancyhead[R]{\thepage}
-\fancyfoot[C]{}
-\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\sffamily\color{amBrownMid}\nouppercase{\leftmark}}
+\fancyhead[R]{\small\sffamily\bfseries\color{amGold}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headrule}{%
+    \vspace{2pt}%
+    {\color{amGold}\hrule width\headwidth height 0.6pt}%
+    \vspace{4pt}%
+}
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \fancyfoot[C]{\small\sffamily\color{amBrownMid}\thepage}%
+    \renewcommand{\headrulewidth}{0pt}%
+}
 
+% --- Titres de chapitres ---
 \renewcommand{\thechapter}{\arabic{chapter}}
 \renewcommand{\chaptername}{Chapitre}
 
 \titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries}
-  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
-\titlespacing*{\chapter}{0pt}{-10pt}{30pt}
+    {\normalfont\huge\bfseries\color{amBrown}}
+    {\filleft\sffamily\Large\color{amGold}\chaptername~\thechapter}
+    {1ex}
+    {\filleft\Huge}
+    [\vspace{0.6em}{\color{amGold}\titlerule[1.2pt]}\vspace{0.8em}]
+
+\titlespacing*{\chapter}{0pt}{-8pt}{28pt}
 
 \titleformat{\section}
-  {\normalfont\Large\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}
-  {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+    {\sffamily\Large\bfseries\color{amBrown}}
+    {\color{amGold}\thesection}{0.8em}{}
+    [\vspace{0.2em}{\color{amBeigeDark}\titlerule[0.6pt]}]
 
-\lstset{
-    basicstyle=\ttfamily\small,
-    breaklines=true,
-    frame=single,
-    backgroundcolor=\color{gray!8},
-    keywordstyle=\color{blue!70!black},
-    commentstyle=\color{green!40!black}
+\titleformat{\subsection}
+    {\sffamily\large\bfseries\color{amBrownMid}}
+    {\color{amGold}\thesubsection}{0.7em}{}
+
+% --- Table des matières ---
+\renewcommand{\cftchapfont}{\sffamily\bfseries\color{amBrown}}
+\renewcommand{\cftsecfont}{\sffamily\color{amText}}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftbeforechapskip}{0.6em}
+
+% --- Légendes de figures ---
+\captionsetup{
+    font=small,
+    labelfont={bf,sf,color=amBrown},
+    textfont={color=amText},
+    skip=10pt,
+    format=hang
 }
 
-\graphicspath{{figures/}{figures/uml/}{figures/captures/}{figures/architecture/}}
+% --- Listings code ---
+\lstset{
+    basicstyle=\ttfamily\small\color{amText},
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{amBeigeDark},
+    backgroundcolor=\color{amBeige},
+    keywordstyle=\color{amBrown}\bfseries,
+    commentstyle=\color{amBrownLight}\itshape,
+    stringstyle=\color{amGoldDark},
+    numbers=left,
+    numberstyle=\tiny\color{amBrownMid},
+    numbersep=8pt,
+    xleftmargin=12pt,
+    aboveskip=10pt,
+    belowskip=10pt
+}
+
+% --- Tableaux ---
+\renewcommand{\arraystretch}{1.22}
+\setlength{\tabcolsep}{10pt}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\newcommand{\amtablehead}[1]{%
+    \rowcolor{amBrown}%
+    \textcolor{white}{\sffamily\bfseries #1}%
+}
+
+\newenvironment{amtable}[1][htbp]{%
+    \begin{table}[#1]
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \rowcolors{2}{amTableRow}{white}
+}{%
+    \end{table}%
+}
+
+\AtBeginEnvironment{tabular}{\small\color{amText}}
+\AtBeginEnvironment{table}{\vspace{0.4em}\color{amText}}
+
+% --- Encadrés (résumé, mots-clés) ---
+\newtcolorbox{ambox}[1][]{%
+    enhanced,
+    breakable,
+    colback=amBeige,
+    colframe=amGold,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\sffamily\bfseries\color{amBrown},
+    #1
+}
+
+\graphicspath{{figures/}{figures/uml/}{figures/captures/}{figures/architecture/}{images/}}
 
 \newcommand{\includefigure}[5]{%
   \begin{figure}[H]
@@ -67,9 +185,10 @@
     \IfFileExists{#1}{%
       \includegraphics[#2]{#3}%
     }{%
-      \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
-      \textit{[#4 — fichier attendu : \texttt{#1}]}
-      \vspace{1.5cm}}}%
+      \fcolorbox{amGold}{amBeige}{%
+        \parbox{0.88\textwidth}{\centering\vspace{1.5cm}
+        \sffamily\color{amBrownMid}\textit{[#4 — fichier attendu : \texttt{#1}]}
+        \vspace{1.5cm}}}%
     }
     \caption{#4}
     \label{#5}
