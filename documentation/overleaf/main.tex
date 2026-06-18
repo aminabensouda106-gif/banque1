@@ -43,83 +43,13 @@
 \definecolor{HonorisRed}{HTML}{8B1538}
 \definecolor{EMSIGray}{HTML}{666666}
 
-% Page de garde EMSI — décor + logos + contenu (sans chevauchement)
-\newcommand{\drawEmsiGardePage}{%
-  \begin{tikzpicture}[remember picture, overlay]
-    % ── Bande verticale gauche (modèle EMSI) ──
-    \fill[EMSIStripeA] (current page.north west) rectangle ([xshift=0.42cm]current page.south west);
-    \fill[EMSIStripeB] ([xshift=0.42cm]current page.north west) rectangle ([xshift=0.84cm]current page.south west);
-    \fill[EMSIStripeC] ([xshift=0.84cm]current page.north west) rectangle ([xshift=1.26cm]current page.south west);
-    \fill[EMSILightGreen] ([xshift=1.26cm]current page.north west) rectangle ([xshift=1.68cm]current page.south west);
-    \node[diamond, fill=HonorisRed, minimum width=0.55cm, minimum height=0.75cm,
-          inner sep=0pt] at ([xshift=0.55cm, yshift=1.35cm]current page.south west) {};
-
-    % ── Cercles décoratifs bas droite ──
-    \fill[EMSIMidGreen!55] ([xshift=-1.6cm, yshift=1.8cm]current page.south east) circle (2.6cm);
-    \fill[EMSILightGreen!85] ([xshift=-4.2cm, yshift=3.6cm]current page.south east) circle (1.45cm);
-
-    % ── Logo EMSI (haut gauche) ──
-    \node[anchor=north west, inner sep=0] at ([xshift=2.05cm, yshift=-0.85cm]current page.north west) {%
-      \IfFileExists{images/emsi-logo.png}{%
-        \includegraphics[height=2.15cm, keepaspectratio]{emsi-logo.png}%
-      }{%
-        \IfFileExists{emsi-logo.png}{%
-          \includegraphics[height=2.15cm, keepaspectratio]{emsi-logo.png}%
-        }{%
-          \parbox{8.5cm}{\footnotesize\color{EMSIDarkGreen}\bfseries
-            ÉCOLE MAROCAINE DES SCIENCES DE L'INGÉNIEUR}%
-        }%
-      }%
-    };
-
-    % ── Logo Honoris (haut droite) ──
-    \node[anchor=north east, inner sep=0] at ([xshift=-1.45cm, yshift=-0.90cm]current page.north east) {%
-      \IfFileExists{images/honoris-logo.png}{%
-        \includegraphics[height=2.05cm, keepaspectratio]{honoris-logo.png}%
-      }{%
-        \IfFileExists{honoris-logo.png}{%
-          \includegraphics[height=2.05cm, keepaspectratio]{honoris-logo.png}%
-        }{%
-          \parbox{4.5cm}{\raggedleft\footnotesize\color{HonorisRed}\bfseries HONORIS}%
-        }%
-      }%
-    };
-
-    % ── Contenu central (sous les logos, au-dessus du pied de page) ──
-    \node[anchor=north, inner sep=0] at ([yshift=-6.0cm]current page.north) {%
-      \begin{minipage}{0.66\textwidth}
-        \centering
-        \includegraphics[width=0.24\textwidth]{amana-logo.png}\\[0.75cm]
-
-        {\color{EMSIDarkGreen}\LARGE\bfseries Rapport de Projet de Fin d'Année}\\[0.3cm]
-        {\color{AmanaText}\large \niveau\ --- \filiere}\\[0.85cm]
-
-        {\color{AmanaGold}\normalsize\textsc{Sous le thème de}}\\[0.3cm]
-        {\color{EMSIDarkGreen}\Large\bfseries \titreprojet}\\[0.2cm]
-        {\color{AmanaBrown}\large Application web \textbf{\nomapplication}}\\[0.9cm]
-
-        {\large\bfseries\color{EMSIDarkGreen} Réalisé par}\\[0.35em]
-        {\large\color{AmanaText} \etudianteun}\\[0.08em]
-        {\large\color{AmanaText} \etudiantedeux}\\[0.75em]
-
-        {\large\bfseries\color{EMSIDarkGreen} Encadrée par}\\[0.25em]
-        {\large\color{AmanaText} \encadrante}\\[0.65em]
-
-        {\normalsize\color{AmanaText} \ecole}\\[0.05em]
-        {\normalsize\color{AmanaText} \villeecole}
-      \end{minipage}%
-    };
-
-    % ── Année universitaire (pied de page) ──
-    \node[anchor=south, inner sep=0] at ([yshift=1.15cm]current page.south) {%
-      \large\bfseries\textit{\underline{Année universitaire : \anneeuniv}}%
-    };
-  \end{tikzpicture}%
-}
+% En-têtes de tableaux (texte blanc sur fond marron)
+\newcommand{\tabhead}[1]{\textcolor{white}{\textbf{#1}}}
 
 % ── Graphiques & tableaux ──────────────────────────────────────────
 \usepackage{graphicx}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.jpeg}
+\usepackage{pdflscape}
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -127,15 +57,19 @@
 \usepackage{multirow}
 \usepackage{colortbl}
 \usepackage{etoolbox}
-\usepackage{xparse}
 \usepackage{caption}
 
 \captionsetup{
     font=small,
     labelfont={bf,color=AmanaBrown},
     textfont=color=AmanaText,
-    skip=8pt
+    skip=8pt,
+    format=plain,
+    singlelinecheck=false,
+    justification=justified
 }
+
+\captionsetup[figure]{labelsep=endash}
 
 \AtBeginEnvironment{tabular}{\renewcommand{\arraystretch}{1.28}}
 \BeforeBeginEnvironment{table}{\rowcolors{2}{AmanaBeige!40}{white}}
@@ -168,23 +102,48 @@
 \renewcommand{\thechapter}{\arabic{chapter}}
 \renewcommand{\chaptername}{Chapitre}
 
-\titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries\color{AmanaBrown}}
-  {\chaptertitlename\ \thechapter}
-  {14pt}
-  {\Huge}
-  [\vspace{0.5em}{\color{AmanaGold}\rule{0.45\textwidth}{1.2pt}}\vspace{0.8em}]
+\titlespacing*{\chapter}{0pt}{0pt}{10pt}
+\titlespacing*{name=\chapter,numberless}{0pt}{0pt}{10pt}
+\titlespacing*{\section}{0pt}{1.4ex plus .2ex minus .2ex}{0.6ex plus .1ex}
+\titlespacing*{\subsection}{0pt}{1.1ex plus .1ex minus .1ex}{0.45ex plus .1ex}
 
-\titlespacing*{\chapter}{0pt}{-8pt}{28pt}
+% Pas de césure dans les titres (rapport académique)
+\newcommand{\HeadingHyphensOff}{%
+  \hyphenpenalty=10000\exhyphenpenalty=10000\linepenalty=10000\raggedright\sloppy
+}
+
+\newcommand{\ChapterRule}{%
+  \vspace{0.25em}{\color{AmanaGold}\rule{0.45\textwidth}{1.2pt}}\vspace{0.35em}%
+}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{AmanaBrown}\HeadingHyphensOff}
+  {\chaptertitlename\ \thechapter}
+  {6pt}
+  {\Huge\HeadingHyphensOff}
+  [\ChapterRule]
+
+% Chapitres non numérotés (Introduction, Dédicaces, etc.) — sans ligne « Chapitre » vide
+\titleformat{name=\chapter,numberless}[block]
+  {\normalfont\huge\bfseries\color{AmanaBrown}\HeadingHyphensOff}
+  {}
+  {0pt}
+  {\HeadingHyphensOff}
+  [\ChapterRule]
 
 \titleformat{\section}
-  {\normalfont\Large\bfseries\color{AmanaBrown}}{\thesection}{0.8em}{}
+  {\normalfont\Large\bfseries\color{AmanaBrown}\HeadingHyphensOff}{\thesection}{0.6em}{}
 \titleformat{\subsection}
-  {\normalfont\large\bfseries\color{AmanaBrownMid}}{\thesubsection}{0.8em}{}
+  {\normalfont\large\bfseries\color{AmanaBrownMid}\HeadingHyphensOff}{\thesubsection}{0.5em}{}
+
+% Table des matières : pas de césure dans les entrées
+\renewcommand{\cftchapfont}{\bfseries\HeadingHyphensOff}
+\renewcommand{\cftsecfont}{\HeadingHyphensOff}
+\renewcommand{\cftsubsecfont}{\HeadingHyphensOff}
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{AmanaBrownMid}\leftmark}
+\fancyhead[L]{\small\color{AmanaBrownMid}\begingroup\HeadingHyphensOff\leftmark\endgroup}
 \fancyhead[R]{\small\color{AmanaBrownMid}\thepage}
 \renewcommand{\headrule}{\color{AmanaGold}\hrule width\headwidth height 0.6pt}
 \fancyfoot[C]{}
@@ -197,6 +156,7 @@
 
 % hyperref en dernier
 \usepackage{hyperref}
+\usepackage{bookmark}
 \hypersetup{
     colorlinks=true,
     linkcolor=AmanaBrown,
@@ -206,25 +166,6 @@
 }
 
 \graphicspath{{./}{images/}}
-
-\newcommand{\includefigure}[4]{%
-  \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{#2}%
-    \caption{#3}%
-    \label{#4}%
-  \end{figure}%
-}
-
-% Capture d'écran : [largeur], fichier, titre court (table des figures), description, label
-\NewDocumentCommand{\includescreenshot}{O{\textwidth} m m m m}{%
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=#1,keepaspectratio]{#2}%
-    \caption[#3]{#4}%
-    \label{#5}%
-  \end{figure}%
-}
 
 % ── Informations du projet ───────────────────────────────────────────
 \newcommand{\anneeuniv}{2025/2026}
@@ -239,12 +180,104 @@
 \newcommand{\nomapplication}{AmanaBank}
 \newcommand{\organisme}{École Marocaine des Sciences de l'Ingénieur — Rabat}
 
+% Page de garde EMSI — logos en haut (position absolue), contenu centré en dessous
+\newcommand{\drawEmsiGardePage}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % ── Bande verticale gauche (modèle EMSI) ──
+    \fill[EMSIStripeA] (current page.north west) rectangle ([xshift=0.42cm]current page.south west);
+    \fill[EMSIStripeB] ([xshift=0.42cm]current page.north west) rectangle ([xshift=0.84cm]current page.south west);
+    \fill[EMSIStripeC] ([xshift=0.84cm]current page.north west) rectangle ([xshift=1.26cm]current page.south west);
+    \fill[EMSILightGreen] ([xshift=1.26cm]current page.north west) rectangle ([xshift=1.68cm]current page.south west);
+    \node[shape=diamond, fill=HonorisRed, minimum width=0.55cm, minimum height=0.75cm,
+          inner sep=0pt] at ([xshift=0.55cm, yshift=1.35cm]current page.south west) {};
+
+    % ── Cercles décoratifs bas droite ──
+    \fill[EMSIMidGreen!55] ([xshift=-1.6cm, yshift=1.8cm]current page.south east) circle (2.6cm);
+    \fill[EMSILightGreen!85] ([xshift=-4.2cm, yshift=3.6cm]current page.south east) circle (1.45cm);
+
+    % ── Logos institutionnels (collés en haut de page) ──
+    \node[anchor=north west, inner sep=0] at ([xshift=2.0cm, yshift=-0.35cm]current page.north west) {%
+      \includegraphics[width=5.6cm,keepaspectratio]{emsi-logo.png}%
+    };
+    \node[anchor=north east, inner sep=0] at ([xshift=-1.15cm, yshift=-0.35cm]current page.north east) {%
+      \includegraphics[height=2.55cm,keepaspectratio]{honoris-logo.png}%
+    };
+  \end{tikzpicture}%
+
+  \vspace*{3.05cm}
+
+  \begin{center}
+    \includegraphics[width=0.36\textwidth,keepaspectratio]{amana-logo.png}\\[1.1cm]
+
+    {\color{EMSIDarkGreen}\Huge\bfseries Rapport de Projet de Fin d'Année}\\[0.55cm]
+    {\color{AmanaText}\Large \niveau\ --- \filiere}\\[1.35cm]
+
+    {\color{AmanaGold}\large\textsc{Sous le thème de}}\\[0.45cm]
+    {\color{EMSIDarkGreen}\LARGE\bfseries \titreprojet}\\[0.35cm]
+    {\color{AmanaBrown}\Large Application web \textbf{\nomapplication}}\\[1.45cm]
+
+    {\Large\bfseries\color{EMSIDarkGreen} Réalisé par}\\[0.45cm]
+    {\Large\color{AmanaText} \etudianteun}\\[0.15cm]
+    {\Large\color{AmanaText} \etudiantedeux}\\[1.05cm]
+
+    {\Large\bfseries\color{EMSIDarkGreen} Encadrée par}\\[0.35cm]
+    {\Large\color{AmanaText} \encadrante}\\[0.95cm]
+
+    {\large\color{AmanaText} \ecole}\\[0.12cm]
+    {\large\color{AmanaText} \villeecole}
+  \end{center}
+
+  \vfill
+
+  \begin{center}
+    {\Large\bfseries\textit{\underline{Année universitaire : \anneeuniv}}}%
+  \end{center}
+  \vspace*{0.55cm}
+}
+
+\NewDocumentCommand{\includefigure}{O{width=\textwidth} m m m m}{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[#1,height=0.82\textheight,keepaspectratio]{#2}%
+    \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+    \label{#5}%
+  \end{figure}%
+}
+
+% Figure en page paysage dédiée (diagrammes larges, lisibilité maximale)
+\NewDocumentCommand{\includefigurelandscape}{O{width=\linewidth,height=0.82\textheight,keepaspectratio} m m m m}{%
+  \clearpage
+  \begin{landscape}
+    \thispagestyle{plain}
+    \begin{figure}[p]
+      \centering
+      \vspace*{\fill}
+      \includegraphics[#1]{#2}%
+      \vspace*{\fill}
+      \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+      \label{#5}%
+    \end{figure}
+  \end{landscape}
+}
+
+% Capture d'écran : [options width], fichier, titre court (table des figures), description, label
+\NewDocumentCommand{\includescreenshot}{O{width=\textwidth} m m m m}{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[#1,height=0.82\textheight,keepaspectratio]{#2}%
+    \caption[#3]{\textbf{#3}\par\vspace{0.35em}#4}%
+    \label{#5}%
+  \end{figure}%
+}
+
 \begin{document}
 
 \pagenumbering{roman}
 \thispagestyle{empty}
 \begin{titlepage}
+  \newgeometry{top=0pt, bottom=1.2cm, left=2cm, right=2cm}
   \drawEmsiGardePage
+  \restoregeometry
 \end{titlepage}
 
 \chapter*{Dédicaces}
@@ -315,7 +348,7 @@ This report presents the project context, requirements analysis, UML design, tec
 \begin{tabular}{@{}ll@{}}
     \rowcolors{2}{AmanaBeige!40}{white}
     \rowcolor{AmanaBrown}
-    \color{white}\textbf{Abréviation} & \textbf{Signification} \\
+    \tabhead{Abréviation} & \tabhead{Signification} \\
     \midrule
     API     & Application Programming Interface \\
     BCrypt  & Algorithme de hachage de mots de passe \\
@@ -342,6 +375,8 @@ This report presents the project context, requirements analysis, UML design, tec
 \chapter*{Introduction générale}
 \addcontentsline{toc}{chapter}{Introduction générale}
 \label{ch:intro}
+\setcounter{section}{0}
+\renewcommand{\thesection}{\arabic{section}}
 
 \section{Contexte général}
 
@@ -361,14 +396,15 @@ Notre démarche vise d'abord à analyser le besoin à partir du cahier des charg
 
 Le \textbf{chapitre~\ref{ch:contexte}} présente le contexte du projet, l'organisme d'accueil, l'étude de l'existant et la méthodologie de travail. Le \textbf{chapitre~\ref{ch:conception}} détaille l'analyse des besoins, l'identification des acteurs et la modélisation UML. Le \textbf{chapitre~\ref{ch:techno}} décrit l'environnement de travail et les technologies utilisées. Le \textbf{chapitre~\ref{ch:archi}} expose l'architecture technique du back-end et du front-end. Le \textbf{chapitre~\ref{ch:realisation}} illustre la réalisation par des captures d'écran commentées des interfaces. Une \textbf{conclusion générale} synthétise le bilan, les difficultés rencontrées et les perspectives d'évolution.
 
-\chapter{Contexte du projet et méthodologie}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\chapter{Contexte du projet et~méthodologie}
 \label{ch:contexte}
 
 \section{Introduction}
 
 Ce chapitre situe notre projet dans son contexte institutionnel et métier. Nous présentons l'organisme d'accueil, l'étude de l'existant avec sa critique, puis la méthodologie adoptée pour mener le développement.
 
-\section{Présentation du contexte et de l'organisme d'accueil}
+\section{Présentation du contexte et de~l'organisme d'accueil}
 
 \subsection{Contexte académique}
 
@@ -413,7 +449,7 @@ Le projet a été organisé en quatre pistes logiques (voir tableau~\ref{tab:pha
     \small
     \begin{tabular}{@{}clp{7cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Phase} & \textbf{Intitulé} & \textbf{Livrable} \\
+        \tabhead{Phase} & \tabhead{Intitulé} & \tabhead{Livrable} \\
         \midrule
         1 & Conception UML & Cas d'utilisation, classes, séquences, MCD/MLD \\
         2--3 & Bootstrap + Auth & Projet Spring Boot, login, rôles \\
@@ -432,7 +468,7 @@ Chaque phase a été validée par des tests (\texttt{mvn test}) avant de passer 
 
 Ce chapitre a situé le projet dans son contexte académique et métier, mis en évidence les limites des approches manuelles et présenté notre méthodologie itérative. Le chapitre suivant détaille l'analyse des besoins et la conception du système.
 
-\chapter{Analyse des besoins et conception}
+\chapter{Analyse des besoins et~conception}
 \label{ch:conception}
 
 \section{Introduction}
@@ -449,7 +485,7 @@ Le système distingue \textbf{quatre acteurs principaux} :
     \label{tab:acteurs}
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Acteur} & \textbf{Rôle et responsabilités} \\
+        \tabhead{Acteur} & \tabhead{Rôle et responsabilités} \\
         \midrule
         Agent bancaire & Clients, comptes, opérations courantes, historique, chéquiers \\
         Chef d'agence & Supervision, dashboard, notifications, journal d'audit \\
@@ -461,7 +497,7 @@ Le système distingue \textbf{quatre acteurs principaux} :
 
 L'authentification est unifiée sur \texttt{/login} ; la redirection post-connexion dépend du rôle (personnel $\rightarrow$ \texttt{/dashboard}, client $\rightarrow$ \texttt{/portal/dashboard}).
 
-\section{Analyse des besoins fonctionnels}
+\section{Analyse des besoins~fonctionnels}
 
 \subsection{Périmètre}
 
@@ -476,7 +512,7 @@ Le périmètre retenu inclut le CRUD clients et comptes, les opérations financi
     \small
     \begin{tabular}{@{}p{3cm}p{9.5cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Module} & \textbf{Description} \\
+        \tabhead{Module} & \tabhead{Description} \\
         \midrule
         Authentification & Login, BCrypt, rôles ADMIN / AGENT / CHEF\_AGENCE / CLIENT \\
         Clients & CRUD, recherche multicritère, statuts \\
@@ -497,45 +533,79 @@ Les règles de gestion structurent le comportement métier du système. Un clien
 
 \section{Modélisation UML}
 
-\subsection{Diagrammes de cas d'utilisation}
+La modélisation UML constitue l'étape centrale de la phase de conception. Elle permet de formaliser le périmètre fonctionnel, la structure des données et le comportement dynamique du système avant toute implémentation. Les diagrammes présentés dans cette section ont été réalisés avec PlantUML, puis intégrés au rapport ; ils ont servi de référence commune au binôme et de base de validation auprès de l'encadrante.
 
-\includefigure{width=\textwidth}{01-clients-comptes.pdf}{Cas d'utilisation — clients et comptes}{fig:uc-clients}
+\subsection{Diagrammes de cas~d'utilisation}
 
-\includefigure{width=\textwidth}{02-operations-supervision.pdf}{Cas d'utilisation — opérations et supervision}{fig:uc-ops}
+Les diagrammes de cas d'utilisation décrivent les interactions entre les acteurs et le système, regroupées par domaine fonctionnel. Ils ont servi de base à la priorisation des modules développés, à la répartition des droits d'accès par rôle et à la rédaction des scénarios de test. Nous avons scindé le périmètre en trois vues complémentaires afin d'éviter un diagramme unique illisible.
 
-\includefigure{width=\textwidth}{03-portail-client.pdf}{Cas d'utilisation — portail client}{fig:uc-portal}
+Le premier diagramme (figure~\ref{fig:uc-clients}) couvre le socle métier \emph{Clients et comptes bancaires}. On y retrouve l'acteur \emph{Personnel de l'agence}, regroupant l'agent, le chef d'agence et l'administrateur, avec des droits différenciés selon le rôle. Les cas principaux concernent l'authentification, la recherche et la gestion des fiches clients (création, modification, consultation), ainsi que l'ouverture, la consultation et l'administration des comptes (blocage, clôture). Ce périmètre correspond aux modules prioritaires du cahier des charges et constitue le point de départ de l'implémentation.
+
+\includefigure[width=\textwidth]{01-clients-comptes.pdf}{Cas d'utilisation — clients et comptes}{Le personnel de l'agence (agent, chef d'agence, administrateur) accède aux cas liés à l'authentification, à la recherche et à la gestion des fiches clients, ainsi qu'à l'ouverture, la consultation et l'administration des comptes. Ce périmètre constitue le socle métier de \nomapplication.}{fig:uc-clients}
+
+Le second diagramme (figure~\ref{fig:uc-ops}) regroupe les \emph{opérations financières} et la \emph{supervision}. L'agent exécute les dépôts, retraits, virements et paiements de facture ; il peut également enregistrer une commande de chéquier et consulter l'historique des opérations. Le chef d'agence dispose en outre de cas de supervision : tableau de bord, centre de notifications, traitement des commandes de chéquier et consultation du journal d'audit. L'administrateur accède en plus à la gestion des utilisateurs internes. Cette répartition traduit la hiérarchie des responsabilités au sein de l'agence.
+
+\includefigure[width=\textwidth]{02-operations-supervision.pdf}{Cas d'utilisation — opérations et supervision}{Ce diagramme couvre les \emph{opérations financières} (dépôt, retrait, virement, paiement de facture), le reporting, la gestion des utilisateurs, le journal d'audit et le traitement des commandes de chéquier. Le chef d'agence dispose en outre de cas de supervision (tableau de bord, notifications).}{fig:uc-ops}
+
+Le troisième diagramme (figure~\ref{fig:uc-portal}) isole le \emph{portail client}, acteur distinct du personnel. Le client bancaire consulte ses comptes, son historique d'opérations, ses notifications et le suivi de ses commandes de chéquier. Aucun cas d'écriture n'est proposé depuis cette interface : le portail est volontairement limité à la consultation, conformément au périmètre retenu pour le PFA et aux bonnes pratiques de sécurité bancaire (les opérations sensibles restent effectuées en agence).
+
+\includefigure[width=\textwidth]{03-portail-client.pdf}{Cas d'utilisation — portail client}{L'acteur \emph{Client bancaire} consulte ses comptes, son historique d'opérations, ses notifications et le suivi de ses commandes de chéquier, sans effectuer d'opérations d'écriture depuis l'interface web.}{fig:uc-portal}
 
 \subsection{Diagramme de classes}
 
-\includefigure{width=0.95\textwidth}{diagramme-classes.pdf}{Diagramme de classes}{fig:classes}
+Le diagramme de classes (figure~\ref{fig:classes}) formalise la structure statique du système : entités persistées, énumérations métier et associations cardinalisées. Il constitue le pont entre l'analyse fonctionnelle et l'implémentation JPA.
 
-Les entités principales sont : \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog}.
+Au centre du modèle se trouvent quatre entités structurantes. \texttt{Client} représente le titulaire bancaire, avec ses informations d'identité et son statut (\texttt{ClientStatus}). \texttt{Account} modélise un compte bancaire rattaché à un seul client ; la cardinalité $1$-$*$ traduit la règle R1 (un client possède un ou plusieurs comptes, R2). \texttt{Transaction} enregistre chaque mouvement financier (dépôt, retrait, virement, paiement de facture) avec son type (\texttt{TransactionType}), son montant et l'agent exécutant. \texttt{User} modélise le personnel de l'agence, distinct du client, avec un rôle (\texttt{UserRole}) déterminant les droits d'accès.
+
+Les extensions métier complètent ce noyau : \texttt{BillProvider} et \texttt{BillPayment} pour le paiement de factures, \texttt{CheckbookOrder} pour le workflow chéquier (statuts \texttt{PENDING}, \texttt{PROCESSED}, \texttt{DELIVERED}), \texttt{Notification} pour les alertes bidirectionnelles, et \texttt{AuditLog} pour la traçabilité des actions sensibles. Les énumérations (\texttt{AccountStatus}, \texttt{AccountType}, \texttt{CheckbookOrderStatus}, etc.) encapsulent les valeurs métier autorisées et évitent les incohérences en base.
+
+\includefigurelandscape[width=\linewidth,height=0.88\textheight,keepaspectratio]{diagramme-classes.pdf}{Diagramme de classes}{On y retrouve les entités centrales (\texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{User}), les extensions (\texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}) et la traçabilité (\texttt{AuditLog}). Les cardinalités traduisent les règles R1--R2 (un client possède un ou plusieurs comptes).}{fig:classes}
 
 \subsection{Modèle de données (MCD et MLD)}
 
-\includefigure{width=\textwidth}{MCD.pdf}{Modèle conceptuel de données (MCD)}{fig:mcd}
+Le passage du diagramme de classes au schéma relationnel s'effectue en deux étapes : le modèle conceptuel de données (MCD), indépendant du SGBD, puis le modèle logique de données (MLD), directement implémentable en PostgreSQL via les migrations Flyway.
 
-\includefigure{width=\textwidth}{MLD.pdf}{Modèle logique de données (MLD)}{fig:mld}
+Le MCD (figure~\ref{fig:mcd}) reprend les entités métier avec leurs attributs principaux et les associations cardinalisées. Il met en évidence les relations structurantes : un client possède plusieurs comptes, un compte reçoit plusieurs transactions, une transaction de paiement de facture est liée à un enregistrement \texttt{BillPayment}, une commande de chéquier est rattachée à un compte et à un agent demandeur. Ce niveau de modélisation a permis de valider la cohérence du modèle avec le cahier des charges avant toute décision technique.
+
+\includefigure[width=\textwidth]{MCD.pdf}{Modèle conceptuel de données (MCD)}{Il met en évidence les entités métier, leurs attributs principaux et les associations avec cardinalités, indépendamment du système de gestion de base de données retenu.}{fig:mcd}
+
+Le MLD (figure~\ref{fig:mld}) dérive du MCD en convertissant chaque entité en table relationnelle (\texttt{clients}, \texttt{accounts}, \texttt{transactions}, \texttt{users}, etc.) avec clés primaires auto-incrémentées et clés étrangères explicites. Les contraintes d'intégrité référentielle (par exemple \texttt{account.client\_id} $\rightarrow$ \texttt{clients.id}) garantissent la cohérence des données. Ce schéma a servi de référence directe aux onze scripts Flyway (\texttt{V1\_\_...} à \texttt{V11\_\_...}) et facilite la compréhension de la base pour toute reprise ultérieure du projet.
+
+\includefigure[width=\textwidth]{MLD.pdf}{Modèle logique de données (MLD)}{Dérivé du MCD, ce modèle convertit les entités en tables relationnelles (\texttt{clients}, \texttt{accounts}, \texttt{transactions}, etc.) avec clés primaires et étrangères, prêtes pour l'implémentation PostgreSQL.}{fig:mld}
 
 \subsection{Diagrammes de séquence}
 
-\includefigure{width=\textwidth}{01-authentification.pdf}{Séquence — authentification dual (personnel / client)}{fig:seq-auth}
+Les diagrammes de séquence décrivent le comportement dynamique du système pour les scénarios critiques. Contrairement aux cas d'utilisation, qui restent au niveau fonctionnel, ils détaillent l'enchaînement des messages entre l'utilisateur, les contrôleurs web, les services métier et la base de données. Ils ont guidé l'implémentation des services annotés \texttt{@Transactional} et la structuration des contrôleurs Spring MVC.
 
-\includefigure{width=\textwidth}{03-operations-financieres.pdf}{Séquence — opérations financières}{fig:seq-ops}
+Le scénario d'authentification (figure~\ref{fig:seq-auth}) modélise le point d'entrée unique de l'application. L'utilisateur soumet le formulaire \texttt{/login} ; Spring Security délègue à \texttt{UserDetailsServiceImpl} la résolution de l'identifiant, qu'il s'agisse d'un nom d'utilisateur personnel ou d'un identifiant client (CIN, numéro client). Selon le rôle détecté, la redirection s'effectue vers \texttt{/dashboard} (personnel) ou \texttt{/portal/dashboard} (client). Ce diagramme a été déterminant pour concevoir l'authentification dual sans dupliquer les écrans de connexion.
 
-\includefigure{width=\textwidth}{06-paiement-facture.pdf}{Séquence — paiement de facture}{fig:seq-facture}
+\includefigure[width=\textwidth]{01-authentification.pdf}{Séquence — authentification}{Le formulaire \texttt{/login} délègue à \texttt{UserDetailsServiceImpl} la résolution de l'identifiant (personnel ou client), puis Spring Security redirige vers \texttt{/dashboard} ou \texttt{/portal/dashboard} selon le rôle détecté.}{fig:seq-auth}
 
-\includefigure{width=\textwidth}{07-commande-chequier.pdf}{Séquence — commande de chéquier}{fig:seq-chequier}
+Le scénario des opérations financières (figure~\ref{fig:seq-ops}) couvre le dépôt, le retrait et le virement selon un schéma commun. L'agent valide le formulaire ; le contrôleur \texttt{OperationController} invoque \texttt{TransactionService}, qui vérifie le statut du compte (actif, non bloqué, non clôturé), contrôle le solde si nécessaire (R3), met à jour les soldes de façon atomique et persiste la transaction. Un reçu HTML est ensuite retourné, avec possibilité de téléchargement PDF. Ce flux a servi de modèle pour l'implémentation transactionnelle et les tests d'intégration associés.
+
+\includefigure[width=\textwidth]{03-operations-financieres.pdf}{Séquence — opérations financières}{L'agent valide le formulaire ; \texttt{TransactionService} contrôle le statut et le solde du compte, met à jour les soldes de façon atomique et enregistre la transaction pour l'historique et le reçu.}{fig:seq-ops}
+
+Le paiement de facture (figure~\ref{fig:seq-facture}) étend le scénario précédent avec des étapes spécifiques. L'agent sélectionne un fournisseur (\texttt{BillProvider} : LYDEC, ONEE, IAM), saisit la référence client et le montant. \texttt{BillPaymentService} vérifie le solde, débite le compte via \texttt{TransactionService}, crée une entrée \texttt{BillPayment} liée à la transaction et génère le reçu. La référence facture est obligatoire (R9), ce qui distingue ce cas d'un simple retrait.
+
+\includefigure[width=\textwidth]{06-paiement-facture.pdf}{Séquence — paiement de facture}{Après sélection du fournisseur (LYDEC, ONEE, IAM) et saisie de la référence, le service débite le compte, crée une entrée \texttt{BillPayment} liée à la transaction et retourne un reçu consultable.}{fig:seq-facture}
+
+La commande de chéquier (figure~\ref{fig:seq-chequier}) illustre un workflow administratif distinct des opérations financières. L'agent enregistre une demande au statut \texttt{PENDING} ; \texttt{CheckbookOrderService} vérifie qu'aucune autre commande en attente n'existe pour le même compte (R14), puis persiste la demande et notifie le chef d'agence. Ce dernier peut faire évoluer le statut vers \texttt{PROCESSED} puis \texttt{DELIVERED}. Aucun mouvement de solde n'intervient : le diagramme met en évidence la séparation entre processus administratif et transaction bancaire.
+
+\includefigure[width=\textwidth]{07-commande-chequier.pdf}{Séquence — commande de chéquier}{L'agent enregistre une demande au statut \texttt{PENDING} ; le chef d'agence est notifié et peut faire évoluer le workflow (\texttt{PROCESSED}, \texttt{DELIVERED}) sans mouvement financier sur le compte.}{fig:seq-chequier}
 
 \subsection{Diagramme d'activité}
 
-\includefigure{width=0.85\textwidth}{diagramme-activite-virement.pdf}{Activité — virement bancaire}{fig:activite-virement}
+Le diagramme d'activité (figure~\ref{fig:activite-virement}) complète les diagrammes de séquence en modélisant le flux décisionnel du virement bancaire sous forme de nœuds et de transitions. Il met l'accent sur les points de contrôle successifs plutôt que sur l'échange de messages entre composants.
+
+Le flux débute par la saisie du formulaire de virement (compte source, compte destination, montant). Des gardes conditionnelles vérifient ensuite que les deux comptes sont actifs (R4), que le montant est strictement positif et que le solde du compte source est suffisant (R3). En cas d'échec, l'opération est rejetée avec un message d'erreur explicite. En cas de succès, le service effectue le débit sur le compte source et le crédit sur le compte destination de façon atomique, puis confirme l'opération et génère le reçu. Ce diagramme a servi de référence pour les tests de non-régression sur les cas limites (compte bloqué, solde insuffisant, virement vers le même compte).
+
+\includefigure[width=0.85\textwidth]{diagramme-activite-virement.pdf}{Activité — virement bancaire}{Il formalise les contrôles successifs (comptes actifs, soldes suffisants, montant positif) et les actions de débit/crédit avant la confirmation de l'opération, en cohérence avec les règles de gestion R3--R4.}{fig:activite-virement}
 
 \section{Conclusion}
 
 Ce chapitre a identifié les acteurs, formalisé les besoins fonctionnels et présenté la modélisation UML complète. Le chapitre suivant détaille l'environnement technique et les outils de développement.
 
-\chapter{Environnement de travail et technologies}
+\chapter{Environnement de travail et~technologies}
 \label{ch:techno}
 
 \section{Introduction}
@@ -566,7 +636,7 @@ Le code source est versionné avec \textbf{Git}. Le dépôt est structuré par p
     \label{tab:stack-backend}
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Technologie} & \textbf{Rôle} \\
+        \tabhead{Technologie} & \tabhead{Rôle} \\
         \midrule
         Java 21 & Langage principal \\
         Spring Boot 3.4 & Framework applicatif (web, sécurité, JPA) \\
@@ -588,7 +658,7 @@ Le code source est versionné avec \textbf{Git}. Le dépôt est structuré par p
     \label{tab:stack-frontend}
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Technologie} & \textbf{Rôle} \\
+        \tabhead{Technologie} & \tabhead{Rôle} \\
         \midrule
         Thymeleaf & Moteur de templates serveur (MVC) \\
         Bootstrap 5.3 & Grille responsive, composants formulaires et tableaux \\
@@ -600,11 +670,11 @@ Le code source est versionné avec \textbf{Git}. Le dépôt est structuré par p
     \end{tabular}
 \end{table}
 
-\subsection{Outils de conception et documentation}
+\subsection{Outils de conception et~documentation}
 
 La modélisation UML est produite avec \textbf{PlantUML} (cas d'utilisation, classes, séquences, activité, MCD/MLD), complétée si besoin par StarUML ou un éditeur texte. La planification des phases peut s'appuyer sur GanttProject. La qualité logicielle est assurée par \textbf{JUnit 5}, Spring Boot Test et MockMvc, pour un total de 80 tests d'intégration automatisés.
 
-\subsection{Choix technologiques}
+\subsection{Choix~technologiques}
 
 Nous avons retenu un \textbf{monolithe Spring Boot}, adapté à un projet PFA mené en binôme : un seul dépôt, un JAR déployable et une courbe d'apprentissage maîtrisée. Spring Security fournit une base solide pour l'authentification bancaire par rôles. Thymeleaf évite la complexité d'un SPA React ou Angular séparé tout en conservant un rendu serveur sécurisé. PostgreSQL garantit l'intégrité relationnelle des données financières, et Flyway assure une évolution reproductible du schéma, argument défendable en soutenance.
 
@@ -612,7 +682,7 @@ Nous avons retenu un \textbf{monolithe Spring Boot}, adapté à un projet PFA me
 
 Ce chapitre a présenté l'environnement de développement et la stack technique de \nomapplication. Le chapitre suivant détaille l'architecture logicielle et l'organisation du code source.
 
-\chapter{Architecture technique de l'application}
+\chapter{Architecture technique de~l'application}
 \label{ch:archi}
 
 \section{Introduction}
@@ -652,7 +722,7 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Fichier / classe} & \textbf{Rôle} \\
+        \tabhead{Fichier / classe} & \tabhead{Rôle} \\
         \midrule
         \texttt{BanqueAgenceApplication.java} & Point d'entrée Spring Boot \\
         \texttt{config/SecurityConfig.java} & Chaîne de sécurité, rôles, redirection login \\
@@ -674,7 +744,7 @@ Le code source se trouve dans \texttt{src/main/java/com/banque/agence/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Package} & \textbf{Contenu} \\
+        \tabhead{Package} & \tabhead{Contenu} \\
         \midrule
         \texttt{domain/entity/} & \texttt{User}, \texttt{Client}, \texttt{Account}, \texttt{Transaction}, \texttt{BillProvider}, \texttt{BillPayment}, \texttt{CheckbookOrder}, \texttt{Notification}, \texttt{AuditLog} \\
         \texttt{domain/enums/} & \texttt{UserRole}, \texttt{AccountType}, \texttt{AccountStatus}, \texttt{TransactionType}, \texttt{ClientStatus}, \texttt{CheckbookOrderStatus}, \texttt{NotificationType}… \\
@@ -695,7 +765,7 @@ La couche persistance regroupe les interfaces Spring Data JPA dans le package \t
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Service} & \textbf{Responsabilité} \\
+        \tabhead{Service} & \tabhead{Responsabilité} \\
         \midrule
         \texttt{ClientService} & CRUD clients, recherche, changement statut \\
         \texttt{AccountService} & Ouverture, blocage, clôture comptes \\
@@ -724,7 +794,7 @@ La classe \texttt{UserDetailsServiceImpl} charge indifféremment un \texttt{User
 
 \section{Front-end (Thymeleaf)}
 
-\subsection{Identité visuelle et charte graphique}
+\subsection{Identité visuelle et charte~graphique}
 
 L'interface a été entièrement repensée autour de l'identité \textbf{AmanaBank}. La palette repose sur trois familles de couleurs définies en variables CSS (\texttt{:root}) : le \textbf{marron} (\texttt{\#4B3621} à \texttt{\#7A6352}) pour la barre latérale et les textes principaux, le \textbf{beige} (\texttt{\#FDFBF8} à \texttt{\#EDE6DA}) pour les arrière-plans et les cartes, et l'\textbf{or} (\texttt{\#A6893A}) pour les boutons d'action et les accents. La police \textbf{DM Sans} (Google Fonts) assure une lecture confortable ; le logo officiel et le favicon renforcent la cohérence de marque sur la vitrine et dans les espaces connectés.
 
@@ -741,7 +811,7 @@ Les vues se trouvent dans \texttt{src/main/resources/templates/}.
     \small
     \begin{tabular}{@{}lp{9cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Dossier / fichier} & \textbf{Rôle} \\
+        \tabhead{Dossier / fichier} & \tabhead{Rôle} \\
         \midrule
         \texttt{landing.html} & Page vitrine publique AmanaBank \\
         \texttt{login.html} & Connexion unique personnel + client \\
@@ -790,22 +860,22 @@ Le composant \texttt{NotificationModelAdvice} injecte le compteur \texttt{unread
 
 Ce chapitre a présenté l'architecture en couches de \nomapplication, l'organisation du back-end Java et la structure du front-end Thymeleaf. La refonte de l'interface — charte AmanaBank, landing autonome, layouts à sidebar et composants KPI réutilisables — assure une cohérence visuelle entre l'espace agence et le portail client. Le chapitre suivant illustre ces interfaces par des captures d'écran commentées.
 
-\chapter{Réalisation et interfaces utilisateur}
+\chapter{Réalisation et interfaces~utilisateur}
 \label{ch:realisation}
 
 \section{Introduction}
 
 Ce chapitre illustre la \textbf{réalisation graphique} de \nomapplication. Au-delà des fonctionnalités métier décrites au chapitre précédent, nous avons porté une attention particulière à l'\textbf{expérience utilisateur} : une vitrine publique professionnelle, un écran de connexion clair et deux espaces connectés (agence et portail client) partageant la même charte visuelle.
 
-Chaque section présente d'abord le \textbf{rôle} de l'écran, puis sa \textbf{composition} (zones, composants, interactions). Les figures correspondent aux captures à déposer dans \texttt{images/} (voir README du dossier).
+Chaque section présente le \textbf{rôle} de l'écran concerné, puis sa \textbf{composition} fonctionnelle. Les figures qui suivent sont commentées de manière à mettre en évidence les choix de conception et leur adéquation aux besoins identifiés au chapitre~\ref{ch:conception}.
 
-\section{Principes de conception de l'interface}
+\section{Principes de conception de~l'interface}
 
 \subsection{Charte graphique}
 
 L'identité AmanaBank repose sur une palette \textbf{marron -- beige -- or}, inspirée du logo de l'établissement. Sur la landing page, le fond clair, le hero sombre et les boutons dorés guident l'attention vers les actions principales. Dans les espaces connectés, la sidebar marron foncé et le contenu beige facilitent une lecture prolongée. Les cartes KPI reprennent des icônes colorées par thème (clients, comptes, opérations, volume) pour une lecture immédiate des indicateurs.
 
-\subsection{Responsive et accessibilité}
+\subsection{Responsive et~accessibilité}
 
 Bootstrap~5.3 assure l'adaptation aux différentes largeurs d'écran (grille \texttt{col-md-*}, tableaux responsives). Des attributs ARIA (\texttt{aria-label}, \texttt{aria-labelledby}) et des libellés explicites sur les formulaires améliorent l'accessibilité. La police DM Sans, chargée via Google Fonts, garantit une typographie nette sur tous les navigateurs modernes.
 
@@ -815,15 +885,15 @@ Bootstrap~5.3 assure l'adaptation aux différentes largeurs d'écran (grille \te
 
 La page d'accueil (\texttt{/}) constitue la \textbf{vitrine institutionnelle} d'AmanaBank. Elle n'exige aucune authentification et vise à présenter l'offre bancaire tout en orientant vers la connexion. L'en-tête fixe affiche le logo cliquable, un menu d'ancrage (Services, Espace digital, Engagements, Contact) et les boutons «\,Connexion\,» et «\,Ouvrir un compte\,» ; un script JavaScript masque l'en-tête au défilement pour libérer l'espace visuel. La section hero met en avant une photographie d'architecture (\texttt{hero.jpg}), un titre accrocheur et deux appels à l'action. Un bandeau de statistiques (28+ années, 120K+ clients, 45 agences, note 4.8/5) renforce la crédibilité, suivi d'une grille de services, de la présentation du portail en ligne, des engagements de la banque et d'un pied de page avec coordonnées et mentions légales.
 
-\includescreenshot{landing.png}{Page d'accueil publique — section hero}{Cette capture montre la partie supérieure de la page d'accueil publique d'AmanaBank. On distingue l'en-tête fixe avec le logo et les liens de navigation, ainsi que la section hero avec l'image de fond et les boutons d'accès à l'espace client. L'ensemble illustre la première impression institutionnelle offerte au visiteur non connecté.}{fig:landing}
+\includescreenshot{landing.png}{Page d'accueil — section hero}{Partie supérieure de l'interface publique : en-tête de navigation fixe, section hero avec visuel institutionnel et appels à l'action vers l'espace client. Cette vitrine constitue le premier point de contact du visiteur et traduit la charte graphique marron, beige et or définie pour l'application.}{fig:landing}
 
-\includescreenshot{landing-services.png}{Page d'accueil — services et espace client}{Cette vue présente la portion médiane de la landing page, dédiée à la présentation des services bancaires et à la mise en avant de l'espace client digital. Les cartes illustrées décrivent l'offre (comptes, financement, services en ligne) et orientent l'utilisateur vers la connexion au portail. La mise en page reprend la charte marron, beige et or de l'application.}{fig:landing-services}
+\includescreenshot{landing-services.png}{Page d'accueil — services et portail}{Partie médiane de l'interface publique : grille des services bancaires (comptes, financement, services digitaux) et encart de promotion du portail client en ligne. La mise en page vise à informer le visiteur et à l'orienter vers la connexion sécurisée.}{fig:landing-services}
 
 \subsection{Page de connexion}
 
 L'écran de connexion (\texttt{/login}) est le \textbf{point d'entrée unique} pour tous les utilisateurs. Un même formulaire accepte le personnel (administrateur, agent ou chef d'agence) via son nom d'utilisateur, ainsi que le client via son CIN ou son numéro client. L'interface comporte le logo AmanaBank centré, des champs avec icônes Bootstrap, un bouton de connexion doré et deux encadrés d'aide rappelant les identifiants de démonstration (ex.\ CIN \texttt{MB654321} pour le client \textbf{Moncef Bensouda}). Un lien «\,Retour à l'accueil\,» permet de revenir à la landing sans utiliser le bouton précédent du navigateur.
 
-\includescreenshot[0.75\textwidth]{login.png}{Connexion unifiée — personnel et client}{Cette capture présente l'écran de connexion unifié d'AmanaBank. Le formulaire centralise l'authentification du personnel et des clients sur une seule page, avec des champs identifiants et mot de passe ainsi que des encadrés d'aide pour la démonstration. Le design sobre et la charte graphique préparent l'accès aux espaces agence ou portail selon le profil connecté.}{fig:login}
+\includescreenshot[width=0.75\textwidth]{login.png}{Écran de connexion unifié}{Point d'entrée unique (\texttt{/login}) pour le personnel et les clients. Le formulaire centralise l'authentification Spring Security ; les encadrés d'aide rappellent les identifiants de démonstration. La redirection post-connexion dépend du profil détecté (espace agence ou portail client).}{fig:login}
 
 \section{Espace agence — personnel}
 
@@ -842,7 +912,7 @@ Le tableau de bord (\texttt{/dashboard}) est la \textbf{page d'atterrissage} apr
     \small
     \begin{tabular}{@{}lp{8cm}@{}}
         \rowcolor{AmanaBrown}
-        \color{white}\textbf{Indicateur} & \textbf{Description et action associée} \\
+        \tabhead{Indicateur} & \tabhead{Description et action associée} \\
         \midrule
         Clients actifs & Nombre de clients au statut actif — lien vers la gestion clients \\
         Comptes actifs & Comptes ouverts et non clôturés — lien vers la liste des comptes \\
@@ -856,47 +926,47 @@ Des \textbf{alertes métier} apparaissent lorsque des commandes de chéquier son
 
 En dessous, un tableau récapitule les \textbf{10 dernières opérations} avec accès immédiat au reçu de chaque transaction.
 
-\includescreenshot{dashboard-agent.png}{Tableau de bord agence — KPI et alertes}{Cette capture illustre le tableau de bord de l'espace agence après connexion d'un agent. Quatre cartes KPI synthétisent l'activité (clients actifs, comptes, opérations et volume du jour), tandis que des alertes signalent les commandes de chéquier en attente. Le tableau inférieur liste les dernières opérations avec un accès direct aux reçus.}{fig:dashboard}
+\includescreenshot{dashboard-agent.png}{Tableau de bord agence}{Quatre indicateurs clés (clients actifs, comptes, opérations et volume du jour), alertes sur les commandes de chéquier en attente, et synthèse des dernières opérations avec accès aux reçus. Cet écran apuie la supervision quotidienne de l'activité.}{fig:dashboard}
 
 \subsection{Gestion des clients}
 
 L'écran de liste clients permet la \textbf{recherche}, la création et la consultation des fiches. Chaque fiche regroupe les informations d'identité, le statut (actif, suspendu, fermé) et la liste des comptes associés.
 
-\includescreenshot{clients-liste.png}{Liste et recherche des clients}{Cette vue montre l'écran de gestion des clients accessible à l'agent bancaire. Un champ de recherche et un tableau récapitulatif permettent de retrouver rapidement un titulaire, de consulter son statut et d'accéder à sa fiche détaillée. Le bouton de création ouvre le formulaire d'enregistrement d'un nouveau client.}{fig:clients}
+\includescreenshot{clients-liste.png}{Liste des clients}{Écran de gestion des clients : recherche multicritère (nom, CIN, numéro, téléphone), tableau des titulaires avec statut et accès à la fiche détaillée, et bouton de création d'un nouveau client. Il matérialise le module CRUD clients du cahier des charges.}{fig:clients}
 
 \subsection{Comptes bancaires}
 
 La fiche compte affiche le numéro, le type (courant, épargne, professionnel), le solde, le statut et les actions disponibles (blocage, clôture, relevé). La figure~\ref{fig:compte} illustre le compte courant de \textbf{Moncef Bensouda} (\texttt{ACC-00001}), client le plus aisé du jeu de démonstration.
 
-\includescreenshot{compte-detail.png}{Fiche détail d'un compte bancaire}{Cette capture présente la fiche détail d'un compte bancaire, ici le compte courant \texttt{ACC-00001} de Moncef Bensouda. Le solde, le type de compte et son statut sont affichés en évidence, avec des actions permettant le blocage, la clôture ou la consultation du relevé. Cet écran centralise les informations nécessaires avant toute opération financière.}{fig:compte}
+\includescreenshot{compte-detail.png}{Fiche détail d'un compte}{Fiche détail du compte courant \texttt{ACC-00001} (titulaire : Moncef Bensouda) : solde, type, statut et actions de gestion (blocage, clôture, relevé). Cet écran concentre les informations nécessaires avant toute opération financière sur le compte.}{fig:compte}
 
 \subsection{Opérations financières}
 
 Le module opérations regroupe quatre types d'actions, chacune sur un formulaire dédié avec validation côté serveur : le dépôt crédite un compte, le retrait débite avec contrôle de solde, le virement transfère des fonds entre deux comptes actifs, et le paiement de facture enregistre le fournisseur (LYDEC, ONEE, IAM, etc.) tout en débitant le compte sélectionné.
 
-\includescreenshot[0.85\textwidth]{operations-depot.png}{Formulaire de dépôt sur compte}{Cette capture montre le formulaire de dépôt utilisé par l'agent pour créditer le compte d'un client. L'agent sélectionne le compte concerné, saisit le montant et valide l'opération ; le serveur contrôle alors le statut du compte et enregistre la transaction dans l'historique. L'interface reprend les composants de formulaire standardisés de l'application.}{fig:depot}
+\includescreenshot[width=0.85\textwidth]{operations-depot.png}{Formulaire de dépôt}{Formulaire de dépôt guichet : sélection du compte, saisie du montant et validation. Le contrôle du statut du compte et l'enregistrement transactionnel sont assurés côté serveur par \texttt{TransactionService}, conformément au scénario de séquence correspondant.}{fig:depot}
 
-\includescreenshot[0.85\textwidth]{paiement-facture.png}{Paiement de facture — fournisseur et compte}{Cette vue correspond au module de paiement de factures. L'agent choisit le fournisseur (électricité, eau, télécom, etc.), le compte à débiter et la référence de la facture avant validation. Le système vérifie le solde disponible et génère une transaction liée au paiement, consultable ensuite dans l'historique et sur le reçu.}{fig:facture}
+\includescreenshot[width=0.85\textwidth]{paiement-facture.png}{Paiement de facture}{Formulaire de paiement de facture : choix du fournisseur (LYDEC, ONEE, IAM), du compte à débiter et de la référence client. Le solde est vérifié avant débit ; une transaction de type \texttt{PAIEMENT\_FACTURE} et un enregistrement \texttt{BillPayment} sont créés.}{fig:facture}
 
 \subsection{Historique et reçu PDF}
 
 Chaque opération génère une entrée dans l'historique. La page de reçu présente le détail de la transaction et propose le \textbf{téléchargement PDF} via OpenPDF, avec un nom de fichier normalisé.
 
-\includescreenshot{recu-pdf.png}{Reçu d'opération avec téléchargement PDF}{Cette capture affiche la page de reçu d'une opération financière. Les informations essentielles (type, montant, compte, date, agent) sont présentées dans un format lisible, avec un bouton permettant de télécharger le document au format PDF. Ce reçu peut être remis au client ou archivé pour la traçabilité de l'agence.}{fig:recu}
+\includescreenshot{recu-pdf.png}{Reçu d'opération et export PDF}{Page de reçu d'une opération financière : type, montant, comptes concernés, date, agent exécutant et lien de téléchargement PDF (OpenPDF). Ce document assure la traçabilité vis-à-vis du client et complète l'historique conservé en base.}{fig:recu}
 
-\subsection{Commandes de chéquier et notifications}
+\subsection{Commandes de chéquier et~notifications}
 
 Les commandes de chéquier suivent un \textbf{workflow} sans impact sur le solde : demande, traitement, livraison. Le chef d'agence reçoit des notifications et peut consulter le centre dédié via la cloche en en-tête.
 
-\includescreenshot{chequier-liste.png}{Suivi des commandes de chéquier}{Cette vue présente l'écran de suivi des commandes de chéquier pour le personnel de l'agence. Les demandes sont classées par statut (en attente, en traitement, livrée) et permettent au chef d'agence de piloter le workflow administratif. Aucun mouvement financier n'est associé à cette fonctionnalité, qui relève du service client.}{fig:chequier}
+\includescreenshot{chequier-liste.png}{Suivi des commandes de chéquier}{Écran de suivi des commandes de chéquier : liste filtrée par statut (\texttt{PENDING}, \texttt{PROCESSED}, \texttt{DELIVERED}), avec accès au détail de chaque demande. Ce workflow administratif n'impacte pas le solde des comptes.}{fig:chequier}
 
-\includescreenshot{notifications.png}{Centre de notifications — chef d'agence}{Cette capture montre le centre de notifications accessible au chef d'agence depuis la cloche en en-tête. Les alertes signalent notamment les nouvelles commandes de chéquier ou les événements nécessitant une supervision. Chaque notification peut être marquée comme lue pour suivre l'activité de l'agence en temps réel.}{fig:notifications}
+\includescreenshot{notifications.png}{Centre de notifications agence}{Centre de notifications du chef d'agence, accessible depuis la cloche en en-tête. Les alertes portent notamment sur les nouvelles demandes de chéquier et les événements nécessitant une supervision ; chaque notification peut être marquée comme lue.}{fig:notifications}
 
 \subsection{Administration}
 
 L'administrateur gère les comptes du personnel (création, modification, réinitialisation de mot de passe). Le journal d'audit, accessible au chef et à l'admin, recense les actions sensibles pour la traçabilité.
 
-\includescreenshot{admin-users.png}{Gestion des utilisateurs internes}{Cette capture illustre l'écran d'administration des utilisateurs internes, réservé au rôle administrateur. La liste présente les comptes du personnel avec leurs rôles respectifs, et permet la création, la modification ou la réinitialisation des mots de passe. Cet écran garantit le contrôle des accès au back-office de l'agence.}{fig:admin}
+\includescreenshot{admin-users.png}{Administration des utilisateurs}{Écran d'administration des comptes du personnel (rôle \texttt{ADMIN}) : liste des utilisateurs, attribution des rôles (\texttt{AGENT}, \texttt{CHEF\_AGENCE}, \texttt{ADMIN}), création et réinitialisation des mots de passe. Il garantit le contrôle des accès au back-office.}{fig:admin}
 
 \section{Espace client (portail)}
 
@@ -908,9 +978,9 @@ Le portail client (\texttt{/portal/**}) offre une \textbf{consultation en lectur
 
 Le dashboard client synthétise la situation du titulaire : le solde total correspond à la somme des comptes actifs, le nombre de comptes ouvre un accès rapide au détail, les notifications non lues signalent les opérations effectuées en agence, et le compteur de chéquiers en cours indique les commandes en attente ou en traitement. Des cartes individuelles affichent chaque compte (type, numéro, solde, badge de statut). La figure~\ref{fig:portal} montre l'espace de \textbf{Moncef Bensouda} (CIN \texttt{MB654321}), dont le solde total dépasse 600\,000~MAD sur trois comptes. Le tableau des \textbf{5 dernières opérations} permet de télécharger les reçus PDF.
 
-\includescreenshot{portal-dashboard.png}{Tableau de bord espace client}{Cette capture présente le tableau de bord de l'espace client connecté en tant que Moncef Bensouda. Les indicateurs en tête résument le patrimoine bancaire du titulaire, tandis que des cartes détaillent chaque compte et un tableau liste les dernières opérations. Le client peut consulter ses soldes et télécharger les reçus PDF sans passer par l'agence.}{fig:portal}
+\includescreenshot{portal-dashboard.png}{Tableau de bord portail client}{Tableau de bord du portail client (exemple : Moncef Bensouda, CIN \texttt{MB654321}) : synthèse du patrimoine, cartes par compte, indicateurs de notifications et historique des cinq dernières opérations avec téléchargement des reçus PDF. L'interface est en lecture seule.}{fig:portal}
 
-\includescreenshot{portal-notifications.png}{Notifications client — opérations et chéquier}{Cette vue montre le centre de notifications du portail client. Le titulaire y retrouve les alertes liées aux opérations réalisées en agence et aux mises à jour de ses commandes de chéquier. L'interface reprend la charte visuelle de l'espace agence tout en limitant les actions à la consultation.}{fig:portal-notif}
+\includescreenshot{portal-notifications.png}{Notifications portail client}{Centre de notifications du portail client : alertes sur les opérations réalisées en agence et sur l'évolution des commandes de chéquier. Le titulaire consulte l'information sans pouvoir modifier les données bancaires en ligne.}{fig:portal-notif}
 
 \section{Conclusion}
 
@@ -921,26 +991,142 @@ L'ensemble des écrans métier (clients, comptes, opérations, reporting) s'appu
 \chapter*{Conclusion générale}
 \addcontentsline{toc}{chapter}{Conclusion générale}
 
-\section*{Conclusion}
+\section*{Introduction}
 
-La réalisation de ce projet de fin d'année, intitulé \textbf{\nomapplication}, nous a permis de mener un développement web complet, de la conception UML jusqu'à une application fonctionnelle et testée. Destinée à la gestion d'une agence bancaire, cette plateforme répond aux exigences du cahier des charges et intègre des extensions métier : paiement de factures, commande de chéquier, notifications et portail client.
+Ce rapport clôt un projet de fin d'année mené sur l'année universitaire \anneeuniv\ au sein de l'\ecole\ (\villeecole), filière \filiere, sous l'encadrement de \encadrante. Il retrace l'ensemble de la démarche suivie pour concevoir, réaliser et valider \textbf{\nomapplication}, système web de gestion d'agence bancaire répondant au cahier des charges PFA.
 
-\section*{Bilan}
+Rappelons la problématique posée en introduction (chapitre~\ref{ch:intro}) : comment digitaliser les activités d'une agence bancaire en centralisant les données clients et comptes, en sécurisant les opérations financières, en garantissant la traçabilité des actions et en offrant au titulaire un espace de consultation en ligne ? À l'issue de ce travail, nous pouvons affirmer que cette problématique a trouvé une réponse concrète, implémentée, testée et documentée.
 
-Sur le plan de la conception, nous avons produit une modélisation UML complète (cas d'utilisation, classes, séquences, activité, MCD/MLD). L'implémentation repose sur onze migrations Flyway, neuf entités JPA et une architecture en couches Spring Boot. Les fonctionnalités couvrent la gestion des clients et des comptes, les opérations financières contrôlées, l'administration, l'audit, le reporting et les reçus PDF. Les extensions (factures, chéquier, notifications bidirectionnelles, portail client en lecture seule) enrichissent le périmètre initial. La qualité est assurée par 80 tests d'intégration, un seed de démonstration modulaire et une documentation technique complète. Enfin, l'interface a fait l'objet d'une refonte graphique intégrale : landing marketing, login unifié, tableaux de bord KPI et charte AmanaBank (marron, beige, or, DM Sans).
+La présente conclusion générale vise à \textbf{synthétiser} les apports de chaque chapitre, à dresser un \textbf{bilan} fonctionnel, technique et méthodologique, à revenir sur les \textbf{difficultés} rencontrées et les \textbf{compétences} acquises, avant d'ouvrir des \textbf{perspectives} réalistes pour l'évolution du système.
 
-Les objectifs fixés en introduction ont été atteints : centralisation des données, respect des règles métier, traçabilité et expérience utilisateur adaptée à chaque rôle.
+\section*{Synthèse du travail réalisé}
 
-\section*{Difficultés rencontrées}
+Le rapport s'organise en cinq chapitres techniques, précédés d'une introduction générale et complétés par la présente conclusion. Chacun a contribué à une étape déterminante du projet.
 
-La configuration de PostgreSQL a d'abord posé problème en raison d'un conflit de ports locaux (5432 déjà occupé), résolu en utilisant le port 5433. La cohérence transactionnelle des soldes a nécessité un verrouillage optimiste (\texttt{@Version}) et des services annotés \texttt{@Transactional}. L'authentification dual sur un seul formulaire de login a été traitée via un \texttt{UserDetailsServiceImpl} composite chargeant indifféremment personnel ou client. L'activation du portail sur la base de démonstration existante passe par \texttt{DemoPortalSync} au démarrage. Enfin, le workflow chéquier a exigé de distinguer clairement un service administratif sans mouvement financier des transactions bancaires classiques.
+Le \textbf{chapitre~\ref{ch:contexte}} a situé le projet dans son contexte académique et métier. L'étude de l'existant a mis en évidence les limites des approches manuelles (registres papier, fichiers tableur, absence de contrôle centralisé des soldes) et a justifié le choix d'une application web intégrée. La méthodologie incrémentale adoptée --- analyse, conception UML, implémentation par modules, tests continus --- a structuré le déroulement du binôme sur toute la durée du PFA.
+
+Le \textbf{chapitre~\ref{ch:conception}} constitue le socle intellectuel du projet. L'identification des acteurs (personnel de l'agence à trois niveaux de responsabilité, client bancaire) et la formalisation des 14 règles de gestion ont encadré le développement. La modélisation UML complète --- onze diagrammes (cas d'utilisation, classes, MCD, MLD, séquences, activité) --- a servi de référence partagée entre les deux étudiantes et l'encadrante, et a directement alimenté le schéma PostgreSQL et les services métier.
+
+Le \textbf{chapitre~\ref{ch:techno}} a argumenté les choix technologiques : Spring Boot~3 pour le back-end, PostgreSQL et Flyway pour la persistance, Spring Security pour l'authentification, Thymeleaf et Bootstrap pour le front-end, OpenPDF pour les reçus. Ces technologies, standards dans l'écosystème Java entreprise, offrent un bon équilibre entre productivité, maintenabilité et adéquation au cahier des charges.
+
+Le \textbf{chapitre~\ref{ch:archi}} a exposé l'architecture en couches (présentation, contrôleurs, services, persistance) et la séparation entre espace agence (\texttt{/dashboard}, \texttt{/clients}, \texttt{/operations}…) et portail client (\texttt{/portal/**}). Cette structuration a facilité la répartition des tâches au sein du binôme et le respect du principe de responsabilité unique.
+
+Enfin, le \textbf{chapitre~\ref{ch:realisation}} a illustré concrètement le travail accompli à travers quatorze captures d'écran commentées, de la landing page publique aux tableaux de bord agence et client. La charte graphique AmanaBank (marron, beige, or) unifie l'ensemble des interfaces et renforce l'identité visuelle de l'application.
+
+\section*{Bilan du projet}
+
+\subsection*{Bilan fonctionnel}
+
+Sur le plan fonctionnel, \nomapplication\ couvre l'intégralité des dix modules identifiés dans le cahier des charges (tableau~\ref{tab:fonctionnalites}) et les enrichit par quatre extensions métier cohérentes.
+
+L'\textbf{authentification unifiée} constitue l'un des apports les plus significatifs du projet : un seul écran de connexion (\texttt{/login}) accepte indifféremment le personnel (nom d'utilisateur) et le client (CIN ou numéro client), avec redirection automatique vers l'espace adapté. Cette simplification améliore l'expérience utilisateur tout en conservant une séparation stricte des droits via Spring Security.
+
+Le module \textbf{clients} assure le cycle de vie complet des titulaires : création, modification, recherche multicritère (nom, CIN, téléphone, numéro), gestion des statuts (\texttt{ACTIVE}, \texttt{SUSPENDED}, \texttt{CLOSED}). Le module \textbf{comptes} permet l'ouverture (courant, épargne, professionnel), le blocage et la clôture sous réserve d'un solde nul, conformément aux règles R1 à R4.
+
+Les \textbf{opérations financières} --- dépôt, retrait, virement --- appliquent systématiquement les contrôles métier : statut du compte, solde suffisant, montant strictement positif, traçabilité de l'agent exécutant. Chaque opération génère un reçu HTML consultable et un export PDF téléchargeable.
+
+Les \textbf{extensions} dépassent le périmètre minimal du cahier des charges :
+\begin{itemize}
+    \item \textbf{Paiement de facture} : intégration de fournisseurs marocains (LYDEC, ONEE, IAM), débit du compte et enregistrement \texttt{BillPayment} lié à la transaction ;
+    \item \textbf{Commande de chéquier} : workflow administratif (\texttt{PENDING} $\rightarrow$ \texttt{PROCESSING} $\rightarrow$ \texttt{DELIVERED}) sans impact sur les soldes, avec notification au chef d'agence ;
+    \item \textbf{Centre de notifications} : alertes bidirectionnelles entre agence et portail client ;
+    \item \textbf{Portail client} : consultation en lecture seule des comptes, de l'historique, des notifications et du suivi des chéquiers.
+\end{itemize}
+
+Le \textbf{reporting} (tableaux de bord KPI, historique filtrable, relevés) et l'\textbf{administration} (gestion des utilisateurs internes, journal d'audit) complètent l'offre pour le personnel de l'agence et le chef d'agence.
+
+\subsection*{Bilan technique}
+
+L'implémentation repose sur une stack Java moderne et éprouvée. Le back-end \textbf{Spring Boot~3} organise le code en couches : contrôleurs MVC (\texttt{@Controller}), services métier (\texttt{@Service}, \texttt{@Transactional}), repositories JPA (\texttt{JpaRepository}) et neuf entités persistées. Cette séparation facilite la maintenance, les tests unitaires et l'évolution future du code.
+
+La persistance \textbf{PostgreSQL} est versionnée par \textbf{onze migrations Flyway}, garantissant la reproductibilité du schéma entre les environnements de développement, de test et de démonstration. La sécurité repose sur \textbf{Spring Security} : hachage BCrypt des mots de passe, gestion des rôles (\texttt{ADMIN}, \texttt{AGENT}, \texttt{CHEF\_AGENCE}, \texttt{CLIENT}), protection des routes par profil et journalisation des actions sensibles dans \texttt{AuditLog}.
+
+Le front-end combine \textbf{Thymeleaf} (templates server-side) et \textbf{Bootstrap~5.3} (grille responsive, composants UI), complétés par une charte graphique AmanaBank (marron \texttt{\#4B3621}, beige \texttt{\#F9F6F1}, or \texttt{\#A6893A}, police DM Sans). Les reçus PDF sont générés par \textbf{OpenPDF} avec un nommage normalisé (\texttt{ReceiptFileNameBuilder}).
+
+Au total, le dépôt comprend une quarantaine de classes Java métier, une vingtaine de templates Thymeleaf, onze scripts SQL de migration et quatorze captures d'interface intégrées au présent rapport.
+
+\subsection*{Bilan de la conception et de la qualité}
+
+La phase de conception a produit une modélisation UML complète et commentée : trois diagrammes de cas d'utilisation, un diagramme de classes (présenté en page paysage pour la lisibilité), un MCD, un MLD, quatre diagrammes de séquence et un diagramme d'activité pour le virement. Les \textbf{14 règles de gestion} (R1 à R14) traduisent les contraintes métier en comportements vérifiables et testables.
+
+La fiabilité du système est attestée par \textbf{80 tests d'intégration} couvrant l'authentification, les clients, les comptes, les transactions, les paiements de factures, les commandes de chéquier, les notifications, le portail client, le reporting et l'administration. Un \textbf{jeu de données de démonstration} modulaire (\texttt{DevDemoDataInitializer}, \texttt{DevPortalAccessInitializer}, \texttt{DemoPortalSync}) permet une soutenance reproductible avec des profils préconfigurés.
+
+La documentation produite comprend : le présent rapport, le cahier des charges, les diagrammes UML (sources PlantUML), le diagramme de Gantt, le README technique du dépôt Git et les scripts d'initialisation PostgreSQL.
+
+\subsection*{Atteinte des objectifs}
+
+Les cinq objectifs fixés en introduction ont été atteints :
+\begin{enumerate}
+    \item \textbf{Centralisation} : toutes les données clients, comptes et transactions sont persistées dans une base unique PostgreSQL et consultables depuis une interface web unifiée ;
+    \item \textbf{Règles métier} : les opérations financières respectent les contrôles de solde (R3), de statut des comptes (R4--R8) et de montant positif ; les virements vérifient l'activité des deux comptes ;
+    \item \textbf{Traçabilité} : chaque opération est historisée avec l'identité de l'agent exécutant ; les actions sensibles (création d'utilisateur, blocage de compte, etc.) sont journalisées dans \texttt{AuditLog} ;
+    \item \textbf{Sécurité} : authentification robuste, mots de passe hachés BCrypt, accès différenciés par rôle, portail client en lecture seule ;
+    \item \textbf{Expérience utilisateur} : interfaces adaptées à chaque profil (agent, chef d'agence, administrateur, client), vitrine publique professionnelle et navigation cohérente.
+\end{enumerate}
+
+\section*{Limites du projet}
+
+Dans un souci d'honnêteté académique, il convient de reconnaître les limites de \nomapplication\ en l'état actuel :
+
+\begin{itemize}
+    \item \textbf{Périmètre fonctionnel} : l'application simule une agence bancaire fictive ; elle ne couvre pas la conformité réglementaire complète (KYC, LBC/FT, reporting Bank Al-Maghrib) ni les interconnexions avec des systèmes bancaires centraux ;
+    \item \textbf{Portail client} : limité à la consultation ; aucune opération financière en ligne (virement, paiement) n'est proposée, par choix de sécurité dans le cadre du PFA ;
+    \item \textbf{Performance et montée en charge} : le système n'a pas fait l'objet de tests de charge ; la configuration actuelle convient à une démonstration et à un usage en agence de taille modeste ;
+    \item \textbf{Déploiement} : l'application tourne en local (\texttt{localhost:8080}) ; aucun déploiement cloud, conteneurisation Docker ou pipeline CI/CD n'a été mis en place ;
+    \item \textbf{Internationalisation} : l'interface est entièrement en français ; aucune gestion multilingue (arabe, anglais) n'a été implémentée.
+\end{itemize}
+
+Ces limites ne remettent pas en cause la valeur pédagogique du projet, mais définissent clairement le périmètre d'une éventuelle industrialisation.
+
+\section*{Apports personnels et compétences acquises}
+
+Ce PFA a constitué une expérience formatrice majeure pour les deux membres du binôme (\etudianteun\ et \etudiantedeux).
+
+Sur le plan \textbf{technique}, nous maîtrisons désormais le cycle complet de développement d'une application Java/Spring Boot : analyse du besoin, modélisation UML, conception de base de données, implémentation en couches, sécurisation, tests d'intégration et documentation. La gestion de PostgreSQL, les migrations Flyway, la configuration Spring Security (authentification dual, gestion des rôles), la génération de PDF et le rendu Thymeleaf/Bootstrap sont des acquis concrets directement transférables en entreprise.
+
+Sur le plan \textbf{méthodologique}, le travail en binôme nous a habituées à la répartition des tâches (back-end / front-end, conception / implémentation), à la revue de code mutuelle via Git, à la résolution collaborative des problèmes et au respect des délais fixés dans le diagramme de Gantt. L'approche incrémentale --- livrer module par module, tester à chaque étape --- s'est révélée efficace pour maintenir un logiciel toujours fonctionnel.
+
+Sur le plan \textbf{rédactionnel et communication}, la production de ce rapport nous a sensibilisées à l'importance de documenter les choix de conception, de justifier les technologies retenues, de commenter les diagrammes et les captures d'écran, et de structurer un document académique de plusieurs dizaines de pages. Ces compétences sont indispensables lors d'une soutenance devant un jury ou d'un entretien technique en entreprise.
+
+Enfin, ce projet nous a permis de \textbf{comprendre le domaine bancaire} : règles de gestion des comptes, workflow des opérations financières, distinction entre processus administratif et transaction bancaire, exigences de traçabilité et de sécurité propres au secteur financier.
+
+\section*{Difficultés rencontrées et solutions apportées}
+
+Le déroulement du projet n'a pas été exempt d'obstacles. Les principaux enjeux rencontrés et les solutions retenues sont les suivants :
+
+\begin{itemize}
+    \item \textbf{Configuration de PostgreSQL} : un conflit de ports locaux (5432 déjà occupé par une autre instance) a retardé la mise en place de l'environnement. \emph{Solution} : basculement sur le port 5433 et documentation dans \texttt{setup-postgresql.sql} et le README.
+    \item \textbf{Cohérence transactionnelle des soldes} : les virements et opérations simultanées sur un même compte risquaient des incohérences de solde. \emph{Solution} : services annotés \texttt{@Transactional}, verrouillage optimiste (\texttt{@Version} sur \texttt{Account}) et tests d'intégration dédiés.
+    \item \textbf{Authentification dual sur un seul formulaire} : le login devait accepter personnel et clients sans dupliquer les écrans. \emph{Solution} : \texttt{UserDetailsServiceImpl} composite chargeant indifféremment \texttt{SecurityUser} ou \texttt{SecurityClient}, avec redirection post-connexion selon le rôle.
+    \item \textbf{Activation du portail sur données existantes} : l'ajout du portail client en cours de projet ne devait pas casser le jeu de démonstration. \emph{Solution} : \texttt{DemoPortalSync} exécuté au démarrage en profil \texttt{dev}.
+    \item \textbf{Workflow chéquier vs opération financière} : risque de confusion entre demande administrative et mouvement de fonds. \emph{Solution} : entité \texttt{CheckbookOrder} dédiée, service sans appel à \texttt{TransactionService}, notifications au chef d'agence.
+    \item \textbf{Lisibilité des diagrammes UML} : certains diagrammes (classes, MCD) étaient illisibles en portrait dans le rapport. \emph{Solution} : page paysage dédiée (\texttt{pdflscape}) pour le diagramme de classes, redimensionnement des autres figures.
+    \item \textbf{Refonte graphique} : la qualité visuelle initiale ne correspondait pas aux attentes d'une application bancaire professionnelle. \emph{Solution} : refonte complète (landing page, charte AmanaBank, tableaux de bord KPI, sidebar par rôle) en parallèle du back-end.
+\end{itemize}
+
+Chaque difficulté surmontée a renforcé notre capacité d'analyse, notre autonomie dans la recherche de solutions documentées et notre persévérance face aux problèmes techniques.
 
 \section*{Perspectives d'évolution}
 
-Plusieurs évolutions sont envisageables : l'export PDF des relevés de compte (les reçus le sont déjà), une API REST documentée via Swagger pour de futures intégrations, un pipeline CI/CD avec déploiement conteneurisé, un enrichissement du portail client (demandes en ligne, messagerie), une authentification à deux facteurs pour le personnel, et un tableau de bord analytique avancé avec graphiques et exports Excel.
+\nomapplication\ constitue une base solide et extensible. Les axes d'amélioration suivants peuvent être envisagés pour une mise en production réelle ou une poursuite du projet :
 
-\vspace{0.5cm}
-En conclusion, \nomapplication\ constitue une solution concrète et défendable pour la digitalisation d'une agence bancaire. Ce PFA nous a permis de consolider nos compétences en conception orientée objet, développement Java/Spring et travail en binôme, et constitue une base solide pour nos futurs projets professionnels.
+\begin{itemize}
+    \item \textbf{Reporting avancé} : export PDF des relevés de compte complets (les reçus unitaires le sont déjà), graphiques d'activité temporelle sur le tableau de bord, exports Excel pour le chef d'agence, filtres avancés sur l'historique des transactions ;
+    \item \textbf{API REST et mobile} : exposition des services métier via une API documentée (Swagger/OpenAPI), développement d'une application mobile Android/iOS pour le portail client ;
+    \item \textbf{Portail client enrichi} : demandes en ligne (ouverture de compte, rendez-vous agence), messagerie sécurisée, alertes par e-mail ou SMS sur les opérations et les changements de statut ;
+    \item \textbf{Sécurité renforcée} : authentification à deux facteurs (2FA) pour le personnel, politique de rotation des mots de passe, limitation des tentatives de connexion, chiffrement des données sensibles au repos ;
+    \item \textbf{DevOps et déploiement} : pipeline CI/CD (GitHub Actions), conteneurisation Docker, déploiement sur serveur cloud (AWS, Azure ou OVH) avec HTTPS, sauvegardes automatiques et monitoring ;
+    \item \textbf{Conformité réglementaire} : modules KYC (Know Your Customer), journalisation conforme aux exigences Bank Al-Maghrib, audit externe, gestion des consentements RGPD-like ;
+    \item \textbf{Intelligence décisionnelle} : tableaux de bord analytiques (segmentation clients, prévision de flux, détection d'anomalies sur les opérations).
+\end{itemize}
+
+\section*{Mot de fin}
+
+En conclusion, le projet \textbf{\nomapplication} répond de manière concrète, structurée et défendable à la problématique posée en introduction. Il démontre notre capacité à mener un développement logiciel complet --- de l'analyse du besoin à la validation par les tests, en passant par la modélisation UML, l'architecture en couches, l'implémentation Spring Boot et la réalisation d'interfaces professionnelles.
+
+Ce PFA constitue bien plus qu'un exercice académique : c'est une vitrine de nos compétences en \filiere, un projet dont nous sommes fières et qui nous a préparées aux exigences du monde professionnel. Les connaissances acquises en conception orientée objet, développement Java enterprise, gestion de bases de données relationnelles et travail collaboratif seront des atouts majeurs pour nos stages et notre future carrière d'ingénieures.
+
+Nous exprimons notre profonde gratitude à \encadrante\ pour son encadrement expert, sa disponibilité et ses conseils avisés tout au long de ce projet. Nous remercions également l'\ecole\ pour la qualité de la formation reçue, le corps professoral pour son exigence bienveillante, ainsi que nos familles pour leur soutien inconditionnel durant cette année universitaire \anneeuniv.
 
 \vspace{1cm}
 \begin{flushright}

@@ -98,16 +98,33 @@ def sync_logo() -> None:
     OUT_IMAGES.mkdir(parents=True, exist_ok=True)
     if LOGO_SRC.exists():
         shutil.copy2(LOGO_SRC, OUT_IMAGES / "amana-logo.png")
+    normalize_pngs()
+
+
+def normalize_pngs() -> None:
+    """Convert palette/RGBA PNGs to RGB for pdfLaTeX compatibility."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return
+
+    for path in OUT_IMAGES.glob("*.png"):
+        try:
+            with Image.open(path) as im:
+                if im.mode in ("RGB", "L"):
+                    continue
+                rgb = im.convert("RGB")
+                rgb.save(path, format="PNG", optimize=True)
+                print(f"  PNG normalized: {path.name} ({im.mode} -> RGB)")
+        except Exception as exc:
+            print(f"  WARN: could not normalize {path.name}: {exc}")
 
 
 def extract_image_refs(tex: str) -> set[str]:
     refs = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}#]+)\}", tex))
-    refs.update(
-        re.findall(
-            r"\\includefigure\{[^}#]+\}\{([^}#]+)\}\{[^}]+\}\{[^}]+\}",
-            tex,
-        )
-    )
+    refs.update(re.findall(r"\\includefigure(?:\[[^\]]*\])?\{([^}#]+\.pdf)\}", tex))
+    refs.update(re.findall(r"\\includescreenshot(?:\[[^\]]*\])?\{([^}#]+\.png)\}", tex))
+    refs.update(re.findall(r"IfFileExists\{images/([^}#]+)\}", tex))
     return {r.strip() for r in refs if r.strip() and not r.startswith("#")}
 
 
