@@ -1,12 +1,12 @@
 @startuml MCD
-left to right direction
+top to bottom direction
 skinparam shadowing false
-skinparam linetype ortho
-skinparam nodesep 36
-skinparam ranksep 46
+skinparam linetype polyline
+skinparam nodesep 85
+skinparam ranksep 95
 skinparam defaultFontSize 13
-skinparam ArrowFontSize 12
-skinparam padding 8
+skinparam ArrowFontSize 11
+skinparam padding 14
 
 title MCD — Modèle conceptuel de données
 
@@ -87,16 +87,6 @@ entity "COMMANDE_CHEQUIER" as chq {
   date livraison
 }
 
-entity "JOURNAL_AUDIT" as audit {
-  * identifiant
-  --
-  action
-  type entité
-  id entité
-  date et heure
-  détails
-}
-
 entity "NOTIFICATION" as notif {
   * identifiant
   --
@@ -107,6 +97,32 @@ entity "NOTIFICATION" as notif {
   lue
   date création
 }
+
+entity "JOURNAL_AUDIT" as audit {
+  * identifiant
+  --
+  action
+  type entité
+  id entité
+  date et heure
+  détails
+}
+
+' Grille 4 x 2
+user -[hidden]right- client
+client -[hidden]right- account
+account -[hidden]right- transaction
+
+provider -[hidden]right- bill
+bill -[hidden]right- chq
+chq -[hidden]right- notif
+
+user -[hidden]down- provider
+client -[hidden]down- bill
+account -[hidden]down- chq
+transaction -[hidden]down- notif
+
+provider -[hidden]down- audit
 
 client ||--o{ account : possède
 client ||--o{ chq : demande

@@ -1,93 +1,105 @@
 @startuml diagramme-classes
-left to right direction
+top to bottom direction
+scale 2.2 width
 skinparam shadowing false
 skinparam classAttributeIconSize 0
-skinparam nodesep 42
-skinparam ranksep 55
-skinparam linetype ortho
+skinparam nodesep 120
+skinparam ranksep 130
+skinparam linetype polyline
 skinparam defaultFontSize 13
-skinparam ArrowFontSize 12
-skinparam packageStyle rectangle
-skinparam padding 8
+skinparam ArrowFontSize 11
+skinparam Padding 18
 
 title Diagramme de classes — domaine métier
 
-package "domain.entity" {
-  together {
-    class User {
-      - username : String
-      - role : UserRole
-      - fullName : String
-    }
-    class Client {
-      - clientNumber : String
-      - cin : String
-      - status : ClientStatus
-    }
-    class Account {
-      - accountNumber : String
-      - type : AccountType
-      - balance : BigDecimal
-      - status : AccountStatus
-    }
-    class Transaction {
-      - type : TransactionType
-      - amount : BigDecimal
-      - executedAt : Instant
-    }
-    User -[hidden]down- Client
-    Client -[hidden]down- Account
-    Account -[hidden]down- Transaction
-  }
-
-  together {
-    class BillProvider {
-      - code : String
-      - name : String
-    }
-    class BillPayment {
-      - clientReference : String
-      - amount : BigDecimal
-    }
-    class CheckbookOrder {
-      - orderNumber : String
-      - status : CheckbookOrderStatus
-      - sheetCount : CheckbookSheetCount
-    }
-    class Notification {
-      - type : NotificationType
-      - title : String
-      - read : boolean
-    }
-    class AuditLog {
-      - action : String
-      - entityType : String
-      - performedAt : Instant
-    }
-    BillProvider -[hidden]down- BillPayment
-    BillPayment -[hidden]down- CheckbookOrder
-    CheckbookOrder -[hidden]down- Notification
-    Notification -[hidden]down- AuditLog
-  }
-
-  User -[hidden]right- BillProvider
-
-  Client "1" o-- "0..*" Account : possède >
-  User "1" -- "0..*" Transaction : exécute >
-  Account "0..1" -- "0..*" Transaction : source >
-  Account "0..1" -- "0..*" Transaction : destination >
-  Transaction --> User : executedBy
-
-  Client "1" o-- "0..*" CheckbookOrder : demande >
-  Client "1" -- "0..*" Notification : reçoit >
-  Account "1" o-- "0..*" BillPayment : paie via >
-  Account "1" o-- "0..*" CheckbookOrder : commande >
-  BillProvider "1" -- "0..*" BillPayment
-  BillPayment "1" -- "1" Transaction : génère >
-  User "1" -- "0..*" CheckbookOrder : traite >
-  User "1" -- "0..*" AuditLog : effectue >
-  User "1" -- "0..*" Notification : reçoit >
-  AuditLog --> User : performedBy
+' ===== Ligne 1 : noyau (4 classes, chaîne horizontale) =====
+class User {
+  - username : String
+  - role : UserRole
+  - fullName : String
 }
+
+class Client {
+  - clientNumber : String
+  - cin : String
+  - status : ClientStatus
+}
+
+class Account {
+  - accountNumber : String
+  - type : AccountType
+  - balance : BigDecimal
+  - status : AccountStatus
+}
+
+class Transaction {
+  - type : TransactionType
+  - amount : BigDecimal
+  - executedAt : Instant
+}
+
+' ===== Ligne 2 : extensions (5 classes, chaîne horizontale) =====
+class BillProvider {
+  - code : String
+  - name : String
+}
+
+class BillPayment {
+  - clientReference : String
+  - amount : BigDecimal
+}
+
+class CheckbookOrder {
+  - orderNumber : String
+  - status : CheckbookOrderStatus
+  - sheetCount : CheckbookSheetCount
+}
+
+class Notification {
+  - type : NotificationType
+  - title : String
+  - read : boolean
+}
+
+class AuditLog {
+  - action : String
+  - entityType : String
+  - performedAt : Instant
+}
+
+' Positionnement en grille 2 x 5 (très aéré)
+User -[hidden]right- Client
+Client -[hidden]right- Account
+Account -[hidden]right- Transaction
+
+BillProvider -[hidden]right- BillPayment
+BillPayment -[hidden]right- CheckbookOrder
+CheckbookOrder -[hidden]right- Notification
+Notification -[hidden]right- AuditLog
+
+User -[hidden]down- BillProvider
+Client -[hidden]down- BillPayment
+Account -[hidden]down- CheckbookOrder
+Transaction -[hidden]down- Notification
+
+' ===== Relations noyau =====
+Client "1" o-- "0..*" Account : possède
+Account "0..1" o-- "0..*" Transaction : source
+Account "0..1" o-- "0..*" Transaction : destination
+Transaction "0..*" --> "1" User : executedBy
+
+' ===== Relations extensions (liens surtout verticaux) =====
+Account "1" o-- "0..*" BillPayment : paie via
+BillProvider "1" o-- "0..*" BillPayment
+BillPayment "1" --> "1" Transaction : génère
+
+Client "1" o-- "0..*" CheckbookOrder : demande
+Account "1" o-- "0..*" CheckbookOrder : commande
+User "1" o-- "0..*" CheckbookOrder : traite
+
+Client "1" o-- "0..*" Notification : reçoit
+User "1" o-- "0..*" Notification : reçoit
+
+User "1" o-- "0..*" AuditLog : effectue
 
 @enduml

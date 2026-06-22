@@ -1,12 +1,12 @@
 @startuml MLD
-left to right direction
+top to bottom direction
 skinparam shadowing false
-skinparam linetype ortho
-skinparam nodesep 38
-skinparam ranksep 50
-skinparam defaultFontSize 13
-skinparam ArrowFontSize 12
-skinparam padding 8
+skinparam linetype polyline
+skinparam nodesep 85
+skinparam ranksep 95
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 11
+skinparam padding 14
 
 title MLD — Modèle logique de données
 
@@ -103,17 +103,6 @@ entity "checkbook_orders" as checkbook_orders {
   notes : VARCHAR(255)
 }
 
-entity "audit_logs" as audit_logs {
-  * **id** : BIGINT <<PK>>
-  --
-  * action : VARCHAR(50)
-  entity_type : VARCHAR(50)
-  entity_id : BIGINT
-  * performed_by : BIGINT <<FK>>
-  * performed_at : TIMESTAMPTZ
-  details : TEXT
-}
-
 entity "notifications" as notifications {
   * **id** : BIGINT <<PK>>
   --
@@ -126,6 +115,33 @@ entity "notifications" as notifications {
   * read : BOOLEAN
   * created_at : TIMESTAMPTZ
 }
+
+entity "audit_logs" as audit_logs {
+  * **id** : BIGINT <<PK>>
+  --
+  * action : VARCHAR(50)
+  entity_type : VARCHAR(50)
+  entity_id : BIGINT
+  * performed_by : BIGINT <<FK>>
+  * performed_at : TIMESTAMPTZ
+  details : TEXT
+}
+
+' Grille 4 x 2
+users -[hidden]right- clients
+clients -[hidden]right- accounts
+accounts -[hidden]right- transactions
+
+bill_providers -[hidden]right- bill_payments
+bill_payments -[hidden]right- checkbook_orders
+checkbook_orders -[hidden]right- notifications
+
+users -[hidden]down- bill_providers
+clients -[hidden]down- bill_payments
+accounts -[hidden]down- checkbook_orders
+transactions -[hidden]down- notifications
+
+bill_providers -[hidden]down- audit_logs
 
 clients ||--o{ accounts : client_id
 clients ||--o{ checkbook_orders : client_id

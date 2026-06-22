@@ -1,84 +1,76 @@
 @startuml diagramme-classes-extensions
 top to bottom direction
-
+scale 2 width
 skinparam shadowing false
 skinparam classAttributeIconSize 0
-skinparam nodesep 55
-skinparam ranksep 70
+skinparam nodesep 100
+skinparam ranksep 110
+skinparam linetype polyline
 skinparam defaultFontSize 13
-skinparam classFontSize 13
 skinparam ArrowFontSize 11
-skinparam linetype ortho
-skinparam Padding 12
-skinparam minClassWidth 150
+skinparam Padding 16
 
-title Diagramme de classes — Vue 2 : Extensions métier
+title Diagramme de classes — extensions métier et traçabilité
 
-skinparam class {
-  BackgroundColor #FAFAFA
-  BorderColor #333333
-}
-
-' Ligne 1 — extensions
-class BillProvider #E8EAF6 {
+class BillProvider {
   - code : String
   - name : String
 }
 
-class BillPayment #E8EAF6 {
+class BillPayment {
   - clientReference : String
   - amount : BigDecimal
 }
 
-class CheckbookOrder #F3E5F5 {
+class CheckbookOrder {
   - orderNumber : String
   - status : CheckbookOrderStatus
+  - sheetCount : CheckbookSheetCount
 }
 
-class Notification #ECEFF1 {
+class Notification {
   - type : NotificationType
   - title : String
   - read : boolean
 }
 
-class AuditLog #ECEFF1 {
+class AuditLog {
   - action : String
   - entityType : String
   - performedAt : Instant
 }
 
-' Ligne 2 — références noyau
-class "Client" as ClientRef #EEEEEE
-class "Account" as AccountRef #EEEEEE
-class "Transaction" as TransactionRef #EEEEEE
-class "User" as UserRef #EEEEEE
+class "<<entité liée>>\nAccount" as AccountRef
+class "<<entité liée>>\nClient" as ClientRef
+class "<<entité liée>>\nUser" as UserRef
+class "<<entité liée>>\nTransaction" as TransactionRef
 
 BillProvider -[hidden]right- BillPayment
 BillPayment -[hidden]right- CheckbookOrder
 CheckbookOrder -[hidden]right- Notification
 Notification -[hidden]right- AuditLog
 
-ClientRef -[hidden]right- AccountRef
-AccountRef -[hidden]right- TransactionRef
-TransactionRef -[hidden]right- UserRef
+BillProvider -[hidden]down- AccountRef
+BillPayment -[hidden]down- TransactionRef
+CheckbookOrder -[hidden]down- ClientRef
+Notification -[hidden]down- UserRef
 
-BillPayment -[hidden]down- AccountRef
-
+AccountRef "1" o-- "0..*" BillPayment : paie via
 BillProvider "1" o-- "0..*" BillPayment
+BillPayment "1" --> "1" TransactionRef : génère
 
-BillPayment ..> AccountRef : paie via
-BillPayment ..> TransactionRef : génère
-CheckbookOrder ..> ClientRef : demande
-CheckbookOrder ..> AccountRef : compte
-CheckbookOrder ..> UserRef : traite
-Notification ..> ClientRef : client
-Notification ..> UserRef : personnel
-AuditLog ..> UserRef : effectue
+ClientRef "1" o-- "0..*" CheckbookOrder : demande
+AccountRef "1" o-- "0..*" CheckbookOrder : commande
+UserRef "1" o-- "0..*" CheckbookOrder : traite
 
-legend right
-  |= Info |= Détail |
-  | R12–R14 | Chéquier : workflow admin |
-  | | sans impact sur le solde |
-endlegend
+ClientRef "1" o-- "0..*" Notification : reçoit
+UserRef "1" o-- "0..*" Notification : reçoit
+
+UserRef "1" o-- "0..*" AuditLog : effectue
+
+note bottom of CheckbookOrder
+  **R12–R14** : une seule commande PENDING
+  par compte ; pas d'impact sur le solde.
+end note
 
 @enduml
