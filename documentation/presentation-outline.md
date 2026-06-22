@@ -1,6 +1,24 @@
 # Plan de présentation — soutenance PFA
 
-Structure suggérée pour un support PowerPoint (10 à 12 slides, ~15 min dont 5–7 min de démo live).
+**Support PowerPoint :**
+- [`presentation/presentation-PFA-AmanaBank.pptx`](presentation/presentation-PFA-AmanaBank.pptx) (30 slides, format 16:9)
+- Copie locale : `C:\Users\HP\Downloads\PFA.pptx`
+
+**Structure imposée par l'encadrante** (20 min : 15 présentation + 5 questions) :
+
+| # | Section |
+|---|---------|
+| 01 | Contexte du projet |
+| 02 | Problématique |
+| 03 | Objectifs |
+| 04 | Méthodologie |
+| 05 | Conception |
+| 06 | Réalisation / démonstration |
+| 07 | Résultats obtenus |
+| 08 | Difficultés rencontrées |
+| 09 | Conclusion et perspectives |
+
+Pour régénérer : `python documentation/generate_presentation.py`
 
 ---
 

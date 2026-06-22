@@ -35,6 +35,7 @@ UML_SRC_DIRS = [
     REPO / "documentation" / "uml" / "sequence",
     REPO / "documentation" / "uml" / "database",
     REPO / "documentation" / "uml" / "class",
+    REPO / "documentation" / "modele-donnees",
 ]
 
 PNG_CAPTURES = [
@@ -70,20 +71,94 @@ def svg_to_pdf(svg: Path, pdf: Path) -> bool:
     ):
         try:
             subprocess.run(cmd, check=True, capture_output=True)
-            return pdf.exists()
+            if pdf.exists() and pdf.stat().st_size > 0:
+                return True
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+    try:
+        import cairosvg
+
+        cairosvg.svg2pdf(url=str(svg), write_to=str(pdf))
+        if pdf.exists() and pdf.stat().st_size > 0:
+            return True
+    except Exception:
+        pass
+    try:
+        from svglib.svglib import svg2rlg
+        from reportlab.graphics import renderPDF
+
+        drawing = svg2rlg(str(svg))
+        if drawing is not None:
+            renderPDF.drawToFile(drawing, str(pdf))
+            if pdf.exists() and pdf.stat().st_size > 0:
+                return True
+    except Exception:
+        pass
+    if pdf.exists() and pdf.stat().st_size == 0:
+        pdf.unlink(missing_ok=True)
+    return False
+
+
+def render_puml_to_svg(puml: Path, out_dir: Path) -> Path | None:
+    svg = out_dir / puml.with_suffix(".svg").name
+    jar = REPO / "tools" / "plantuml.jar"
+    plantuml_cmds: list[list[str]] = []
+    if shutil.which("plantuml"):
+        plantuml_cmds.append(["plantuml", "-tsvg", "-o", str(out_dir), str(puml)])
+    if jar.exists():
+        plantuml_cmds.append(["java", "-jar", str(jar), "-tsvg", "-o", str(out_dir), str(puml)])
+    for cmd in plantuml_cmds:
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, cwd=puml.parent)
+            if svg.exists():
+                return svg
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+    return None
+
+
+def render_puml_to_pdf(puml: Path, pdf: Path) -> bool:
+    jar = REPO / "tools" / "plantuml.jar"
+    out_dir = pdf.parent
+    plantuml_cmds: list[list[str]] = []
+    if shutil.which("plantuml"):
+        plantuml_cmds.append(
+            ["plantuml", "-tpdf", "-o", str(out_dir), str(puml)]
+        )
+    if jar.exists():
+        plantuml_cmds.append(
+            ["java", "-jar", str(jar), "-tpdf", "-o", str(out_dir), str(puml)]
+        )
+    for cmd in plantuml_cmds:
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, cwd=puml.parent)
+            generated = out_dir / puml.with_suffix(".pdf").name
+            if generated.exists() and generated != pdf:
+                generated.replace(pdf)
+            if pdf.exists() and pdf.stat().st_size > 0:
+                return True
+            pdf.unlink(missing_ok=True)
         except (FileNotFoundError, subprocess.CalledProcessError):
             continue
     return False
 
 
-def ensure_uml_pdfs() -> None:
+def ensure_uml_pdfs(force: bool = False) -> None:
     OUT_IMAGES.mkdir(parents=True, exist_ok=True)
     for svg_name in UML_SVGS:
         pdf_name = svg_name.replace(".svg", ".pdf")
         pdf_path = OUT_IMAGES / pdf_name
-        if pdf_path.exists():
-            continue
         src = find_svg(svg_name)
+        puml = src.with_suffix(".puml") if src else None
+        if puml and puml.exists():
+            fresh = render_puml_to_svg(puml, puml.parent)
+            if fresh:
+                src = fresh
+        if not force and pdf_path.exists() and src and pdf_path.stat().st_mtime >= src.stat().st_mtime:
+            continue
+        if puml and puml.exists() and render_puml_to_pdf(puml, pdf_path):
+            print(f"  PDF (PlantUML): {pdf_name}")
+            continue
         if src and svg_to_pdf(src, pdf_path):
             print(f"  PDF: {pdf_name}")
             continue
@@ -123,6 +198,7 @@ def normalize_pngs() -> None:
 def extract_image_refs(tex: str) -> set[str]:
     refs = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}#]+)\}", tex))
     refs.update(re.findall(r"\\includefigure(?:\[[^\]]*\])?\{([^}#]+\.pdf)\}", tex))
+    refs.update(re.findall(r"\\includefiagram(?:\[[^\]]*\])?\{([^}#]+\.pdf)\}", tex))
     refs.update(re.findall(r"\\includescreenshot(?:\[[^\]]*\])?\{([^}#]+\.png)\}", tex))
     refs.update(re.findall(r"IfFileExists\{images/([^}#]+)\}", tex))
     return {r.strip() for r in refs if r.strip() and not r.startswith("#")}
@@ -150,12 +226,15 @@ def build_zip() -> None:
 
 
 def main() -> None:
+    import sys
+
+    force = "--force" in sys.argv
     if not OUT_TEX.exists():
         raise SystemExit("main.tex missing")
     tex = OUT_TEX.read_text(encoding="utf-8")
     sync_logo()
     print("UML diagrams:")
-    ensure_uml_pdfs()
+    ensure_uml_pdfs(force=force)
     missing = validate(tex)
     if missing:
         print("MISSING images:")

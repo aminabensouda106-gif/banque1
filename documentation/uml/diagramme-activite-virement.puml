@@ -1,5 +1,8 @@
 @startuml diagramme-activite-virement
 skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ActivityFontSize 12
+skinparam ArrowFontSize 11
 
 title Activité — Effectuer un virement
 
@@ -7,24 +10,23 @@ start
 
 :Agent saisit compte source,\ncompte destination et montant;
 
-:Vérifier que les deux comptes existent;
+note right
+  **Cas de refus :**
+  compte introuvable ;
+  compte bloqué ou clôturé ;
+  solde insuffisant
+end note
 
-if (Comptes trouvés ?) then (oui)
-  if (Les deux comptes sont ACTIVE ?) then (oui)
-    if (Solde source >= montant ?) then (oui)
-      :Débiter le compte source;
-      :Créditer le compte destination;
-      :Enregistrer la transaction;
-      :Journaliser dans l'audit;
-      :Afficher confirmation;
-    else (non)
-      :Refuser — solde insuffisant;
-    endif
-  else (non)
-    :Refuser — compte bloqué ou clôturé;
-  endif
+:Vérifier existence des comptes,\nstatut ACTIVE et solde source;
+
+if (Tous les contrôles\nsont valides ?) then (oui)
+  :Débiter le compte source;
+  :Créditer le compte destination;
+  :Enregistrer la transaction;
+  :Journaliser dans l'audit;
+  :Afficher confirmation à l'agent;
 else (non)
-  :Refuser — compte introuvable;
+  :Afficher message de refus\nà l'agent;
 endif
 
 stop
