@@ -1,6 +1,12 @@
 @startuml 09-portail-client-notifications
 skinparam shadowing false
 skinparam responseMessageBelowArrow true
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 12
+skinparam ParticipantPadding 30
+skinparam ParticipantMargin 20
+skinparam BoxPadding 12
+skinparam Padding 8
 
 title Séquence — Opération agence → notification client
 

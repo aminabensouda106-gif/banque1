@@ -1,0 +1,84 @@
+@startuml diagramme-classes-extensions
+top to bottom direction
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 55
+skinparam ranksep 70
+skinparam defaultFontSize 13
+skinparam classFontSize 13
+skinparam ArrowFontSize 11
+skinparam linetype ortho
+skinparam Padding 12
+skinparam minClassWidth 150
+
+title Diagramme de classes — Vue 2 : Extensions métier
+
+skinparam class {
+  BackgroundColor #FAFAFA
+  BorderColor #333333
+}
+
+' Ligne 1 — extensions
+class BillProvider #E8EAF6 {
+  - code : String
+  - name : String
+}
+
+class BillPayment #E8EAF6 {
+  - clientReference : String
+  - amount : BigDecimal
+}
+
+class CheckbookOrder #F3E5F5 {
+  - orderNumber : String
+  - status : CheckbookOrderStatus
+}
+
+class Notification #ECEFF1 {
+  - type : NotificationType
+  - title : String
+  - read : boolean
+}
+
+class AuditLog #ECEFF1 {
+  - action : String
+  - entityType : String
+  - performedAt : Instant
+}
+
+' Ligne 2 — références noyau
+class "Client" as ClientRef #EEEEEE
+class "Account" as AccountRef #EEEEEE
+class "Transaction" as TransactionRef #EEEEEE
+class "User" as UserRef #EEEEEE
+
+BillProvider -[hidden]right- BillPayment
+BillPayment -[hidden]right- CheckbookOrder
+CheckbookOrder -[hidden]right- Notification
+Notification -[hidden]right- AuditLog
+
+ClientRef -[hidden]right- AccountRef
+AccountRef -[hidden]right- TransactionRef
+TransactionRef -[hidden]right- UserRef
+
+BillPayment -[hidden]down- AccountRef
+
+BillProvider "1" o-- "0..*" BillPayment
+
+BillPayment ..> AccountRef : paie via
+BillPayment ..> TransactionRef : génère
+CheckbookOrder ..> ClientRef : demande
+CheckbookOrder ..> AccountRef : compte
+CheckbookOrder ..> UserRef : traite
+Notification ..> ClientRef : client
+Notification ..> UserRef : personnel
+AuditLog ..> UserRef : effectue
+
+legend right
+  |= Info |= Détail |
+  | R12–R14 | Chéquier : workflow admin |
+  | | sans impact sur le solde |
+endlegend
+
+@enduml

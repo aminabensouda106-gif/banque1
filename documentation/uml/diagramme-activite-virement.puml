@@ -3,6 +3,9 @@ skinparam shadowing false
 skinparam defaultFontSize 12
 skinparam ActivityFontSize 12
 skinparam ArrowFontSize 11
+skinparam nodesep 30
+skinparam ranksep 35
+skinparam padding 8
 
 title Activité — Effectuer un virement
 

@@ -8,6 +8,7 @@ import com.banque.agence.repository.ClientRepository;
 import com.banque.agence.web.dto.ClientForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientService {
 
     private static final String ENTITY_TYPE = "Client";
+    public static final String DEFAULT_PORTAL_PASSWORD = "client123";
 
     private final ClientRepository clientRepository;
     private final AuditService auditService;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClientService(ClientRepository clientRepository, AuditService auditService) {
+    public ClientService(ClientRepository clientRepository,
+                         AuditService auditService,
+                         PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
         this.auditService = auditService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -44,6 +50,7 @@ public class ClientService {
         client.setClientNumber(generateClientNumber());
         applyForm(client, form);
         client.setStatus(ClientStatus.ACTIVE);
+        enablePortalAccess(client);
 
         Client saved = clientRepository.save(client);
         auditService.log(performedBy, "CLIENT_CREATED", ENTITY_TYPE, saved.getId(),
@@ -98,11 +105,26 @@ public class ClientService {
     private String generateClientNumber() {
         return clientRepository.findTopByOrderByIdDesc()
                 .map(last -> {
-                    String numeric = last.getClientNumber().replace("CLI-", "");
-                    long next = Long.parseLong(numeric) + 1;
+                    long next = parseSequenceSuffix(last.getClientNumber()) + 1;
                     return String.format("CLI-%05d", next);
                 })
                 .orElse("CLI-00001");
+    }
+
+    private static long parseSequenceSuffix(String reference) {
+        int separator = reference.lastIndexOf('-');
+        if (separator >= 0 && separator < reference.length() - 1) {
+            String suffix = reference.substring(separator + 1);
+            if (!suffix.isEmpty() && suffix.chars().allMatch(Character::isDigit)) {
+                return Long.parseLong(suffix);
+            }
+        }
+        throw new IllegalStateException("Format de numéro client invalide : " + reference);
+    }
+
+    private void enablePortalAccess(Client client) {
+        client.setPortalEnabled(true);
+        client.setPasswordHash(passwordEncoder.encode(DEFAULT_PORTAL_PASSWORD));
     }
 
     private String blankToNull(String value) {

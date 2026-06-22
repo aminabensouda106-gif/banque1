@@ -1,6 +1,12 @@
 @startuml MLD
+left to right direction
 skinparam shadowing false
 skinparam linetype ortho
+skinparam nodesep 38
+skinparam ranksep 50
+skinparam defaultFontSize 13
+skinparam ArrowFontSize 12
+skinparam padding 8
 
 title MLD — Modèle logique de données
 

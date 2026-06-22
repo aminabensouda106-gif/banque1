@@ -103,6 +103,9 @@ class ClientIntegrationTest {
                 .andExpect(redirectedUrlPattern("/clients/*"));
 
         assertThat(clientRepository.findAll()).hasSize(1);
+        var created = clientRepository.findAll().getFirst();
+        assertThat(created.isPortalEnabled()).isTrue();
+        assertThat(created.getPasswordHash()).isNotNull();
         assertThat(auditLogRepository.count()).isEqualTo(1);
 
         mockMvc.perform(get("/clients").param("q", "AB123456"))

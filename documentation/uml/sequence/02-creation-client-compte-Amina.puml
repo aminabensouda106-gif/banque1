@@ -1,0 +1,49 @@
+@startuml 02-creation-client-compte
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Ajout client et ouverture de compte
+
+actor Agent
+participant "ClientController" as CC
+participant "ClientService" as CS
+participant "AccountController" as AC
+participant "AccountService" as AS
+participant "AuditService" as AUD
+database "PostgreSQL" as DB
+
+== Ajouter un client ==
+
+Agent -> CC : POST /clients (infos perso. et pro.)
+activate CC
+CC -> CS : createClient(dto)
+activate CS
+CS -> DB : INSERT client
+CS -> AUD : log(CLIENT_CREATED)
+AUD -> DB : INSERT audit_log
+CS --> CC : Client
+deactivate CS
+CC --> Agent : Fiche client (avec liste comptes vide)
+deactivate CC
+
+== Ouvrir un compte ==
+
+Agent -> AC : POST /accounts (clientId, type)
+activate AC
+AC -> AS : openAccount(clientId, type)
+activate AS
+AS -> DB : SELECT client WHERE id = ?
+AS -> DB : INSERT account (balance = 0)
+AS -> AUD : log(ACCOUNT_OPENED)
+AUD -> DB : INSERT audit_log
+AS --> AC : Account
+deactivate AS
+AC --> Agent : Fiche compte (solde, statut)
+deactivate AC
+
+note over AS, DB
+  Types : courant, épargne, professionnel
+  Compte associé à un client existant
+end note
+
+@enduml

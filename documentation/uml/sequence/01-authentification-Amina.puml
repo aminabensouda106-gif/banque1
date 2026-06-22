@@ -1,0 +1,51 @@
+@startuml 01-authentification
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Authentification (personnel et client)
+
+actor Utilisateur as U
+participant "LoginController" as C
+participant "UserDetailsServiceImpl" as S
+database "PostgreSQL" as DB
+
+U -> C : POST /login (identifiant, mot de passe)
+activate C
+C -> S : loadUserByUsername(identifiant)
+activate S
+
+S -> DB : SELECT user WHERE username = ?
+alt Personnel trouvé
+  DB --> S : User (passwordHash, role, enabled)
+  S --> C : SecurityUser (ROLE_ADMIN / AGENT / CHEF_AGENCE)
+else Personnel introuvable
+  S -> DB : SELECT client WHERE portal_enabled\nAND (cin = ? OR client_number = ?)
+  alt Client portail actif
+    DB --> S : Client (passwordHash, ACTIVE)
+    S --> C : SecurityClient (ROLE_CLIENT)
+  else Identifiant inconnu
+    S --> C : UsernameNotFoundException
+  end
+end
+deactivate S
+
+alt Identifiants valides et compte actif
+  alt ROLE_CLIENT
+    C --> U : Redirection /portal/dashboard
+  else Personnel
+    C --> U : Redirection /dashboard
+  end
+else Identifiants invalides ou compte désactivé
+  C --> U : Page login + « Identifiants incorrects »
+end
+deactivate C
+
+note over S, DB
+  Mot de passe vérifié via BCrypt
+  Page /login unique (icônes Bootstrap)
+  Personnel → /dashboard (sidebar bleue)
+  Client → /portal/dashboard (sidebar teal, cloche)
+  Démo : DemoPortalSync active le portail (CD789012, BE123456)
+end note
+
+@enduml

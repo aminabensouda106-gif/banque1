@@ -1,0 +1,119 @@
+@startuml MCD
+skinparam shadowing false
+skinparam linetype ortho
+
+title MCD — Modèle conceptuel de données
+
+entity "UTILISATEUR" as user {
+  * identifiant
+  --
+  nom d'utilisateur
+  mot de passe (chiffré)
+  nom complet
+  email
+  rôle
+  compte actif
+}
+
+entity "CLIENT" as client {
+  * identifiant
+  --
+  numéro client
+  CIN
+  nom
+  prénom
+  email
+  téléphone
+  adresse
+  infos professionnelles
+  statut
+  mot de passe portail (chiffré)
+  portail activé
+  dernière connexion portail
+}
+
+entity "COMPTE" as account {
+  * identifiant
+  --
+  numéro compte
+  type
+  statut
+  solde
+  date ouverture
+  date clôture
+}
+
+entity "TRANSACTION" as transaction {
+  * identifiant
+  --
+  type
+  montant
+  date et heure
+  description
+}
+
+entity "FACTURIER" as provider {
+  * identifiant
+  --
+  code
+  libellé
+  catégorie
+  actif
+}
+
+entity "PAIEMENT_FACTURE" as bill {
+  * identifiant
+  --
+  référence client
+  montant
+  date création
+}
+
+entity "COMMANDE_CHEQUIER" as chq {
+  * identifiant
+  --
+  numéro commande
+  quantité
+  format feuillets
+  statut
+  date demande
+  date traitement
+  date livraison
+}
+
+entity "JOURNAL_AUDIT" as audit {
+  * identifiant
+  --
+  action
+  type entité
+  id entité
+  date et heure
+  détails
+}
+
+entity "NOTIFICATION" as notif {
+  * identifiant
+  --
+  type
+  titre
+  message
+  lien
+  lue
+  date création
+}
+
+client ||--o{ account : possède
+client ||--o{ chq : demande
+client ||--o{ notif : reçoit
+user ||--o{ transaction : exécute
+user ||--o{ chq : traite
+user ||--o{ audit : effectue
+user ||--o{ notif : reçoit
+account ||--o{ transaction : source
+account ||--o{ transaction : destination
+account ||--o{ bill : débite via
+account ||--o{ chq : commande
+provider ||--o{ bill : concerne
+bill ||--|| transaction : génère
+
+@enduml

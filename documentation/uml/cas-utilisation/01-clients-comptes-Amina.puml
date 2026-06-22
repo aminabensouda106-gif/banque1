@@ -1,0 +1,70 @@
+@startuml 01-clients-comptes
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 40
+skinparam linetype ortho
+
+title Gestion des clients et comptes
+
+actor "Personnel\nde l'agence" as personnel
+
+actor "Administrateur" as admin
+actor "Agent bancaire" as agent
+actor "Chef d'agence" as chef
+
+admin -up-|> personnel
+agent -up-|> personnel
+chef -up-|> personnel
+
+rectangle "Accès au système" {
+  usecase "S'authentifier" as UC_LOGIN
+  usecase "Se déconnecter" as UC_LOGOUT
+}
+
+rectangle "Clients" {
+  usecase "Ajouter un client" as UC_C_ADD
+  usecase "Modifier un client" as UC_C_EDIT
+  usecase "Consulter la fiche client" as UC_C_VIEW
+  usecase "Rechercher un client" as UC_C_SEARCH
+  usecase "Gérer le statut client" as UC_C_STATUS
+}
+
+rectangle "Comptes bancaires" {
+  usecase "Ouvrir un compte" as UC_A_OPEN
+  usecase "Consulter un compte" as UC_A_VIEW
+  usecase "Lister les comptes\nd'un client" as UC_A_LIST
+  usecase "Gérer le statut compte" as UC_A_STATUS
+  usecase "Commander un chéquier" as UC_CHQ_ORDER
+  usecase "Suivre une commande\nde chéquier" as UC_CHQ_TRACK
+}
+
+personnel --> UC_LOGIN
+personnel --> UC_LOGOUT
+personnel --> UC_C_ADD
+personnel --> UC_C_EDIT
+personnel --> UC_C_VIEW
+personnel --> UC_C_SEARCH
+personnel --> UC_C_STATUS
+personnel --> UC_A_OPEN
+personnel --> UC_A_VIEW
+personnel --> UC_A_LIST
+personnel --> UC_A_STATUS
+personnel --> UC_CHQ_ORDER
+personnel --> UC_CHQ_TRACK
+
+legend bottom
+  |= Détails |= |
+  | Auth | Accès selon le rôle, mot de passe chiffré (BCrypt) |
+  | Modifier client | Informations personnelles et professionnelles |
+  | Recherche | Nom, CIN, numéro client, téléphone |
+  | Statut client | Activer, suspendre, désactiver |
+  | Types compte | Courant, épargne, professionnel |
+  | Consulter compte | Solde et statut |
+  | Statut compte | Bloquer, débloquer, clôturer |
+  | Chéquier | Compte courant/pro actif ; workflow PENDING → LIVRÉE |
+  | Audit | Toute modification est journalisée |
+endlegend
+
+@enduml

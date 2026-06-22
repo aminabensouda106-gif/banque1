@@ -1,0 +1,78 @@
+@startuml 02-operations-supervision
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 40
+skinparam linetype ortho
+
+title Opérations et supervision
+
+actor "Personnel\nde l'agence" as personnel
+
+actor "Administrateur" as admin
+actor "Agent bancaire" as agent
+actor "Chef d'agence" as chef
+
+admin -up-|> personnel
+agent -up-|> personnel
+chef -up-|> personnel
+
+rectangle "Transactions" {
+  usecase "Effectuer un dépôt" as UC_DEPOT
+  usecase "Effectuer un retrait" as UC_RETRAIT
+  usecase "Effectuer un virement" as UC_VIREMENT
+  usecase "Payer une facture" as UC_BILL
+  usecase "Consulter l'historique" as UC_HIST
+  usecase "Éditer un relevé\nou reçu" as UC_RELEVE
+}
+
+rectangle "Supervision" {
+  usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Visualiser les opérations\nrécentes" as UC_RECENT
+  usecase "Consulter les alertes\nmétier" as UC_ALERTS
+  usecase "Consulter les\nnotifications" as UC_NOTIF
+  usecase "Gérer les utilisateurs" as UC_USERS
+  usecase "Consulter le journal d'audit" as UC_AUDIT_VIEW
+  usecase "Valider une opération\nsensible" as UC_VALIDATE
+}
+
+usecase "Contrôler l'éligibilité\nde l'opération" as UC_CHECK
+
+personnel --> UC_DEPOT
+personnel --> UC_RETRAIT
+personnel --> UC_VIREMENT
+personnel --> UC_BILL
+personnel --> UC_HIST
+personnel --> UC_RELEVE
+personnel --> UC_DASH
+personnel --> UC_RECENT
+personnel --> UC_NOTIF
+
+admin --> UC_USERS
+admin --> UC_AUDIT_VIEW
+chef --> UC_AUDIT_VIEW
+chef --> UC_VALIDATE
+chef --> UC_ALERTS
+
+UC_DEPOT ..> UC_CHECK : <<include>>
+UC_RETRAIT ..> UC_CHECK : <<include>>
+UC_VIREMENT ..> UC_CHECK : <<include>>
+UC_BILL ..> UC_CHECK : <<include>>
+UC_DASH ..> UC_RECENT : <<include>>
+UC_DASH ..> UC_ALERTS : <<include>>
+
+legend bottom
+  |= Détails |= |
+  | Contrôle | Solde suffisant, compte actif |
+  | Paiement facture | Facturier, référence, débit compte, reçu |
+  | Historique | Date, heure, montant, utilisateur responsable |
+  | Filtres | Date, type, compte, utilisateur |
+  | Utilisateurs | Créer, modifier, rôles, activer/désactiver — admin seul |
+  | Validation | Chef d'agence — opérations sensibles |
+  | Audit | Opérations importantes journalisées |
+  | Notifications | Cloche + badge ; centre /notifications ; lu / tout marquer lu |
+  | Alertes métier | Dashboard : commandes chéquier en attente ou en cours |
+endlegend
+
+@enduml

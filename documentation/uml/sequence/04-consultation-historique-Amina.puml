@@ -1,0 +1,63 @@
+@startuml 04-consultation-historique
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Historique, relevé et reçu
+
+actor Agent
+participant "TransactionController" as TC
+participant "AccountController" as AC
+participant "TransactionService" as TS
+database "PostgreSQL" as DB
+
+== Consulter l'historique ==
+
+Agent -> TC : GET /transactions?type=&account=&from=&to=
+activate TC
+TC -> TS : search(filters, page)
+activate TS
+TS -> DB : SELECT transactions\nJOIN accounts, users\nWHERE filtres
+DB --> TS : Page<Transaction>
+TS --> TC : résultats paginés
+deactivate TS
+TC --> Agent : Tableau des opérations
+deactivate TC
+
+== Éditer un relevé ==
+
+Agent -> AC : GET /accounts/{id}/statement?from=&to=
+activate AC
+AC -> TS : getStatement(accountId, period)
+activate TS
+TS -> DB : SELECT transactions du compte
+DB --> TS : liste + solde courant
+TS --> AC : relevé
+deactivate TS
+AC --> Agent : Relevé imprimable
+deactivate AC
+
+== Éditer un reçu ==
+
+Agent -> TC : GET /transactions/{id}/receipt
+activate TC
+TC -> TS : findById(transactionId)
+activate TS
+TS -> DB : SELECT transaction + comptes + user
+DB --> TS : détails complets
+TS --> TC : transaction
+deactivate TS
+TC --> Agent : Reçu imprimable (HTML)
+
+opt Télécharger en PDF
+  Agent -> TC : GET /transactions/{id}/receipt.pdf
+  TC -> TS : findById(transactionId)
+  activate TS
+  TS -> DB : SELECT transaction + bill_payment si facture
+  DB --> TS : détails complets
+  TS --> TC : transaction
+  deactivate TS
+  TC --> Agent : fichier reçu-TYPE-date.pdf
+end
+deactivate TC
+
+@enduml

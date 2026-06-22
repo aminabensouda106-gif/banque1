@@ -1,0 +1,206 @@
+@startuml diagramme-classes
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title Diagramme de classes — domaine métier
+
+package "domain.enums" {
+  enum UserRole {
+    ADMIN
+    AGENT
+    CHEF_AGENCE
+  }
+  enum ClientStatus {
+    ACTIVE
+    SUSPENDED
+    INACTIVE
+  }
+  enum AccountType {
+    COURANT
+    EPARGNE
+    PROFESSIONNEL
+  }
+  enum AccountStatus {
+    ACTIVE
+    BLOCKED
+    CLOSED
+  }
+  enum TransactionType {
+    DEPOT
+    RETRAIT
+    VIREMENT
+    PAIEMENT_FACTURE
+  }
+  enum CheckbookOrderStatus {
+    PENDING
+    PROCESSING
+    DELIVERED
+    CANCELLED
+  }
+  enum CheckbookSheetCount {
+    FEUILLES_20
+    FEUILLES_40
+  }
+  enum NotificationType {
+    CHECKBOOK_ORDER_CREATED
+    CHECKBOOK_ORDER_STATUS_CHANGED
+  }
+}
+
+package "domain.entity" {
+
+  class User {
+    - id : Long
+    - username : String
+    - passwordHash : String
+    - fullName : String
+    - email : String
+    - role : UserRole
+    - enabled : boolean
+    - createdAt : Instant
+    - lastLoginAt : Instant
+  }
+
+  class Client {
+    - id : Long
+    - clientNumber : String
+    - cin : String
+    - firstName : String
+    - lastName : String
+    - email : String
+    - phone : String
+    - address : String
+    - professionalInfo : String
+    - status : ClientStatus
+    - createdAt : Instant
+    - updatedAt : Instant
+    - passwordHash : String
+    - portalEnabled : boolean
+    - lastLoginAt : Instant
+  }
+
+  class Account {
+    - id : Long
+    - accountNumber : String
+    - type : AccountType
+    - status : AccountStatus
+    - balance : BigDecimal
+    - openedAt : Instant
+    - closedAt : Instant
+    - version : Long
+  }
+
+  class Transaction {
+    - id : Long
+    - type : TransactionType
+    - amount : BigDecimal
+    - executedAt : Instant
+    - description : String
+  }
+
+  class BillProvider {
+    - id : Long
+    - code : String
+    - name : String
+    - category : String
+    - active : boolean
+  }
+
+  class BillPayment {
+    - id : Long
+    - clientReference : String
+    - amount : BigDecimal
+    - createdAt : Instant
+  }
+
+  class CheckbookOrder {
+    - id : Long
+    - orderNumber : String
+    - quantity : int
+    - sheetCount : CheckbookSheetCount
+    - status : CheckbookOrderStatus
+    - requestedAt : Instant
+    - processedAt : Instant
+    - deliveredAt : Instant
+    - notes : String
+  }
+
+  class AuditLog {
+    - id : Long
+    - action : String
+    - entityType : String
+    - entityId : Long
+    - performedAt : Instant
+    - details : String
+  }
+
+  class Notification {
+    - id : Long
+    - type : NotificationType
+    - title : String
+    - message : String
+    - link : String
+    - read : boolean
+    - createdAt : Instant
+  }
+}
+
+Client "1" o-- "0..*" Account : possède >
+Client "1" o-- "0..*" CheckbookOrder : demande >
+Client "1" -- "0..*" Notification : reçoit >
+User "1" -- "0..*" Transaction : exécute >
+User "1" -- "0..*" CheckbookOrder : traite >
+User "1" -- "0..*" AuditLog : effectue >
+User "1" -- "0..*" Notification : reçoit >
+Account "0..1" -- "0..*" Transaction : source >
+Account "0..1" -- "0..*" Transaction : destination >
+Account "1" o-- "0..*" BillPayment : paie via >
+Account "1" o-- "0..*" CheckbookOrder : commande >
+BillProvider "1" -- "0..*" BillPayment : facturier >
+BillPayment "1" -- "1" Transaction : génère >
+Transaction --> User : executedBy
+AuditLog --> User : performedBy
+
+note bottom of Account
+  Un client possède plusieurs comptes
+  Chaque compte appartient à un seul client
+  Compte bloqué ou clôturé : pas d'opérations
+end note
+
+note bottom of BillPayment
+  Extension v1.1 — paiement facture
+  Débite le compte via Transaction PAIEMENT_FACTURE
+  Reçu réutilise la transaction liée
+  Téléchargement PDF : reçu-TYPE-date.pdf
+end note
+
+note bottom of CheckbookOrder
+  Extension v1.1 — pas d'impact sur le solde
+  Compte COURANT ou PROFESSIONNEL actif
+  Format : 20 ou 40 feuillets (sheetCount)
+  Création / changement statut → Notification
+end note
+
+note bottom of Notification
+  Extension v1.2 / v2
+  Destinataire : User (staff) ou Client (portail)
+  Événements client : opérations + chéquier
+end note
+
+note bottom of Transaction
+  Datée, horodatée
+  Associée à l'utilisateur exécutant
+end note
+
+note bottom of Client
+  Portail v2 : passwordHash, portalEnabled
+  UI /portal : shell commun (sidebar icônes, cloche)
+  Login partagé /login → /portal/dashboard
+end note
+
+note bottom of User
+  Mot de passe jamais stocké en clair
+end note
+
+@enduml

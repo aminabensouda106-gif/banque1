@@ -1,0 +1,49 @@
+@startuml 08-notifications
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Centre de notifications
+
+actor "Agent bancaire" as agent
+actor "Chef d'agence" as chef
+participant "CheckbookOrderService" as chqSvc
+participant "NotificationService" as notifSvc
+database "PostgreSQL" as db
+participant "NotificationController" as ctrl
+
+== Nouvelle commande chéquier ==
+agent -> chqSvc : requestCheckbook(...)
+chqSvc -> db : INSERT checkbook_order (PENDING)
+chqSvc -> notifSvc : notifyChefsAboutNewCheckbookOrder(order)
+notifSvc -> db : SELECT users CHEF_AGENCE actifs
+loop pour chaque chef
+  notifSvc -> db : INSERT notification\n(CHECKBOOK_ORDER_CREATED)
+end
+notifSvc --> chqSvc : OK
+
+== Consultation par le chef ==
+chef -> ctrl : GET /notifications
+ctrl -> notifSvc : listForUser(chef, page)
+notifSvc -> db : SELECT notifications\nORDER BY created_at DESC
+ctrl --> chef : liste + badge non lues
+
+chef -> ctrl : POST /notifications/{id}/read
+ctrl -> notifSvc : markAsRead(id, chef)
+notifSvc -> db : UPDATE read = true
+ctrl --> chef : redirection liste
+
+== Changement de statut ==
+chef -> chqSvc : updateStatus(orderId, PROCESSING, chef)
+chqSvc -> db : UPDATE checkbook_order
+chqSvc -> notifSvc : notifyRequesterAboutStatusChange(order, chef)
+alt demandeur ≠ acteur
+  notifSvc -> db : INSERT notification\n(CHECKBOOK_ORDER_STATUS_CHANGED)
+end
+
+note right of notifSvc
+  Badge cloche dans la barre
+  « Tout marquer comme lu » disponible
+  Alertes dashboard : compteurs PENDING / PROCESSING
+end note
+
+@enduml

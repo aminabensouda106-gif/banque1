@@ -1,0 +1,32 @@
+@startuml 09-portail-client-notifications
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Opération agence → notification client
+
+actor "Agent bancaire" as agent
+actor "Client bancaire" as client
+participant "TransactionService" as txSvc
+participant "NotificationService" as notifSvc
+database "PostgreSQL" as db
+participant "PortalNotificationController" as portal
+
+agent -> txSvc : dépôt / virement / facture / chéquier
+txSvc -> db : enregistrement métier
+txSvc -> notifSvc : notifyClientAbout...
+alt portail activé pour le client
+  notifSvc -> db : INSERT notification (client_id)
+end
+
+client -> portal : GET /portal/notifications
+portal -> notifSvc : listForClient(client)
+notifSvc -> db : SELECT notifications client
+portal --> client : liste + badge non lues
+
+note right of notifSvc
+  Événements notifiés :
+  dépôt, retrait, virement,
+  paiement facture, chéquier
+end note
+
+@enduml

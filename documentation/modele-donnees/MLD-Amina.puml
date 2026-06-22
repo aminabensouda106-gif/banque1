@@ -1,0 +1,138 @@
+@startuml MLD
+skinparam shadowing false
+skinparam linetype ortho
+
+title MLD — Modèle logique de données
+
+entity "users" as users {
+  * **id** : BIGINT <<PK>>
+  --
+  * username : VARCHAR(50) <<UK>>
+  * password_hash : VARCHAR(255)
+  * full_name : VARCHAR(100)
+  email : VARCHAR(100)
+  * role : VARCHAR(20)
+  * enabled : BOOLEAN
+  created_at : TIMESTAMPTZ
+  last_login_at : TIMESTAMPTZ
+}
+
+entity "clients" as clients {
+  * **id** : BIGINT <<PK>>
+  --
+  * client_number : VARCHAR(20) <<UK>>
+  * cin : VARCHAR(20) <<UK>>
+  * first_name : VARCHAR(50)
+  * last_name : VARCHAR(50)
+  email : VARCHAR(100)
+  phone : VARCHAR(20)
+  address : VARCHAR(255)
+  professional_info : TEXT
+  * status : VARCHAR(20)
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+  password_hash : VARCHAR(255)
+  portal_enabled : BOOLEAN
+  last_login_at : TIMESTAMPTZ
+}
+
+entity "accounts" as accounts {
+  * **id** : BIGINT <<PK>>
+  --
+  * account_number : VARCHAR(20) <<UK>>
+  * client_id : BIGINT <<FK>>
+  * type : VARCHAR(20)
+  * status : VARCHAR(20)
+  * balance : NUMERIC(19,4)
+  opened_at : TIMESTAMPTZ
+  closed_at : TIMESTAMPTZ
+  * version : BIGINT
+}
+
+entity "transactions" as transactions {
+  * **id** : BIGINT <<PK>>
+  --
+  * type : VARCHAR(30)
+  * amount : NUMERIC(19,4)
+  source_account_id : BIGINT <<FK>>
+  destination_account_id : BIGINT <<FK>>
+  * executed_by : BIGINT <<FK>>
+  * executed_at : TIMESTAMPTZ
+  description : VARCHAR(255)
+}
+
+entity "bill_providers" as bill_providers {
+  * **id** : BIGINT <<PK>>
+  --
+  * code : VARCHAR(20) <<UK>>
+  * name : VARCHAR(100)
+  category : VARCHAR(50)
+  * active : BOOLEAN
+}
+
+entity "bill_payments" as bill_payments {
+  * **id** : BIGINT <<PK>>
+  --
+  * account_id : BIGINT <<FK>>
+  * bill_provider_id : BIGINT <<FK>>
+  * client_reference : VARCHAR(50)
+  * amount : NUMERIC(19,4)
+  * transaction_id : BIGINT <<FK>> <<UK>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "checkbook_orders" as checkbook_orders {
+  * **id** : BIGINT <<PK>>
+  --
+  * order_number : VARCHAR(20) <<UK>>
+  * account_id : BIGINT <<FK>>
+  * client_id : BIGINT <<FK>>
+  * quantity : INTEGER
+  * sheet_count : VARCHAR(20)
+  * status : VARCHAR(20)
+  * requested_at : TIMESTAMPTZ
+  processed_at : TIMESTAMPTZ
+  delivered_at : TIMESTAMPTZ
+  * requested_by : BIGINT <<FK>>
+  notes : VARCHAR(255)
+}
+
+entity "audit_logs" as audit_logs {
+  * **id** : BIGINT <<PK>>
+  --
+  * action : VARCHAR(50)
+  entity_type : VARCHAR(50)
+  entity_id : BIGINT
+  * performed_by : BIGINT <<FK>>
+  * performed_at : TIMESTAMPTZ
+  details : TEXT
+}
+
+entity "notifications" as notifications {
+  * **id** : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  client_id : BIGINT <<FK>>
+  * type : VARCHAR(50)
+  * title : VARCHAR(150)
+  * message : VARCHAR(500)
+  link : VARCHAR(255)
+  * read : BOOLEAN
+  * created_at : TIMESTAMPTZ
+}
+
+clients ||--o{ accounts : client_id
+clients ||--o{ checkbook_orders : client_id
+users ||--o{ transactions : executed_by
+users ||--o{ checkbook_orders : requested_by
+users ||--o{ audit_logs : performed_by
+users ||--o{ notifications : user_id
+clients ||--o{ notifications : client_id
+accounts ||--o{ transactions : source_account_id
+accounts ||--o{ transactions : destination_account_id
+accounts ||--o{ bill_payments : account_id
+accounts ||--o{ checkbook_orders : account_id
+bill_providers ||--o{ bill_payments : bill_provider_id
+transactions ||--|| bill_payments : transaction_id
+
+@enduml

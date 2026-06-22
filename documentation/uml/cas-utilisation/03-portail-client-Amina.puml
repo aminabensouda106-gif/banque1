@@ -1,0 +1,47 @@
+@startuml 03-portail-client
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Portail client — cas d'utilisation
+
+actor "Client bancaire" as client
+
+rectangle "Accès commun /login" {
+  usecase "S'authentifier\n(CIN ou n° client)" as UC_LOGIN
+  usecase "Se déconnecter" as UC_LOGOUT
+}
+
+rectangle "Espace client /portal/**" {
+  usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Consulter ses comptes" as UC_ACCOUNTS
+  usecase "Consulter l'historique" as UC_HISTORY
+  usecase "Consulter un reçu\n(HTML ou PDF)" as UC_RECEIPT
+  usecase "Suivre ses commandes chéquier" as UC_CHQ
+  usecase "Consulter ses notifications\n(cloche en-tête)" as UC_NOTIF
+}
+
+client --> UC_LOGIN
+client --> UC_LOGOUT
+client --> UC_DASH
+client --> UC_ACCOUNTS
+client --> UC_HISTORY
+client --> UC_RECEIPT
+client --> UC_CHQ
+client --> UC_NOTIF
+
+UC_DASH ..> UC_ACCOUNTS : <<include>>
+UC_HISTORY ..> UC_RECEIPT : <<extend>>
+
+legend bottom
+  |= Détails |= |
+  | Interface | Même shell que le personnel : sidebar icônes, en-tête, cloche |
+  | Couleur | Thème teal (espace client) vs bleu (agence) |
+  | Authentification | Page /login partagée → redirection /portal/dashboard |
+  | Périmètre | Consultation et notifications uniquement |
+  | Reçu | Page HTML + téléchargement PDF (`reçu-TYPE-date.pdf`) |
+  | Opérations | Saisies par l'agent en agence |
+  | Notifications | Dépôt, retrait, virement, facture, chéquier |
+endlegend
+
+@enduml

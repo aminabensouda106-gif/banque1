@@ -1,6 +1,12 @@
 @startuml MCD
+left to right direction
 skinparam shadowing false
 skinparam linetype ortho
+skinparam nodesep 36
+skinparam ranksep 46
+skinparam defaultFontSize 13
+skinparam ArrowFontSize 12
+skinparam padding 8
 
 title MCD — Modèle conceptuel de données
 

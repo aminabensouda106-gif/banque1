@@ -1,0 +1,91 @@
+@startuml 03-operations-financieres
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+
+title Séquence — Dépôt, retrait et virement
+
+actor Agent
+participant "TransactionController" as C
+participant "TransactionService" as S
+participant "AuditService" as AUD
+database "PostgreSQL" as DB
+
+== Dépôt ==
+
+Agent -> C : POST /deposit (accountId, amount)
+activate C
+C -> S : deposit(accountId, amount, user)
+activate S
+S -> DB : SELECT account FOR UPDATE
+S -> S : vérifier compte ACTIVE
+
+alt Compte actif
+  S -> DB : UPDATE balance (+ amount)
+  S -> DB : INSERT transaction (DEPOT)
+  S -> AUD : log(DEPOSIT)
+  AUD -> DB : INSERT audit_log
+  S --> C : OK
+  C --> Agent : Succès + nouveau solde
+else Compte bloqué ou clôturé
+  S --> C : Erreur métier
+  C --> Agent : Message d'erreur
+end
+deactivate S
+deactivate C
+
+== Retrait ==
+
+Agent -> C : POST /withdraw (accountId, amount)
+activate C
+C -> S : withdraw(accountId, amount, user)
+activate S
+S -> DB : SELECT account FOR UPDATE
+S -> S : vérifier compte ACTIVE
+S -> S : vérifier balance >= amount
+
+alt Solde suffisant et compte actif
+  S -> DB : UPDATE balance (- amount)
+  S -> DB : INSERT transaction (RETRAIT)
+  S -> AUD : log(WITHDRAW)
+  AUD -> DB : INSERT audit_log
+  S --> C : OK
+  C --> Agent : Succès + nouveau solde
+else Solde insuffisant ou compte inactif
+  S --> C : Erreur métier
+  C --> Agent : Message d'erreur
+end
+deactivate S
+deactivate C
+
+== Virement ==
+
+Agent -> C : POST /transfer (sourceId, destId, amount)
+activate C
+C -> S : transfer(sourceId, destId, amount, user)
+activate S
+S -> DB : SELECT comptes source et destination
+S -> S : vérifier les deux comptes ACTIVE
+S -> S : vérifier solde source >= amount
+
+alt Comptes actifs et solde OK
+  S -> DB : UPDATE source (- amount)
+  S -> DB : UPDATE destination (+ amount)
+  S -> DB : INSERT transaction (VIREMENT)
+  S -> AUD : log(TRANSFER)
+  AUD -> DB : INSERT audit_log
+  S --> C : OK
+  C --> Agent : Succès
+else Compte inactif ou solde insuffisant
+  S --> C : Erreur métier
+  C --> Agent : Message d'erreur
+end
+deactivate S
+deactivate C
+
+note over S
+  Chaque transaction : date, heure,
+  montant, utilisateur responsable
+  Opérations importantes → journal d'audit
+end note
+
+@enduml
