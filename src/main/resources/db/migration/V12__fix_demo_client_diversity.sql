@@ -1,5 +1,5 @@
 -- Diversifie les clients affichés sur la liste des comptes (un titulaire distinct
--- parmi les 5 comptes les plus récents) et remplace Abdellah Raisouni par Abdellah Idrissi.
+-- parmi les 5 comptes les plus récents) et renomme le client de démo CL-00002 (CIN AR234567).
 -- Les réaffectations ne s'appliquent qu'à l'ancien jeu « 2 clients / 5 comptes » (sans ACC-00007).
 
 UPDATE clients
@@ -8,8 +8,7 @@ SET last_name         = 'Idrissi',
     cin               = 'AI876543',
     professional_info = 'Ingénieur informatique',
     updated_at        = NOW()
-WHERE cin = 'AR234567'
-   OR (first_name = 'Abdellah' AND last_name = 'Raisouni');
+WHERE cin = 'AR234567';
 
 INSERT INTO clients (client_number, cin, first_name, last_name, email, phone, address, professional_info, status)
 SELECT v.client_number, v.cin, v.first_name, v.last_name, v.email, v.phone, v.address, v.professional_info,

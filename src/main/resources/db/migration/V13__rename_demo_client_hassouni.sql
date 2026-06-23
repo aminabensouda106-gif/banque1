@@ -1,4 +1,4 @@
--- Renomme le client de démo CL-00002 (Abdellah Raisouni / Idrissi) en Mohamed Amine Hassouni.
+-- Renomme le client de démo CL-00002 en Mohamed Amine Hassouni.
 
 UPDATE clients
 SET first_name        = 'Mohamed Amine',
@@ -8,5 +8,4 @@ SET first_name        = 'Mohamed Amine',
     professional_info = 'Consultant en finance',
     updated_at        = NOW()
 WHERE client_number = 'CL-00002'
-   OR cin IN ('AR234567', 'AI876543')
-   OR (first_name = 'Abdellah' AND last_name IN ('Raisouni', 'Idrissi'));
+   OR cin IN ('AR234567', 'AI876543');
