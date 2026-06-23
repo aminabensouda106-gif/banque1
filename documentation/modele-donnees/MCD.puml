@@ -1,141 +1,167 @@
 @startuml MCD
 top to bottom direction
+scale max 3000 width
 skinparam shadowing false
-skinparam linetype polyline
-skinparam nodesep 85
-skinparam ranksep 95
-skinparam defaultFontSize 13
-skinparam ArrowFontSize 11
-skinparam padding 14
+skinparam backgroundColor #0F0F14
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam padding 12
+skinparam arrowColor #BBBBBB
 
-title MCD — Modèle conceptuel de données
+title <color:#FFFFFF>MCD — Modèle conceptuel de données AmanaBank</color>
 
-entity "UTILISATEUR" as user {
-  * identifiant
-  --
-  nom d'utilisateur
-  mot de passe (chiffré)
-  nom complet
-  email
-  rôle
-  compte actif
+skinparam entity {
+  BackgroundColor #D8CCE8
+  BorderColor #4A4A4A
+  FontColor #111111
 }
 
-entity "CLIENT" as client {
-  * identifiant
-  --
-  numéro client
-  CIN
-  nom
-  prénom
-  email
-  téléphone
-  adresse
-  infos professionnelles
-  statut
-  mot de passe portail (chiffré)
-  portail activé
-  dernière connexion portail
+skinparam package {
+  BackgroundColor #1E1E28
+  BorderColor #888888
+  FontColor #FFFFFF
 }
 
-entity "COMPTE" as account {
-  * identifiant
-  --
-  numéro compte
-  type
-  statut
-  solde
-  date ouverture
-  date clôture
+package "Personnel & accès" #1A1A24 {
+  entity "UTILISATEUR" as user {
+    * **identifiant**
+    --
+    nom d'utilisateur
+    mot de passe (BCrypt)
+    nom complet
+    email
+    **rôle** (ADMIN / AGENT / CHEF)
+    compte actif
+    dernière connexion
+  }
 }
 
-entity "TRANSACTION" as transaction {
-  * identifiant
-  --
-  type
-  montant
-  date et heure
-  description
+package "Clients & comptes" #1A1A24 {
+  entity "CLIENT" as client {
+    * **identifiant**
+    --
+    numéro client
+    **CIN**
+    nom · prénom
+    email · téléphone
+    adresse
+    statut
+    portail activé
+    mot de passe portail
+  }
+
+  entity "COMPTE" as account {
+    * **identifiant**
+    --
+    numéro compte
+    **type** (courant / épargne / pro)
+    **statut** (actif / bloqué / clôturé)
+    **solde**
+    date ouverture
+    date clôture
+  }
 }
 
-entity "FACTURIER" as provider {
-  * identifiant
-  --
-  code
-  libellé
-  catégorie
-  actif
+package "Opérations financières" #1A1A24 {
+  entity "TRANSACTION" as transaction {
+    * **identifiant**
+    --
+    **type** (dépôt / retrait / virement / …)
+    **montant**
+    date et heure
+    description
+  }
 }
 
-entity "PAIEMENT_FACTURE" as bill {
-  * identifiant
-  --
-  référence client
-  montant
-  date création
+package "Extensions métier" #1A1A24 {
+  entity "FACTURIER" as provider {
+    * **identifiant**
+    --
+    code (LYDEC, ONEE…)
+    libellé
+    catégorie
+    actif
+  }
+
+  entity "PAIEMENT_FACTURE" as bill {
+    * **identifiant**
+    --
+    référence client
+    montant
+    date création
+  }
+
+  entity "COMMANDE_CHEQUIER" as chq {
+    * **identifiant**
+    --
+    numéro commande
+    quantité · format feuillets
+    **statut** (PENDING → DELIVERED)
+    dates demande / traitement / livraison
+  }
 }
 
-entity "COMMANDE_CHEQUIER" as chq {
-  * identifiant
-  --
-  numéro commande
-  quantité
-  format feuillets
-  statut
-  date demande
-  date traitement
-  date livraison
+package "Traçabilité & notifications" #1A1A24 {
+  entity "NOTIFICATION" as notif {
+    * **identifiant**
+    --
+    type · titre · message
+    lien · lue
+    date création
+  }
+
+  entity "JOURNAL_AUDIT" as audit {
+    * **identifiant**
+    --
+    action · type entité
+    id entité · détails
+    date et heure
+  }
 }
 
-entity "NOTIFICATION" as notif {
-  * identifiant
-  --
-  type
-  titre
-  message
-  lien
-  lue
-  date création
-}
+' ── Relations noyau ──
+client ||--o{ account : "R1–R2\npossède"
+user ||--o{ transaction : "exécute"
+account ||--o{ transaction : "source"
+account ||--o{ transaction : "destination"
 
-entity "JOURNAL_AUDIT" as audit {
-  * identifiant
-  --
-  action
-  type entité
-  id entité
-  date et heure
-  détails
-}
+' ── Extensions ──
+account ||--o{ bill : "débite via"
+provider ||--o{ bill : "concerne"
+bill ||--|| transaction : "génère"
+client ||--o{ chq : "demande"
+account ||--o{ chq : "commande"
+user ||--o{ chq : "traite"
 
-' Grille 4 x 2
+' ── Transversal ──
+client ||--o{ notif : "reçoit"
+user ||--o{ notif : "reçoit"
+user ||--o{ audit : "effectue"
+
+' ── Layout ──
 user -[hidden]right- client
 client -[hidden]right- account
 account -[hidden]right- transaction
 
 provider -[hidden]right- bill
 bill -[hidden]right- chq
-chq -[hidden]right- notif
+
+notif -[hidden]right- audit
 
 user -[hidden]down- provider
 client -[hidden]down- bill
 account -[hidden]down- chq
 transaction -[hidden]down- notif
 
-provider -[hidden]down- audit
-
-client ||--o{ account : possède
-client ||--o{ chq : demande
-client ||--o{ notif : reçoit
-user ||--o{ transaction : exécute
-user ||--o{ chq : traite
-user ||--o{ audit : effectue
-user ||--o{ notif : reçoit
-account ||--o{ transaction : source
-account ||--o{ transaction : destination
-account ||--o{ bill : débite via
-account ||--o{ chq : commande
-provider ||--o{ bill : concerne
-bill ||--|| transaction : génère
+legend bottom right
+  |= Règle |= Signification |
+  | R1–R2 | 1 client → N comptes ; 1 compte → 1 client |
+  | R3–R4 | Solde suffisant · comptes actifs |
+  | R12–R14 | Chéquier : workflow sans impact solde |
+  | <color:#AAAAAA>User ≠ Client</color> | Personnel agence ≠ client bancaire |
+endlegend
 
 @enduml

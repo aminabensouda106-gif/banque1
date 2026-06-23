@@ -1,63 +1,252 @@
 @startuml diagramme-classes
 top to bottom direction
-
+scale max 3200 width
 skinparam shadowing false
+skinparam backgroundColor #0F0F14
 skinparam classAttributeIconSize 0
-skinparam nodesep 60
-skinparam ranksep 50
-skinparam defaultFontSize 14
-skinparam classFontSize 14
-skinparam ArrowFontSize 12
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam defaultFontSize 11
+skinparam classFontSize 11
+skinparam ArrowFontSize 10
 skinparam linetype ortho
-skinparam Padding 12
-skinparam minClassWidth 160
+skinparam Padding 10
+skinparam arrowColor #BBBBBB
+skinparam classFontColor #111111
+skinparam stereotypeFontStyle bold
 
-title Diagramme de classes — Vue 1 : Noyau transactionnel
+title <color:#FFFFFF>Diagramme de classes — AmanaBank (domaine métier)</color>
 
 skinparam class {
-  BackgroundColor #FAFAFA
-  BorderColor #333333
+  BackgroundColor #D8CCE8
+  BorderColor #4A4A4A
+  HeaderBackgroundColor #C4B5D8
 }
 
-class Client #E8F5E9 {
+' ═══════════════ PERSONNEL (User + rôles) ═══════════════
+abstract class "<<Personnel>>\nUser" as User {
+  - id : Long
+  - username : String
+  - passwordHash : String
+  - fullName : String
+  - email : String
+  - enabled : boolean
+  --
+  +authentifier()
+  +seDeconnecter()
+}
+
+class "Administrateur" as Admin {
+  +gererUtilisateurs()
+  +attribuerRoles()
+  +consulterAudit()
+}
+
+class "Agent bancaire" as Agent {
+  +creerClient()
+  +ouvrirCompte()
+  +effectuerOperation()
+}
+
+class "Chef d'agence" as Chef {
+  +consulterTableauBord()
+  +validerChequier()
+  +superviserAgence()
+}
+
+User <|-- Admin
+User <|-- Agent
+User <|-- Chef
+
+' ═══════════════ CLIENT & COMPTE ═══════════════
+class Client {
+  - id : Long
   - clientNumber : String
   - cin : String
+  - firstName : String
+  - lastName : String
+  - phone : String
+  - email : String
   - status : ClientStatus
+  - portalEnabled : boolean
+  --
+  +consulterComptes()
+  +consulterHistorique()
+  +telechargerRecu()
 }
 
-class Account #FFFDE7 {
+class Account {
+  - id : Long
   - accountNumber : String
   - type : AccountType
   - balance : BigDecimal
   - status : AccountStatus
+  - version : Long
+  --
+  +crediter(montant)
+  +debiter(montant)
+  +verifierSolde()
 }
-
-class Transaction #FBE9E7 {
-  - type : TransactionType
-  - amount : BigDecimal
-  - executedAt : Instant
-}
-
-class User #E3F2FD {
-  - username : String
-  - role : UserRole
-  - fullName : String
-}
-
-' Une seule ligne horizontale
-Client -[hidden]right- Account
-Account -[hidden]right- Transaction
-Transaction -[hidden]right- User
 
 Client "1" o-- "0..*" Account : possède >
-Account "0..*" o-- "0..*" Transaction : mouvements >
+
+' ═══════════════ TRANSACTIONS (hiérarchie) ═══════════════
+abstract class "<<Transaction>>\nTransaction" as Transaction {
+  - id : Long
+  - amount : BigDecimal
+  - executedAt : Instant
+  - description : String
+  --
+  +executer()
+}
+
+class Depot {
+  +executerDepot()
+}
+
+class Retrait {
+  +executerRetrait()
+}
+
+class Virement {
+  - compteDestinataire : Account
+  +executerVirement()
+  +verifierEligibilite()
+}
+
+class PaiementFacture {
+  - referenceFacture : String
+  - fournisseur : BillProvider
+  +payerFacture()
+}
+
+Transaction <|-- Depot
+Transaction <|-- Retrait
+Transaction <|-- Virement
+Transaction <|-- PaiementFacture
+
+Account "0..1" o-- "0..*" Transaction : source >
+Account "0..1" o-- "0..*" Transaction : destination >
 Transaction "0..*" --> "1" User : exécutée par >
 
-legend right
-  |= Règle |= Signification |
+' ═══════════════ EXTENSIONS MÉTIER ═══════════════
+class BillProvider {
+  - code : String
+  - name : String
+  - category : String
+  - active : boolean
+}
+
+class BillPayment {
+  - clientReference : String
+  - amount : BigDecimal
+  - createdAt : Instant
+  --
+  +enregistrerPaiement()
+}
+
+class CheckbookOrder {
+  - orderNumber : String
+  - status : CheckbookOrderStatus
+  - sheetCount : CheckbookSheetCount
+  - requestedAt : Instant
+  --
+  +commanderChequier()
+  +validerCommande()
+  +suivreCommande()
+}
+
+BillProvider "1" o-- "0..*" BillPayment
+Account "1" o-- "0..*" BillPayment : paie via >
+BillPayment "1" --> "1" Transaction : génère >
+
+Client "1" o-- "0..*" CheckbookOrder : demande >
+Account "1" o-- "0..*" CheckbookOrder : compte >
+User "1" o-- "0..*" CheckbookOrder : traite >
+
+' ═══════════════ TRANSVERSAL ═══════════════
+class Notification {
+  - type : NotificationType
+  - title : String
+  - message : String
+  - read : boolean
+  - createdAt : Instant
+  --
+  +envoyerNotification()
+  +marquerCommeLue()
+}
+
+class AuditLog {
+  - action : String
+  - entityType : String
+  - entityId : Long
+  - performedAt : Instant
+  - details : String
+  --
+  +enregistrer()
+}
+
+class "TableauBord\n(DashboardStats)" as Dashboard {
+  - nbClients : long
+  - nbComptes : long
+  - nbTransactions : long
+  - montantTotal : BigDecimal
+  --
+  +afficherStatistiques()
+  +genererRapport()
+}
+
+class Recu {
+  - dateGeneration : Instant
+  - contenu : bytes
+  --
+  +genererPDF()
+  +telecharger()
+}
+
+class Authentification {
+  - username : String
+  - password : String
+  --
+  +login()
+  +logout()
+  +verifierMotDePasse()
+}
+
+Client "1" o-- "0..*" Notification : reçoit >
+User "1" o-- "0..*" Notification : reçoit >
+User "1" o-- "0..*" AuditLog : effectue >
+Transaction ..> AuditLog : journalise >
+Transaction "1" o-- "0..1" Recu : produit >
+Client "1" ..> Authentification : portail >
+User "1" ..> Authentification : personnel >
+Chef "1" --> "1" Dashboard : consulte >
+
+' ═══════════════ LAYOUT (axe central) ═══════════════
+Admin -[hidden]right- Agent
+Agent -[hidden]right- Chef
+User -[hidden]down- Client
+Client -[hidden]down- Account
+Account -[hidden]down- Transaction
+
+Depot -[hidden]right- Retrait
+Retrait -[hidden]right- Virement
+Virement -[hidden]right- PaiementFacture
+Transaction -[hidden]down- Depot
+
+BillProvider -[hidden]right- BillPayment
+BillPayment -[hidden]right- CheckbookOrder
+
+Notification -[hidden]down- AuditLog
+Dashboard -[hidden]right- Recu
+Recu -[hidden]right- Authentification
+
+legend bottom right
+  |= Note |= Détail |
+  | <color:#D8CCE8>Personnel</color> | User + rôles (ADMIN, AGENT, CHEF_AGENCE) |
+  | <color:#D8CCE8>Client</color> | Entité distincte — portail en ligne |
+  | <color:#D8CCE8>Transaction</color> | Hiérarchie conceptuelle → enum en JPA |
   | R1–R2 | 1 client → N comptes |
-  | | 1 compte → 1 client |
-  | | **User ≠ Client** |
 endlegend
 
 @enduml
